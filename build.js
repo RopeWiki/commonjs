@@ -3,8 +3,14 @@ var fs = require('fs');
 var path = require('path');
 
 var options = {
+    "compress": false,
+    "mangle": false,
+    "warnings": true,
     "output": {
-        "preamble": "// Do not modify this page directly; instead build from https://github.com/RopeWiki/commonjs"
+        "preamble": "// Do not modify this page directly; instead build from https://github.com/RopeWiki/commonjs",
+        "beautify": true,
+        "width": 100,
+        "max_line_len": 100
     }
 };
 
@@ -20,6 +26,22 @@ function addInputFilesFrom(inputPath) {
         }
     });
 }
-addInputFilesFrom(path.join(__dirname, 'lib'))
+addInputFilesFrom(path.join(__dirname, 'lib'));
 
-fs.writeFileSync("out/Common.min.js", UglifyJS.minify(inputFiles, options).code, "utf8");
+const result = UglifyJS.minify(inputFiles, options);
+
+if (result.warnings != null) {
+    console.log("===== Warnings =====")
+    console.log(result.warnings);
+} else {
+    console.log("No warnings.")
+}
+
+if (result.error != null) {
+    console.log("===== Errors =====")
+    console.log(result.error);
+} else {
+    console.log("No errors.")
+}
+
+fs.writeFileSync("out/Common.min.js", result.code, "utf8");
