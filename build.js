@@ -2,15 +2,14 @@ var UglifyJS = require("uglify-js");
 var fs = require('fs');
 var path = require('path');
 
+// Note: enabling `compress` breaks functionality on ropewiki.com currently
 var options = {
     "compress": false,
-    "mangle": false,
+    "mangle": true,
     "warnings": true,
     "output": {
         "preamble": "// Do not modify this page directly; instead build from https://github.com/RopeWiki/commonjs",
-        "beautify": true,
-        "width": 100,
-        "max_line_len": 100
+        "beautify": false
     }
 };
 
