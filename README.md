@@ -1,4 +1,4 @@
-This repository enables more standard development for MediaWiki:Common.js.
+This repository enables more effective development for MediaWiki:Common.js than attempting to edit a 5500-line monolithic file.
 
 ## Usage
 
@@ -14,3 +14,8 @@ Then execute the build:
 npm run build
 ```
 
+## Development guidelines
+
+Currently, all Javascript must be ECMAScript 5 because this is what is supported by uglify-js.
+
+All code in individual files should consist of function or constant definitions.  Invocations of those functions (for instance, on page load) should be centralized in zzz_onload.js.  By following this guideline, the order each file's content appears in the generated monolithic, minified file should not matter.
