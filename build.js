@@ -22,6 +22,8 @@ function addInputFilesFrom(inputPath) {
 
         if (isFile) {
             inputFiles[filepath] = fs.readFileSync(filepath, "utf8");
+        } else {
+            addInputFilesFrom(filepath);
         }
     });
 }
