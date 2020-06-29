@@ -26,3 +26,35 @@ npm run build
 5. Automatic function invocations (for instance, on page load) should be centralized in `zzz_onload.js`.
 
 By following the guidelines above, the order each file's content appears in the generated monolithic, minified file should not matter.
+
+### Function comments
+
+Whenever practical, try to document functions with a summary of what the function does, the input parameters, and the return value.  Here is a long-form format to model comments after:
+
+```javascript
+/**
+ * Summary. (use period)
+ *
+ * Description. (use period)
+ *
+ * @access     private
+ *
+ * @see  Function/class relied on
+ *
+ * @fires   eventName
+ * @fires   className#eventName
+ * @listens event:eventName
+ * @listens className~event:eventName
+ *
+ * @param {type}   var           Description.
+ * @param {type}   [var]         Description of optional variable.
+ * @param {type}   [var=default] Description of optional variable with default variable.
+ * @param {Object} objectVar     Description.
+ * @param {type}   objectVar.key Description of a key in the objectVar parameter.
+ *
+ * @yield {type} Yielded value description.
+ *
+ * @return {type} Return value description.
+ */
+```
+
