@@ -14,6 +14,12 @@ Then execute the build:
 npm run build
 ```
 
+## Usage (Visual Studio)
+If you wish to develop in Visual Studio, there is a 'Ropewiki Javascript.sln' and corresponding project in this repo that you can open. To do the bundling and minify for deployment, install the 'Bundler & Minifier' extension for VS. This extension uses settings in the bundleconfig.json file, and once installed, the files are automatically minified every time a change is saved to the watched files. To deploy, copy and paste the output in to the http://ropewiki.com/MediaWiki:Common.js page in production.
+
+https://marketplace.visualstudio.com/items?itemName=MadsKristensen.BundlerMinifier
+
+
 ## Development guidelines
 
 1. Currently, all Javascript must be ECMAScript 5 because this is what is supported by uglify-js.
