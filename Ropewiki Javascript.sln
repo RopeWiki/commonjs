@@ -1,0 +1,104 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "commonjs", "commonjs", "{9CCE694B-405A-4F47-AA72-5A21AE129795}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		build.js = build.js
+		LICENSE.md = LICENSE.md
+		package-lock.json = package-lock.json
+		package.json = package.json
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".idea", ".idea", "{24D34A68-73EA-4F07-90F8-EDCA48FBA6C7}"
+	ProjectSection(SolutionItems) = preProject
+		.idea\.gitignore = .idea\.gitignore
+		.idea\commonjs.iml = .idea\commonjs.iml
+		.idea\jsLibraryMappings.xml = .idea\jsLibraryMappings.xml
+		.idea\misc.xml = .idea\misc.xml
+		.idea\modules.xml = .idea\modules.xml
+		.idea\vcs.xml = .idea\vcs.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{37919E5E-70E3-4760-B8D4-3175EF54EEB1}"
+	ProjectSection(SolutionItems) = preProject
+		lib\android.js = lib\android.js
+		lib\collapsible_lists.js = lib\collapsible_lists.js
+		lib\constants.js = lib\constants.js
+		lib\cookies.js = lib\cookies.js
+		lib\credits.js = lib\credits.js
+		lib\directions.js = lib\directions.js
+		lib\geo.js = lib\geo.js
+		lib\global_variables.js = lib\global_variables.js
+		lib\localization.js = lib\localization.js
+		lib\navigation.js = lib\navigation.js
+		lib\pdf.js = lib\pdf.js
+		lib\pictures.js = lib\pictures.js
+		lib\regions.js = lib\regions.js
+		lib\search.js = lib\search.js
+		lib\sites.js = lib\sites.js
+		lib\skin.js = lib\skin.js
+		lib\stars.js = lib\stars.js
+		lib\translation.js = lib\translation.js
+		lib\wikieditor_customization.js = lib\wikieditor_customization.js
+		lib\zzz_onload.js = lib\zzz_onload.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "out", "out", "{88D813C3-0CBC-44B0-8B87-17410E72B1EA}"
+	ProjectSection(SolutionItems) = preProject
+		out\Common.min.js = out\Common.min.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "utils", "utils", "{7F4D1C32-A2A9-4366-9949-5F85FBDD5099}"
+	ProjectSection(SolutionItems) = preProject
+		lib\utils\urls.js = lib\utils\urls.js
+		lib\utils\utils.js = lib\utils\utils.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui", "ui", "{D045C9ED-B5FE-4470-A641-CFB30E24D82E}"
+	ProjectSection(SolutionItems) = preProject
+		lib\ui\fav.js = lib\ui\fav.js
+		lib\ui\style.js = lib\ui\style.js
+		lib\ui\toggle.js = lib\ui\toggle.js
+		lib\ui\ui.js = lib\ui\ui.js
+		lib\ui\ui_utils.js = lib\ui\ui_utils.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "map", "map", "{81DE89BF-A85C-4BC0-8D99-0EED87197A49}"
+	ProjectSection(SolutionItems) = preProject
+		lib\map\constants.js = lib\map\constants.js
+		lib\map\fullscreen.js = lib\map\fullscreen.js
+		lib\map\map.js = lib\map\map.js
+		lib\map\map_init.js = lib\map\map_init.js
+		lib\map\search.js = lib\map\search.js
+		lib\map\toggle.js = lib\map\toggle.js
+		lib\map\ui.js = lib\map\ui.js
+		lib\map\utils.js = lib\map\utils.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "facebook", "facebook", "{01D63242-60A7-4360-BAA3-380842CD8054}"
+	ProjectSection(SolutionItems) = preProject
+		lib\facebook\comments.js = lib\facebook\comments.js
+		lib\facebook\search.js = lib\facebook\search.js
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{24D34A68-73EA-4F07-90F8-EDCA48FBA6C7} = {9CCE694B-405A-4F47-AA72-5A21AE129795}
+		{37919E5E-70E3-4760-B8D4-3175EF54EEB1} = {9CCE694B-405A-4F47-AA72-5A21AE129795}
+		{88D813C3-0CBC-44B0-8B87-17410E72B1EA} = {9CCE694B-405A-4F47-AA72-5A21AE129795}
+		{7F4D1C32-A2A9-4366-9949-5F85FBDD5099} = {37919E5E-70E3-4760-B8D4-3175EF54EEB1}
+		{D045C9ED-B5FE-4470-A641-CFB30E24D82E} = {37919E5E-70E3-4760-B8D4-3175EF54EEB1}
+		{81DE89BF-A85C-4BC0-8D99-0EED87197A49} = {37919E5E-70E3-4760-B8D4-3175EF54EEB1}
+		{01D63242-60A7-4360-BAA3-380842CD8054} = {37919E5E-70E3-4760-B8D4-3175EF54EEB1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3292BEA3-7B66-4698-BF9E-C85DFBC8024B}
+	EndGlobalSection
+EndGlobal
