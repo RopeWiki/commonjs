@@ -1,0 +1,48 @@
+[
+  {
+    "outputFileName": "out/Common.min.js",
+    "inputFiles": [
+      "lib/android.js",
+      "lib/collapsible_lists.js",
+      "lib/constants.js",
+      "lib/cookies.js",
+      "lib/credits.js",
+      "lib/directions.js",
+      "lib/facebook/comments.js",
+      "lib/facebook/search.js",
+      "lib/geo.js",
+      "lib/global_variables.js",
+      "lib/localization.js",
+      "lib/map/constants.js",
+      "lib/map/fullscreen.js",
+      "lib/map/map.js",
+      "lib/map/map_init.js",
+      "lib/map/search.js",
+      "lib/map/toggle.js",
+      "lib/map/ui.js",
+      "lib/map/utils.js",
+      "lib/navigation.js",
+      "lib/pdf.js",
+      "lib/pictures.js",
+      "lib/regions.js",
+      "lib/search.js",
+      "lib/sites.js",
+      "lib/skin.js",
+      "lib/stars.js",
+      "lib/translation.js",
+      "lib/ui/fav.js",
+      "lib/ui/style.js",
+      "lib/ui/toggle.js",
+      "lib/ui/ui.js",
+      "lib/ui/ui_utils.js",
+      "lib/utils/urls.js",
+      "lib/utils/utils.js",
+      "lib/wikieditor_customization.js",
+      "lib/zzz_onload.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "commentMode": "all"
+    }
+  }
+]
