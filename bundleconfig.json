@@ -14,7 +14,6 @@
       "lib/global_variables.js",
       "lib/localization.js",
       "lib/map/constants.js",
-      "lib/map/fullscreen.js",
       "lib/map/map.js",
       "lib/map/map_init.js",
       "lib/map/search.js",
