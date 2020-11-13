@@ -16,7 +16,7 @@ var SITE_ALTERNATE_NAMES = [
 ];
 
 // Google Maps API key
-var GOOGLE_MAPS_APIKEY = "AIzaSyDdkcexZV-p5Nj8RwgLYTcegm5jorJpbyw";
+var GOOGLE_MAPS_APIKEY = "AIzaSyDdkcexZV-p5Nj8RwgLYTcegm5jorJpbyw"; //ben's
 
 // enable debug mode
 var DEBUG = window.location.href.toString().indexOf('debug=')>=0; // || url.indexOf('http')<0;

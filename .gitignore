@@ -1,6 +1,7 @@
 node_modules
-Common.min.js
-/bin
-/obj
-/.vs
+*out
+*bin
+*obj
+*.vs
 *.user
+*Properties
