@@ -742,7 +742,7 @@ function loadInteractiveMap() {
 
         if (kmllist) {
 
-            controls += spstart + '<label id="showKmlButton" style="display:none"><input class="gmnoprint" id="routeschk" type="checkbox" onclick="toggleRoutes()">Show&nbsp;KML&nbsp;</label>' + spend;
+            controls += spstart + '<label id="showKmlButton" style="display:none"><input class="gmnoprint" id="routeschk" type="checkbox" onclick="toggleRoutes()">Show&nbsp;track&nbsp;data</label>' + spend;
 
             // map search
             if (document.getElementById('locsearch')) {
