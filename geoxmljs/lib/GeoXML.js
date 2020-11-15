@@ -3305,14 +3305,7 @@ GeoXml.prototype.handleStyle = function (style, sid, currstyle) {
         }
         if (href) {
 
-            // patch default marker icons for CalTopo
-            if (
-                href == "http://caltopo.com/resource/imagery/icons/circle/FF0000.png" ||
-                href == "http://caltopo.com/resource/imagery/icons/circle/000000.png" ||
-                href == "http://caltopo.com/static/images/icons/c:ring,FF0000.png" ||
-                href == "http://caltopo.com/static/images/icons/c:ring,000000.png"
-            )
-                href = 'http://maps.google.com/mapfiles/kml/shapes/open-diamond.png';
+            href = validateIconUrl(href);
 
             var scale = parseFloat(this.getText(icons[0].getElementsByTagName("scale")[0]), 10);
             if (scale) {
@@ -3414,6 +3407,27 @@ GeoXml.prototype.handleStyle = function (style, sid, currstyle) {
 
     return tempstyle;
 };
+
+function validateIconUrl(href) {
+
+    // patch default marker icons for CalTopo
+    if (
+        href == "http://caltopo.com/resource/imagery/icons/circle/FF0000.png" ||
+            href == "http://caltopo.com/resource/imagery/icons/circle/000000.png" ||
+            href == "http://caltopo.com/static/images/icons/c:ring,FF0000.png" ||
+            href == "http://caltopo.com/static/images/icons/c:ring,000000.png"
+    )
+        href = 'http://maps.google.com/mapfiles/kml/shapes/open-diamond.png';
+
+    // replace known bad icon urls:
+    if (href == "http://caltopo.com/resource/imagery/icon.png?cfg=nps-parking")
+        href = 'http://maps.google.com/mapfiles/kml/shapes/parking_lot.png';
+
+    // add others as needed
+
+    return href;
+}
+
 GeoXml.prototype.processKML = function (node, marks, title2, sbid, depth, paren) {
     var that = this;
     var thismap = this.map;
