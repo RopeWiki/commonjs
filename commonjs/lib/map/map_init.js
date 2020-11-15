@@ -1094,6 +1094,8 @@ function loadInteractiveMap() {
 function GetMapTypeIds() {
     // set map types to display from "kmltype"
     var embeddedMaptype;
+    var pagename = mw.config.get("wgPageName");
+    var parentRegionEnable = ($("[title='United States']").length > 0 || $("[title='Canada']").length > 0) && pagename !== 'North_America'
     var kmlType = document.getElementById("kmltype");
     if (kmlType != null) {
         var mapset = kmlType.innerHTML.split('@');
@@ -1101,7 +1103,9 @@ function GetMapTypeIds() {
     }
 
     var mapTypeIds = [google.maps.MapTypeId.TERRAIN];
-    if (embeddedMaptype === "topo")
+    if (embeddedMaptype === "topo"
+        || pagename === "United_States" || pagename === "Canada" || pagename === "Pacific_Northwest" //region pages
+        || parentRegionEnable) //sub-region under US or Canada
         mapTypeIds.push("topousa");
 
     if (embeddedMaptype === "estopo")
