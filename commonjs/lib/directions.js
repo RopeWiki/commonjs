@@ -19,7 +19,7 @@ function displaycoordenates(loc) {
 function displaydirections(lat, lng, extra) {
     var ret = '<div><i>';
     //ret += '<a href="javascript:displaycoordenates(['+lat+','+lng+']);">Coords</a> - '
-    ret += '<a href="javascript:displaydirectionsto([' + lat + ',' + lng + ']);">Directions To</a> - <a href="javascript:displaydirectionsfrom([' + lat + ',' + lng + ']);">Directions From</a>';
+    ret += '<a href="javascript:displaydirectionsto([' + lat + ',' + lng + ']);">Directions To</a>';
     if (!!extra) ret += extra;
     ret += '</i></div>';
     return ret;

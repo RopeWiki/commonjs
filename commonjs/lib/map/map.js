@@ -6,7 +6,7 @@ function displayinfowindow(marker) {
 
     marker.infowindow.setZIndex(++zindex);
     marker.infowindow.open(map, marker);
-    getGeoElevation(marker.getPosition(), "infoelevation", "~")
+    //getGeoElevation(marker.getPosition(), "infoelevation", "~")
     lastinfowindow = marker.infowindow;
 }
 
@@ -135,70 +135,35 @@ function loadlist(list, fitbounds) {
         sdescm = '<div class="notranslate">' + sdescm.split('*').join('&#9733;') + '</div>';
 
         // set up thumbnail
-        var iwheight = "50px";
         if (item.thumbnail) {
-            /*
-            var height = "";
-            var ps=0, pe=0;
-            if ((pe=item.thumbnail.lastIndexOf('px-'))>0)
-               {
-               ps = item.thumbnail.lastIndexOf('/', pe);
-               var h = parseInt(item.thumbnail.substring(ps+1,pe));
-               console.log(h+"="+item.thumbnail);
-               if (h>0)
-                 height = 'height='+h+'px';
-                 //img = '<div style="width:auto;height:'+h+'px;overflow:hidden;">'+img+'</div>';
-               }
-            */
-            var style = "";
-            var width = "";
-            var height = 'height="150px"';
-            // try to get width from thumbnail
-            var fsplit = item.thumbnail.split('/');
-            if (fsplit.length > 0) {
-                var fname = fsplit[fsplit.length - 1];
-                var w = parseInt(fname);
-                if (w > 0) {
-                    width = 'width="' + w + 'px"';
-                    style = 'style="border:1px solid #808080"';
-                    iwheight = "200px";
-                }
-            }
-            sdescm += '<div><img ' + style + ' ' + width + ' ' + height + ' src="' + item.thumbnail + '"/></div>';
+            //width of 186 produces an even white border on both sides for standard infowindow size
+            //(the infowindow will get wider if the canyon name is very long, and produce more whitespace on the right)
+            sdescm += '<div><img style="border:1px solid #808080;max-width:186px;max-height:150px;width:auto;height:auto" src="' + item.thumbnail + '"/></div>';
         }
 
         // set up extras
         {
             if (item.kmlfile && item.kmlfile != "") {
                 sdescm += '<div><i>';
-                sdescm += '<a href="javascript:toggleRoutes(\'' +
-                    urlencode(item.kmlfile) +
-                    '\',\'' +
-                    urlencode(item.id) +
-                    '\');">Show KML Map of the route</a>';
+                sdescm += '<a href="javascript:toggleRoutes(\'' + urlencode(item.kmlfile) + '\',\'' + urlencode(item.id) + '\');">Show track data on map</a>';
                 sdescm += '</i></div>';
             }
-            var extra = '<br><span id="infoelevation"></span> - '
-            extra += '<a href="' + SITE_BASE_URL + '/Weather?pagename=' + item.id + '" target="_blank">Weather</a>';
-            extra += ' - <a href="' +
-                SITE_BASE_URL +
-                '/Location?locdist=30mi&locname=Coord:' +
-                item.location.lat +
-                ',' +
-                item.location.lng +
-                '">Search nearby</a>';
+            var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=Coord:' + item.location.lat + ',' + item.location.lng + '">Search nearby</a><p>';
             sdescm += displaydirections(item.location.lat, item.location.lng, extra);
         }
 
         // set up infowindow
-        //'<div class="gm-style-iw">'+'</div>'
-        var contentString = '<div style="width:auto;height:auto;overflow:hidden;"><b class="notranslate">' +
-            sitelink(item.id, nonamespace(item.id)) +
-            '</b>'; //'+iwheight+'
-        if (kmladdbutton)
-            contentString += '<input class="submitoff addbutton" type="submit" onclick="addbutton(\'' +
-                item.id.split("'").join("%27") +
-                '\')" value="+">';
+        var contentString = '<div style="width:auto;height:auto;overflow:hidden;">';
+
+        // add title
+        contentString += '<b class="notranslate">' + sitelink(item.id, nonamespace(item.id)) + '</b>';
+
+        //if (kmladdbutton)
+        //    contentString += '<input class="submitoff addbutton" type="submit" onclick="addbutton(\'' + item.id.split("'").join("%27") + '\')" value="+">';
+
+        // add elevation
+        //contentString += '<br><span id="infoelevation"></span>';
+
         contentString += '<hr/>' + sdescm + '</div>';
         if (item.infocontent) contentString = item.infocontent;
         var infowindowm = new google.maps.InfoWindow({ content: contentString });
@@ -245,6 +210,7 @@ function loadlist(list, fitbounds) {
                 this.highlight.setMap(map);
                 tooltip.show(this.description, e, this);
             });
+
         google.maps.event.addListener(marker,
             "mouseout",
             function() {
@@ -256,13 +222,13 @@ function loadlist(list, fitbounds) {
             });
 
         markers.push(marker);
+
         google.maps.event.addListener(marker,
             'click',
             function() {
                 displayinfowindow(this);
             });
-        // extend bouds
-        //console.log(item.id+":"+item.location.lat+","+item.location.lng+"="+positionm.toString());
+
         boundslist.extend(positionm);
     }
 
@@ -285,9 +251,8 @@ function loadlist(list, fitbounds) {
             map.fitBounds(boundslist);
             map.panToBounds(boundslist);
         }
-        //console.log(bounds);
+
         zindex = 6000;
-        //map.panTo(bounds.getCenter());
     }
 
     return n;
@@ -319,10 +284,8 @@ function getrwlist(data) {
                         //var colors = [ "666666", "7b6434", "b2882c", "f6b114", "f78931", "f74c24" ];
                         var num = obj.id.slice(1).split(' ')[0];
                         obj.icon = 'https://sites.google.com/site/rwicons/bg' + obj.q + '_' + num + '.png';
-                        //iconm = 'http://chart.apis.google.com/chart?chst=d_text_outline&chld='+colors[Number(line[3])]+'|12|h|000000|b|'+parseInt(num);
                     }
 
-                //console.log(iconm);
                 v = item.printouts["Has summary"];
                 if (v && v.length > 0)
                     obj.description = v[0];
@@ -368,11 +331,9 @@ function morekmllist(loccontinue, loctotal) {
 
     if (loccontinue > 0) {
         var tablelist = $(".loctable .loctabledata");
-        //var morelist = $(".loctable .smw-template-furtherresults a");
-        if (tablelist.length == 1) // && morelist.length==1)
+
+        if (tablelist.length == 1)
         {
-            //var href = morelist[0].href;
-            //if (href) {
             ++morelistc;
             document.body.style.cursor = 'wait';
             $.get(geturl(tablelisturl + '&offset=' + loccontinue),
@@ -420,60 +381,8 @@ function morekmllist(loccontinue, loctotal) {
     var morelist = $(".loctable .smw-template-furtherresults a");
     if (morelist.length == 1) {
         morelist[0].href = 'javascript:morekmllist(' + loccontinue + ',' + loctotal + ');';
-        /*
-        var href = morelist[0].href;
-        if (href) {
-          var offset = '&offset=';
-          var pos = href.indexOf(offset);
-          morelist[0].href = href.substr(0, pos) + offset + loccontinue;
-        }
-        */
     }
 }
-
-/*
-function mappoint( even )
-{
-          // get map stats
-          var scale = Math.pow(2, map.getZoom());
-          var proj = map.getProjection();
-          var bounds = map.getBounds();
-          if (!proj || !bounds)
-            {
-            console.log("null proj");
-            return null;
-            }
-          //console.log("bounds NE "+bounds.getNorthEast()+" SW "+bounds.getSouthWest());
-          //console.log("bounds NE.lat "+bounds.getNorthEast().lat()+" SW,lng "+bounds.getSouthWest().lng());
-          var nwll = new google.map.LatLng( bounds.getNorthEast().lat(), bounds.getSouthWest().lng() );
-          //console.log("nwll "+nwll);
-          var nw = proj.fromLatLngToPoint(nwll);
-          //console.log("nw "+nw);
-
-        function fromLatLngToPixel(position) {
-          var point = proj.fromLatLngToPoint(position);
-          return new google.map.Point(
-          Math.floor((point.x - nw.x) * scale),
-          Math.floor((point.y - nw.y) * scale));
-          }
-
-        function fromPixelToLatLng(pixel) {
-          var point = new google.map.Point();
-          point.x = pixel.x / scale + nw.x;
-          point.y = pixel.y / scale + nw.y;
-          return proj.fromPointToLatLng(point);
-        }
-
-    var d = 20;
-    var bounds = map.getBounds();
-    var pixsw = fromLatLngToPixel( bounds.getSouthWest() );
-    pixsw.x += d; pixsw.y -=d;
-    var sw = fromPixelToLatLng(pixsw);
-    var pixne = fromLatLngToPixel( bounds.getNorthEast() );
-    pixne.x -= d; pixne.y +=d;
-    var ne = fromPixelToLatLng(pixne);
-}
-*/
 
 function morestop() {
     // finished loading

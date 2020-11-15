@@ -5,7 +5,6 @@ function addhighlight(idlist) {
             if (m.highlight)
                 continue;
 
-            var iconsize = 16;
             var highlight = new google.maps.Marker({
                 position: m.getPosition(),
                 icon: SITE_BASE_URL + "/images/e/e6/Starn_y.png",
@@ -14,7 +13,6 @@ function addhighlight(idlist) {
                 optimized: false,
                 zIndex: m.zIndex - 1
             });
-            //alert(m.zIndex);
 
             highlight.setMap(qmaps[m.q]);
             m.highlight = highlight;
@@ -30,24 +28,12 @@ function addhighlight(idlist) {
 }
 
 function addbutton(id) {
-    //id = urlencode(id);
     function reattribute(elem) {
         var elems = elem.childNodes;
         for (var e = 0; e < elems.length; ++e) {
             var elem = elems[e];
             if (elem.attributes)
                 for (var a = 0; a < elem.attributes.length; ++a) {
-                    /*
-                    if (elem.attributes[a].oldattribute)
-                     {
-                     elem.attributes[a].value = elem.attributes[a].oldattribute.replace(/@/gi,id);
-                     }
-                    else if (elem.attributes[a].value.indexOf('@')>=0)
-                     {
-                     elem.attributes[a].oldattribute = elem.attributes[a].value;
-                     elem.attributes[a].value = elem.attributes[a].value.replace(/@/gi,id);
-                     }
-                    */
                     if (elem.attributes[a].value.indexOf(oldid) >= 0)
                         elem.attributes[a].value = elem.attributes[a].value.split(oldid).join(id);
                 }
@@ -61,14 +47,10 @@ function addbutton(id) {
         var kmlform = kmladdbutton.getElementsByTagName('BUTTON');
         if (kmlform.length > 0)
             kmlform[0].click();
-        /*
-           var kmlform = kmladdbutton.getElementsByTagName('FORM');
-           if (kmlform.length>0)
-             kmlform[0].submit();
-        */
 
         if (lastinfowindow)
             lastinfowindow.close();
+
         var idlist = [id];
         addhighlight(idlist);
         oldid = id;
@@ -100,7 +82,7 @@ function setmarker(lat, lng, z) {
 
 function centermap() {
     if (!map) return;
-    //var bounds = map.getBounds();
+
     var center = map.getCenter();
     google.maps.event.trigger(map, 'resize');
     //map.panToBounds(bounds);
