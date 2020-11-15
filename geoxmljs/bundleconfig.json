@@ -2,7 +2,13 @@
   {
     "outputFileName": "out/geoxml.min.js",
     "inputFiles": [
-      "lib/geoxml.js"
+      "lib/geoxml.js",
+      "lib/elevation.js",
+      "lib/functions.js",
+      "lib/label.js",
+      "lib/messagebox.js",
+      "lib/gmapsextensions.js",
+      "lib/overlaymanager.js"
     ],
     "minify": {
       "enabled": true,

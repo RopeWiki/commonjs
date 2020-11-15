@@ -7,122 +7,7 @@
   Addition by Luca Chiarabini include: marker highlight, distance and elevation computations
 \******************************************************************************/
 
-var mapid = '#mapbox';
-var iconsize = 16;
-var checkbox = false;
-var zI = 0;
-var coordst = "<" + "coordinates" + ">";
-var coorded = "</" + "coordinates" + ">";
-var webproxy = LUCA_BASE_URL + "\/rwr?url=";
-var maxpathlen = 255; // max path len allowed for elevation
-var mi2ft = 5280;
-
-// Constructor
-function KMLObj(title2, desc, op, fid) {
-    this.title2 = title2;
-    this.description = escape(desc);
-    this.marks = [];
-    this.folders = [];
-    this.groundOverlays = [];
-    this.open = op;
-    this.folderid = fid;
-}
-if (typeof console === "undefined" || typeof console.log === "undefined") {
-    console = {};
-    console.log = function () { };
-}
-function Lance$(mid) { return document.getElementById(mid); }
-var topwin = self;
-var G = google.maps;
-
-function ftxmi(value) {
-    return Math.round(value);
-}
-
-function xdeg(value) {
-    return Math.round(value);
-}
-
-function ft(value) {
-    return Math.round(value) + "ft";
-}
-
-function mi(value) {
-    return Math.round(value * 10) / 10 + "mi";
-}
-
-function getTolerance(map) {
-    var psize = 16;
-    // get map stats
-    var scale = Math.pow(2, map.getZoom());
-    var proj = map.getProjection();
-    var bounds = map.getBounds();
-    if (!proj || !bounds) {
-        //console.log("null proj");
-        return 1e-5;
-    }
-    var nwll = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng());
-    var nw = proj.fromLatLngToPoint(nwll);
-
-    function fromLatLngToPixel(position) {
-        var point = proj.fromLatLngToPoint(position);
-        return new google.maps.Point(
-            Math.floor((point.x - nw.x) * scale),
-            Math.floor((point.y - nw.y) * scale));
-    }
-
-    function fromPixelToLatLng(pixel) {
-        var point = new google.maps.Point();
-        point.x = pixel.x / scale + nw.x;
-        point.y = pixel.y / scale + nw.y;
-        return proj.fromPointToLatLng(point);
-    }
-
-
-    // compute pixel locations
-    var center = new google.maps.LatLng((bounds.getNorthEast().lat() + bounds.getSouthWest().lat()) / 2, (bounds.getNorthEast().lng() + bounds.getSouthWest().lng()) / 2);
-    var c = fromLatLngToPixel(center);
-    var p = { x: c.x + psize, y: c.y + psize };
-    var pos = fromPixelToLatLng(p);
-    /*    
-    new google.maps.Marker({
-    	      map:map,
-            position: center,
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 16,
-                color: "#aaffaa",
-            strokeColor:"#aaffff",
-            strokeOpacity:0.5,
-            strokeWeight:8
-            },
-            draggable: false,
-            clickable: false,
-            optimized: false,
-            zIndex: 100
-            });
-
-    new google.maps.Marker({
-    	      map:map,
-            position: pos,
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 16,
-                color: "#aaffaa",
-            strokeColor:"#aaffaa",
-            strokeOpacity:0.5,
-            strokeWeight:8
-            },
-            draggable: false,
-            clickable: false,
-            optimized: false,
-            zIndex: 100
-            });
-    */
-    map.tolerance = Math.min(Math.abs(pos.lat() - center.lat()), Math.abs(pos.lng() - center.lng()));
-    //console.log("tol="+map.tolerance);
-};
-
+var useLegacyLocalLoad = true;
 
 function GeoXml(myvar, map, url, opts) {
     /*
@@ -369,8 +254,82 @@ function GeoXml(myvar, map, url, opts) {
     }
 }
 
+GeoXml.SEMI_MAJOR_AXIS = 6378137.0;
+GeoXml.ECCENTRICITY = 0.0818191913108718138;
+GeoXml.DEG2RAD = 180.0 / (Math.PI);
 
+GeoXml.merc2Lon = function (lon) {
+    return (lon * GeoXml.DEG2RAD) * GeoXml.SEMI_MAJOR_AXIS;
+};
 
+GeoXml.merc2Lat = function (lat) {
+    var rad = lat * GeoXml.DEG2RAD;
+    var sinrad = Math.sin(rad);
+    return (GeoXml.SEMI_MAJOR_AXIS * Math.log(Math.tan((rad + Math.PI / 2) / 2) * Math.pow(((1 - GeoXml.ECCENTRICITY * sinrad) / (1 + GeoXml.ECCENTRICITY * sinrad)), (GeoXml.ECCENTRICITY / 2))));
+};
+
+// Dropdown factory method
+GeoXml.addDropdown = function (myvar, name, type, i, graphic) {
+    return '<option value="' + i + '">' + name + '</option>';
+};
+
+// Sidebar factory method One - adds an entry to the sidebar
+GeoXml.addSidebar = function (myvar, type, name, e, graphic, ckd, i, snippet) {
+    var check = "checked";
+    if (ckd == "false") { check = ""; }
+    var h = "";
+    var mid = myvar + "sb" + e;
+    if (snippet && snippet != "undefined") {
+        snippet = "<br><span class='" + myvar + "snip'>" + snippet + "</span>";
+    }
+    else {
+        snippet = "";
+    }
+    //if (this.opts.debug)
+    //  console.log("LEGEND:"+name);
+    switch (type) {
+    case "polygon":
+    case "marker":
+    case "polyline":
+        h = '<li id="' + mid + '" onmouseout="' + myvar + '.overlayman.markers[' + e + '].onOut(null)" onmouseover="' + myvar + '.overlayman.markers[' + e + '].onOver(null)" >' +
+            (checkbox ? '<input id="' + myvar + '' + e + 'CB" type="checkbox" ' + check + ' onclick="' + myvar + '.showHide(null,this.checked,' + i + ')">' : '') +
+            '<span style="margin-top:6px;"><a href="javascript:void(0);" onclick="' + myvar + '.onClick(' + e + ');">' + graphic + '&nbsp;' + name + '</a></span>' + snippet + '</li>';
+        //'<span style="margin-top:6px;"><a href="#" onclick="'+myvar+ '.overlayman.markers['+e+'],\'click\');return false;">'+ graphic + '&nbsp;' + name + '</a></span>'+snippet+'</li>';
+        break;
+    }
+    return h;
+};
+
+GeoXml.stripHTML = function (s) {
+    return (s.replace(/(<([^>]+)>)/ig, ""));
+};
+
+GeoXml.getDescription = function (node) {
+    var sub = "";
+    var n = 0;
+    var cn;
+    if (typeof XMLSerializer != "undefined") {
+        var serializer = new XMLSerializer();
+        for (; n < node.childNodes.length; n++) {
+            cn = serializer.serializeToString(node.childNodes.item(n));
+            sub += cn;
+        }
+    }
+    else {
+        for (; n < node.childNodes.length; n++) {
+            cn = node.childNodes.item(n);
+            sub += cn.xml;
+        }
+    }
+    var s = sub.replace("<![CDATA[", "");
+    var u = s.replace("]]>", "");
+    u = u.replace(/\&amp;/g, "&");
+    u = u.replace(/\&lt;/g, "<");
+    u = u.replace(/\&quot;/g, '"');
+    u = u.replace(/\&apos;/g, "'");
+    u = u.replace(/\&gt;/g, ">");
+    return u;
+};
 
 GeoXml.prototype.setOpacity = function (opacity) {
     this.opts.overrideOpacity = opacity;
@@ -391,10 +350,6 @@ GeoXml.prototype.setOpacity = function (opacity) {
         }
 
     }
-};
-
-GeoXml.stripHTML = function (s) {
-    return (s.replace(/(<([^>]+)>)/ig, ""));
 };
 
 GeoXml.prototype.showIt = function (str, h, w) {
@@ -445,8 +400,6 @@ GeoXml.prototype.clear = function () {
     this.wmscount = 0;
 };
 
-
-// Create Marker
 GeoXml.prototype.createMarkerJSON = function (item, idx) {
     var that = this;
 
@@ -903,7 +856,6 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
         m.label = ILabel(point, name, this.map, scale, "");
 };
 
-// Get external contents
 GeoXml.prototype.getextContent = function (url, x) {
     var that = this;
     that.DownloadURL(url, function (doc) {
@@ -913,61 +865,6 @@ GeoXml.prototype.getextContent = function (url, x) {
                 obj.innerHTML = doc;
         }
     }, 'geoxmlobjcont' + x + ' ' + url, false);
-};
-
-// Create Polyline
-
-
-function DistanceLength(p1, p2) {
-    var ra = Math.PI / 180;
-    var lat1 = p1.lat();
-    var lng1 = p1.lng();
-    var lat2 = p2.lat();
-    var lng2 = p2.lng();
-    var b = lat1 * ra, c = lat2 * ra, d = b - c;
-    var g = lng1 * ra - lng2 * ra;
-    var f = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(d / 2), 2) + Math.cos(b) * Math.cos(c) * Math.pow(Math.sin(g / 2), 2)));
-    return f * 6378.137 * km2mi;
-}
-
-function Length(pl) {
-    var a = pl.getPath(), len = a.getLength(), dist = 0;
-    for (var i = 0; i < len - 1; i++)
-        dist += DistanceLength(a.getAt(i), a.getAt(i + 1));
-    return dist;
-}
-
-
-function evalTimeout(str, time) {
-    //setTimeout(str, time);
-    eval(str);
-}
-
-GeoXml.getDescription = function (node) {
-    var sub = "";
-    var n = 0;
-    var cn;
-    if (typeof XMLSerializer != "undefined") {
-        var serializer = new XMLSerializer();
-        for (; n < node.childNodes.length; n++) {
-            cn = serializer.serializeToString(node.childNodes.item(n));
-            sub += cn;
-        }
-    }
-    else {
-        for (; n < node.childNodes.length; n++) {
-            cn = node.childNodes.item(n);
-            sub += cn.xml;
-        }
-    }
-    var s = sub.replace("<![CDATA[", "");
-    var u = s.replace("]]>", "");
-    u = u.replace(/\&amp;/g, "&");
-    u = u.replace(/\&lt;/g, "<");
-    u = u.replace(/\&quot;/g, '"');
-    u = u.replace(/\&apos;/g, "'");
-    u = u.replace(/\&gt;/g, ">");
-    return u;
 };
 
 GeoXml.prototype.processLine = function (pnum, lnum, idx, multi) {
@@ -1338,8 +1235,6 @@ GeoXml.prototype.createPolyline = function (lines, color, width, opacity, pbound
     that.polylines.push(p);
     evalTimeout(that.myvar + ".processLine(" + (that.polylines.length - 1) + ",0,'" + idx + "',true);", 15);
 };
-
-// Create Polygon
 
 GeoXml.prototype.processPLine = function (pnum, linenum, idx) {
 
@@ -2027,6 +1922,7 @@ GeoXml.prototype.hide = function () {
     //  alert("hiding marker pane");
     //  }
 };
+
 GeoXml.prototype.setMap = function (map) {
     if (map) {
         this.show();
@@ -2035,6 +1931,7 @@ GeoXml.prototype.setMap = function (map) {
         this.hide();
     }
 };
+
 GeoXml.prototype.show = function () {
     //if(this.polylines.length > 0 || this.polygons.length > 0){
     this.contentToggle(1, true);
@@ -2112,7 +2009,6 @@ GeoXml.prototype.contentToggle = function (i, show) {
     //console.log("changed "+f);
 };
 
-
 GeoXml.prototype.showHide = function (a, show, p) { // if a is not defined then p will be.
     var m, i;
     if (a !== null) {
@@ -2158,7 +2054,6 @@ GeoXml.prototype.showHide = function (a, show, p) { // if a is not defined then 
     OverlayManager.Display(this.overlayman, true);
 };
 
-
 GeoXml.prototype.toggleOff = function (a, show) {
     if (show) {
         this.overlayman.markers[a].setMap(this.map);
@@ -2174,34 +2069,6 @@ GeoXml.prototype.toggleOff = function (a, show) {
     }
 };
 
-
-// Sidebar factory method One - adds an entry to the sidebar
-GeoXml.addSidebar = function (myvar, type, name, e, graphic, ckd, i, snippet) {
-    var check = "checked";
-    if (ckd == "false") { check = ""; }
-    var h = "";
-    var mid = myvar + "sb" + e;
-    if (snippet && snippet != "undefined") {
-        snippet = "<br><span class='" + myvar + "snip'>" + snippet + "</span>";
-    }
-    else {
-        snippet = "";
-    }
-    //if (this.opts.debug)
-    //  console.log("LEGEND:"+name);
-    switch (type) {
-        case "polygon":
-        case "marker":
-        case "polyline":
-            h = '<li id="' + mid + '" onmouseout="' + myvar + '.overlayman.markers[' + e + '].onOut(null)" onmouseover="' + myvar + '.overlayman.markers[' + e + '].onOver(null)" >' +
-                (checkbox ? '<input id="' + myvar + '' + e + 'CB" type="checkbox" ' + check + ' onclick="' + myvar + '.showHide(null,this.checked,' + i + ')">' : '') +
-                '<span style="margin-top:6px;"><a href="javascript:void(0);" onclick="' + myvar + '.onClick(' + e + ');">' + graphic + '&nbsp;' + name + '</a></span>' + snippet + '</li>';
-            //'<span style="margin-top:6px;"><a href="#" onclick="'+myvar+ '.overlayman.markers['+e+'],\'click\');return false;">'+ graphic + '&nbsp;' + name + '</a></span>'+snippet+'</li>';
-            break;
-    }
-    return h;
-};
-
 GeoXml.prototype.onClick = function (e) {
     var marker = this.overlayman.markers[e];
     $("#mapcover").css({ display: "none" });
@@ -2211,12 +2078,6 @@ GeoXml.prototype.onClick = function (e) {
     }, 500);
 
 }
-
-
-// Dropdown factory method
-GeoXml.addDropdown = function (myvar, name, type, i, graphic) {
-    return '<option value="' + i + '">' + name + '</option>';
-};
 
 // Request to Load an XML file
 GeoXml.prototype.load = function (url, group, title2) {
@@ -2232,7 +2093,6 @@ GeoXml.prototype.load = function (url, group, title2) {
 };
 
 // Request to Parse an XML file
-
 GeoXml.prototype.parse = function (titles) {
     var that = this;
     var names = [];
@@ -2686,7 +2546,6 @@ GeoXml.prototype.handleGeomark = function (mark, idx, trans) {
     }
 };
 
-
 GeoXml.prototype.handlePlacemark = function (mark, idx, depth, fullstyle) {
     var mgeoms = mark.getElementsByTagName("MultiGeometry");
     if (mgeoms.length < 1) {
@@ -2708,20 +2567,6 @@ GeoXml.prototype.handlePlacemark = function (mark, idx, depth, fullstyle) {
         }
     }
 };
-
-
-function listchildren(current, depth) {
-    if (!current) return;
-    if (current.nodeName == 'when')
-        return;
-    var spc = "";
-    for (var i = 0; i < depth; ++i)
-        spc += ' ';
-    console.log(spc + current.nodeName);
-    var children = current.childNodes;
-    for (var i = 0; i < children.length; ++i)
-        listchildren(children[i], depth + 1);
-}
 
 GeoXml.prototype.handlePlacemarkGeometry = function (mark, geom, idx, depth, fullstyle) {
     var that = this;
@@ -3162,6 +3007,7 @@ GeoXml.prototype.handlePlacemarkGeometry = function (mark, geom, idx, depth, ful
         }
     }
 };
+
 GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
     var scale = 1;
     var tempstyle;
@@ -3407,26 +3253,6 @@ GeoXml.prototype.handleStyle = function (style, sid, currstyle) {
 
     return tempstyle;
 };
-
-function validateIconUrl(href) {
-
-    // patch default marker icons for CalTopo
-    if (
-        href == "http://caltopo.com/resource/imagery/icons/circle/FF0000.png" ||
-            href == "http://caltopo.com/resource/imagery/icons/circle/000000.png" ||
-            href == "http://caltopo.com/static/images/icons/c:ring,FF0000.png" ||
-            href == "http://caltopo.com/static/images/icons/c:ring,000000.png"
-    )
-        href = 'http://maps.google.com/mapfiles/kml/shapes/open-diamond.png';
-
-    // replace known bad icon urls:
-    if (href == "http://caltopo.com/resource/imagery/icon.png?cfg=nps-parking")
-        href = 'http://maps.google.com/mapfiles/kml/shapes/parking_lot.png';
-
-    // add others as needed
-
-    return href;
-}
 
 GeoXml.prototype.processKML = function (node, marks, title2, sbid, depth, paren) {
     var that = this;
@@ -3723,7 +3549,6 @@ GeoXml.prototype.processKML = function (node, marks, title2, sbid, depth, paren)
     return idx;
 };
 
-
 GeoXml.prototype.processGPX = function (node, title2, sbid, depth) {
     var icon;
     if (node.nodeName == "gpx") { icon = this.gmlicon; }
@@ -3882,7 +3707,6 @@ GeoXml.prototype.ParseURL = function () {
         }
     }
 };
-
 
 GeoXml.prototype.processing = function (xmlDoc, title2, latlon, desc, sbid) {
     this.overlayman.miStart = new Date();
@@ -4068,8 +3892,6 @@ GeoXml.prototype.processing = function (xmlDoc, title2, latlon, desc, sbid) {
     }
 };
 
-
-
 GeoXml.prototype.createFolder = function (idx, title2, sbid, icon, desc, snippet, keepopen, visible, suppressIt) {
     var sb = Lance$(sbid);
     keepopen = true;
@@ -4230,764 +4052,6 @@ GeoXml.prototype.processGML = function (root, title2, latlon, desc, me) {
     // Is this the last file to be processed?
 };
 
-google.maps.Polyline.prototype.getBounds = function () {
-    if (typeof this.bounds != "undefined") { return this.bounds; }
-    else { return (this.computeBounds()); }
-};
-
-google.maps.Polyline.prototype.getPosition = function () {
-    var p = this.getPath();
-    return (p.getAt(Math.round(p.getLength() / 2)));
-};
-google.maps.Polyline.prototype.computeBounds = function () {
-    var bounds = new google.maps.LatLngBounds();
-    var p = this.getPath();
-    for (var i = 0; i < p.getLength(); i++) {
-        var v = p.getAt(i);
-        if (v) {
-            bounds.extend(v);
-        }
-    }
-
-    this.bounds = bounds;
-    return bounds;
-};
-
-google.maps.Polyline.prototype.ismouseover = function (latLng) {
-    return this.getBounds().contains(latLng) && google.maps.geometry.poly.isLocationOnEdge(latLng, this, map.tolerance ? map.tolerance : null); // tolerance not working?
-}
-
-google.maps.Polygon.prototype.ismouseover = function (latLng) {
-    return false;
-}
-
-google.maps.Marker.prototype.ismouseover = function (latLng) {
-    return false; //this.getBounds().contains(latLng);
-}
-
-/*
-GTileLayerOverlay.prototype.getBounds = function(){return this.bounds; };
-
-GTileLayer.prototype.getBounds = function(){
-  return this.bounds;
-  }; 
-*/
-google.maps.Polygon.prototype.getPosition = function () { return (this.getBounds().getCenter()); };
-google.maps.Polygon.prototype.computeBounds = function () {
-    var bounds = new google.maps.LatLngBounds();
-    var p = this.getPaths();
-    for (var a = 0; a < p.getLength(); a++) {
-        var s = p.getAt(a);
-        for (var i = 0; i < s.getLength(); i++) {
-            var v = s.getAt(i);
-            if (v) {
-                bounds.extend(v);
-            }
-        }
-    }
-    this.bounds = bounds;
-    return bounds;
-};
-google.maps.Polygon.prototype.getBounds = function () {
-    if (typeof this.bounds != "undefined") { return this.bounds; }
-    else { return (this.computeBounds()); }
-};
-google.maps.Polygon.prototype.getCenter = function () {
-    return (this.getBounds().getCenter());
-};
-
-OverlayManagerView.prototype = new google.maps.OverlayView();
-function OverlayManagerView(map) {
-    this.setMap(map);
-};
-
-OverlayManagerView.prototype.onAdd = function () {
-};
-OverlayManagerView.prototype.draw = function () {
-};
-OverlayManagerView.prototype.onRemove = function () {
-};
-
-OverlayManager = function (map, paren, opts) {
-    this.myvar = paren.myvar;
-    this.paren = paren;
-    this.map = map;
-    this.markers = [];
-    this.labels = [];
-    this.byid = [];
-    this.byname = [];
-    this.groups = [];
-    this.timeout = null;
-    this.folders = [];
-    this.folderBounds = [];
-    this.folderhtml = [];
-    this.folderhtmlast = [];
-    this.subfolders = [];
-    this.currentZoomLevel = map.getZoom();
-    this.isParsed = false;
-    this.overlayview = new OverlayManagerView(map);
-
-    this.defaultMaxVisibleMarkers = 400;
-    this.defaultGridSize = 12;
-    this.defaultMinMarkersPerCluster = 5;
-    this.defaultMaxLinesPerInfoBox = 15;
-    this.defaultClusterZoom = 'dblclick';
-    this.defaultClusterInfoWindow = 'click';
-    this.defaultClusterMarkerZoom = 16;
-    this.defaultIcon = new google.maps.MarkerImage('http://maps.google.com/mapfiles/kml/paddle/blu-circle.png',
-        new google.maps.Size(iconsize, iconsize), //size
-        new google.maps.Point(0, 0), //origin
-        new google.maps.Point(iconsize / 2, iconsize / 2), //anchor
-        new google.maps.Size(iconsize, iconsize) //scaledSize 
-    );
-
-    this.maxVisibleMarkers = opts.maxVisibleMarkers || this.defaultMaxVisibleMarkers;
-    this.gridSize = opts.gridSize || this.defaultGridSize;
-    this.minMarkersPerCluster = opts.minMarkersPerCluster || this.defaultMinMarkersPerCluster;
-    this.maxLinesPerInfoBox = opts.maxLinesPerInfoBox || this.defaultMaxLinesPerInfoBox;
-    this.ClusterZoom = opts.ClusterZoom || this.defaultClusterZoom;
-    this.ClusterInfoWindow = opts.ClusterInfoWindow || this.defaultClusterInfoWindow;
-    this.ClusterMarkerZoom = opts.ClusterMarkerZoom || this.defaultClusterMarkerZoom;
-    this.ClusterIconUrl = opts.ClusterIconUrl || 'http://www.dyasdesigns.com/tntmap/images/m';
-    this.lang = { txtzoomin: "", txtclustercount1: "...and", txtclustercount2: "more" };
-    if (typeof opts.lang != "undefined") {
-        this.lang.txtzoomin = opts.lang.txtzoomin;
-        this.lang.txtclustercount1 = opts.lang.txtclustercount1;
-        this.lang.txtclustercount2 = opts.lang.txtclustercount2;
-    }
-
-    this.icon = opts.Icon || this.defaultIcon;
-    this.optcluster = {};
-    this.optcluster.overlayman = this;
-    this.optcluster.minimumClusterSize = this.minMarkersPerCluster;
-    this.optcluster.gridSize = this.gridSize;
-    this.optcluster.ClusterZoom = this.ClusterZoom;
-    this.optcluster.ClusterInfoWindow = this.ClusterInfoWindow;
-    this.optcluster.imagePath = this.ClusterIconUrl;
-    //this.cluster = new MarkerClusterer(this.map, {}, this.optcluster,this.paren);
-
-    google.maps.event.addListener(this.paren, 'adjusted', OverlayManager.MakeCaller(OverlayManager.Display, this));
-    google.maps.event.addListener(map, 'idle', OverlayManager.MakeCaller(OverlayManager.Display, this));
-    //google.maps.event.addListener( map, 'zoomend', OverlayManager.MakeCaller( OverlayManager.Display, this ) );
-    // google.maps.event.addListener( map, 'moveend', OverlayManager.MakeCaller( OverlayManager.Display, this ) );
-    google.maps.event.addListener(map, 'infowindowclose', OverlayManager.MakeCaller(OverlayManager.PopDown, this));
-    this.icon.pane = this.paren.markerpane;
-};
-
-// Call this to change the group icon.
-OverlayManager.prototype.SetIcon = function (icon) {
-    this.icon = icon;
-};
-
-
-// Changes the maximum number of visible markers before clustering kicks in.
-OverlayManager.prototype.SetMaxVisibleMarkers = function (n) {
-    this.maxVisibleMarkers = n;
-};
-
-
-// Sets the minumum number of markers for a group.
-OverlayManager.prototype.SetMinMarkersPerCluster = function (n) {
-    this.minMarkersPerCluster = n;
-};
-
-
-// Sets the maximum number of lines in an info box.
-OverlayManager.prototype.SetMaxLinesPerInfoBox = function (n) {
-    this.maxLinesPerInfoBox = n;
-};
-
-
-// Call this to add a marker.
-OverlayManager.prototype.addMarker = function (marker, title2, idx, sidebar, visible, forcevisible) {
-
-    if (marker.setMap != null) {
-        marker.onMap = true;
-        marker.setMap(this.map);
-    }
-    marker.hidden = false;
-    if (visible != true) { marker.hidden = true; }
-    if (this.paren.hideall) { marker.hidden = true; }
-    //@ fuck off! title2 already set marker.title2 = title2;
-    this.folders[idx].push(this.markers.length);
-
-    var bounds = this.map.getBounds();
-    var vis = false;
-    if (bounds) { //map doesnt have bounds defined?
-        if (typeof marker.getBounds == "undefined") {
-            if (bounds.contains(marker.getPosition())) {
-                vis = true;
-            }
-        }
-        else {
-            var b = marker.getBounds();
-            if (!b.isEmpty()) {
-                if (bounds.intersects(b)) {
-                    vis = true;
-                }
-            }
-        }
-    }
-    else {
-        vis = true;
-    }
-    if (forcevisible) { vis = true; }
-    // var id = this.markers.length;
-    this.markers.push(marker);
-    if (vis) {
-        if (marker.hidden) {
-            marker.setMap(null);
-            marker.onMap = false;
-            //      if(!!marker.label){ marker.label.hide();} 
-            if (!!marker.label) { marker.label.setMap(null); }
-        }
-        else {
-            marker.setMap(this.map);
-            marker.onMap = true;
-            //      if(!!marker.label){ marker.label.show();} 
-            if (!!marker.label) { marker.label.setMap(this.map); }
-        }
-    }
-    //this.cluster.addMarker(marker);
-    this.DisplayLater();
-    if (sidebar) {
-        this.folderhtml[idx].push(sidebar);
-    }
-    // return id;
-};
-
-OverlayManager.prototype.zoomToFolder = function (idx) {
-    var bounds = this.folderBounds[idx];
-    this.map.fitBounds(bounds);
-};
-
-
-// Call this to remove a marker.
-OverlayManager.prototype.RemoveMarker = function (marker) {
-    for (var i = 0; i < this.markers.length; ++i) {
-        if (this.markers[i] == marker) {
-            if (marker.onMap) {
-                marker.setMap(null);
-            }
-            if (!!marker.label) {
-                //      marker.label.hide();
-                marker.label.setMap(null);
-            }
-            for (var j = 0; j < this.groups.length; ++j) {
-
-                var group = this.groups[j];
-                if (group != null) {
-                    for (var k = 0; k < group.markers.length; ++k) {
-                        if (group.markers[k] == marker) {
-                            group.markers[k] = null;
-                            --group.markerCount;
-                            break;
-                        }
-                    }
-                    if (group.markerCount == 0) {
-                        this.ClearGroup(group);
-                        this.groups[j] = null;
-                    }
-                    else {
-                        if (group == this.poppedUpCluster) { OverlayManager.RePop(this); }
-                    }
-                }
-            }
-            this.markers[i] = null;
-            break;
-        }
-    }
-    //this.cluster.removeMarker(marker);
-    this.DisplayLater();
-};
-
-OverlayManager.prototype.Hide = function (group) {
-    for (var i = 0; i < this.markers.length; i++) {
-        marker = this.markers[i];
-        if (!!group && marker.group != group)
-            continue;
-        marker.setMap(null);
-        marker.onMap = false;
-        if (!!marker.label)
-            marker.label.setMap(null);
-        var bar = Lance$(marker.sidebarid);
-        if (bar)
-            bar.style.display = "none";
-    }
-};
-
-OverlayManager.prototype.Show = function (group) {
-    for (var i = 0; i < this.markers.length; i++) {
-        marker = this.markers[i];
-        if (!!group && marker.group != group)
-            continue;
-        marker.setMap(this.map);
-        marker.onMap = true;
-        if (!!marker.label)
-            marker.label.setMap(this.map);
-        var bar = Lance$(marker.sidebarid);
-        if (bar)
-            bar.style.display = "block";
-    }
-};
-
-OverlayManager.prototype.DisplayLater = function () {
-    if (this.timeout != null) {
-        clearTimeout(this.timeout);
-    }
-    this.timeout = setTimeout(OverlayManager.MakeCaller(OverlayManager.Display, this), 50);
-};
-
-OverlayManager.Display = function (overlaymanager) {
-    var i, j, k, marker, group, l;
-    clearTimeout(overlaymanager.timeout);
-    if (overlaymanager.paren.allRemoved) {
-        return;
-    }
-
-    var update_side = false;
-    var count = 0;
-    var clon, bits;
-    var vis;
-    var content;
-    if (overlaymanager.paren.basesidebar) {
-        for (k = 0; k < overlaymanager.folderhtml.length; k++) {
-            var curlen = overlaymanager.folderhtml[k].length;
-            var con = overlaymanager.folderhtmlast[k];
-            if (con < curlen) {
-                var destid = overlaymanager.paren.myvar + "_folder" + k;
-                var dest = Lance$(destid);
-                if (dest) {
-                    if (overlaymanager.paren.opts.sortbyname) {
-                        content = dest.innerHTML;
-                        clon = overlaymanager.folderhtml[k].sort();
-                        for (l = 0; l < curlen; l++) {
-                            bits = clon[l].split("$$$", 8);
-                            content += overlaymanager.paren.sidebarfn(bits[0], bits[1], bits[2], bits[3], bits[4], bits[5], bits[6], bits[7]);
-                        }
-                    }
-                    else {
-                        content = dest.innerHTML;
-                        clon = overlaymanager.folderhtml[k];
-                        for (l = con; l < curlen; l++) {
-                            bits = clon[l].split("$$$", 8);
-                            content += overlaymanager.paren.sidebarfn(bits[0], bits[1], bits[2], bits[3], bits[4], bits[5], bits[6], bits[7]);
-                        }
-                    }
-
-                    overlaymanager.folderhtmlast[k] = curlen;
-                    dest.innerHTML = content;
-                    if (overlaymanager.paren.forcefoldersopen) {
-                        dest.style.display = "block";
-                    }
-                    update_side = true;
-                    count = curlen;
-                }
-                else {
-                    //  alert("target folder not found "+destid);
-                }
-            }
-        }
-    }
-
-    // Is this the last file to be processed?
-
-    if (update_side && count > 0) {
-        if (overlaymanager.paren.progress <= 0) {
-            overlaymanager.paren.setFolders();
-            google.maps.event.trigger(overlaymanager.paren, "parsed");
-
-            if (!overlaymanager.paren.opts.sidebarid) {
-                overlaymanager.paren.mb.showMess("Finished Parsing", 1000);
-            }
-            var mifinish = new Date();
-            var sec = ((mifinish - overlaymanager.miStart) / 1000 + " seconds");
-            google.maps.event.trigger(overlaymanager.paren, "loaded");
-            //overlaymanager.paren.mb.showMess("Loaded "+count+" GeoXML elements in "+sec,1000);
-            overlaymanager.paren.ParseURL();
-            if (!overlaymanager.paren.opts.nozoom) {
-                overlaymanager.paren.map.fitBounds(overlaymanager.paren.bounds);
-            }
-        }
-    }
-
-    if (update_side && typeof resizeKML != "undefined") {
-        resizeKML();
-    }
-
-    var bounds;
-    var sw;
-    var ne;
-    var dx;
-    var dy;
-    var newzoom = false;
-    var newZoomLevel = overlaymanager.map.getZoom();
-    if (newZoomLevel != overlaymanager.currentZoomLevel) {
-        newzoom = true;
-        // When the zoom level changes, we have to remove all the groups.
-        for (i = 0; i < overlaymanager.groups.length; ++i) {
-            if (overlaymanager.groups[i] != null) {
-                overlaymanager.ClearGroup(overlaymanager.groups[i]);
-                overlaymanager.groups[i] = null;
-            }
-        }
-        overlaymanager.groups.length = 0;
-        overlaymanager.currentZoomLevel = newZoomLevel;
-    }
-
-    // Get the current bounds of the visible area.
-    // bounds = overlaymanager.map.getBounds();
-    if (overlaymanager.map.getBounds()) {
-        // Expand the bounds a little, so things look smoother when scrolling
-        // by small amounts.
-        bounds = overlaymanager.getMapBounds(overlaymanager);
-        //alert(bounds);
-        sw = bounds.getSouthWest();
-        ne = bounds.getNorthEast();
-        dx = ne.lng() - sw.lng();
-        dy = ne.lat() - sw.lat();
-        //    if ( dx < 300 && dy < 150 ){
-        //      dx *= 0.05;
-        //      dy *= 0.05;
-        //      bounds = new google.maps.LatLngBounds(
-        //      new google.maps.LatLng( sw.lat() - dy, sw.lng() - dx ),
-        //      new google.maps.LatLng( ne.lat() + dy, ne.lng() + dx ) );
-        //      }
-    }
-    if (!!!bounds && overlaymanager.map) {
-        //alert("finding bounds");
-        bounds = overlaymanager.getMapBounds(overlaymanager);
-        if (!!!bounds) return;
-    }
-    // Partition the markers into visible and non-visible lists.
-    var visibleMarkers = [];
-    var nonvisibleMarkers = [];
-    var viscount = 0;
-
-    for (i = 0; i < overlaymanager.markers.length; ++i) {
-        marker = overlaymanager.markers[i];
-        vis = false;
-        //alert(marker);
-        if (marker !== null) {
-            var mid = overlaymanager.paren.myvar + "sb" + i;
-            if (typeof marker.getBounds == "undefined") {
-                var pos = marker.getPosition();
-                if (bounds.contains(pos)) {
-                    vis = true;
-                    viscount++;
-                }
-            }
-            else {
-                var b = marker.getBounds();
-                if (bounds.intersects(b)) {
-                    vis = true;
-                }
-            }
-            if (Lance$(mid)) {
-                if (vis) { Lance$(mid).className = "inView"; }
-                else { Lance$(mid).className = "outView"; }
-            }
-            //alert(vis);
-            if (vis && (marker.hidden == false)) {
-                visibleMarkers.push(i);
-            }
-            else { nonvisibleMarkers.push(i); }
-
-        }
-    }
-
-    if (newzoom) {
-        /*
-          if (viscount > overlaymanager.maxVisibleMarkers)
-            overlaymanager.cluster.setMinimumClusterSize(overlaymanager.minMarkersPerCluster);  
-          else
-            overlaymanager.cluster.setMinimumClusterSize(overlaymanager.maxVisibleMarkers);  
-            
-          overlaymanager.cluster.repaint();  
-          */
-    }
-
-    OverlayManager.RePop(overlaymanager);
-};
-
-
-OverlayManager.PopUp = function (overlaymanager, cClusterIcon) {
-    /*  
-    for (x =0; x<overlaymanager.cluster.clusters_.length; x++) {
-      if (cClusterIcon==overlaymanager.cluster.clusters_[x].clusterIcon_)
-        break;
-    }
-      
-    var html = '<table style="font-size:10px" width="300">';
-    var n = 0;
-    for ( var i = 0; i < cClusterIcon.cluster_.markers_.length; ++i ) {
-      var marker = cClusterIcon.cluster_.markers_[i];
-      if ( marker!= null ) {
-        ++n;
-        html += '<tr><td><a href="javascript:OverlayManager.ZoomIntoMarker('+overlaymanager.myvar+'.overlayman.cluster.clusters_['+x+'].markers_['+i+'])">';
-        if (marker.smallImage != null ) {
-          html += '<img src="' + marker.smallImage + '">';
-        } else {
-          html += '<img src="' + marker.icon.url + '" width="' + ( marker.icon.size.width / 2 ) + '" height="' + ( marker.icon.size.height / 2 ) + '">'; 
-        }
-        html += '</td><td>' + marker.title2 + '</a></td></tr>';
-        if (n == overlaymanager.maxLinesPerInfoBox - 1 && cClusterIcon.cluster_.markers_.length > overlaymanager.maxLinesPerInfoBox) {
-          html += '<tr><td colspan="2">'+overlaymanager.lang.txtclustercount1+' ' + ( cClusterIcon.cluster_.markers_.length - n ) + ' '+overlaymanager.lang.txtclustercount2+'</td></tr>';
-          break;
-        }
-      }
-    }
-    html += '<tr><td colspan="2"><a href="javascript:OverlayManager.ZoomIntoCluster('+overlaymanager.myvar+'.overlayman)">'+overlaymanager.lang.txtzoomin+'</a></td></tr>';
-    html += '</table>';
-  
-    // overlaymanager.map.closeInfoWindow(); close Last Marker
-      if (overlaymanager.paren.lastMarker&&overlaymanager.paren.lastMarker.infoWindow)
-      overlaymanager.paren.lastMarker.infoWindow.close();
-    var infoWindowOptions = { 
-          content: html,
-          pixelOffset: new google.maps.Size(0, 2),
-          position: cClusterIcon.cluster_.bounds_.getCenter()
-          };
-    if(overlaymanager.paren.maxiwwidth){
-            infoWindowOptions.maxWidth = overlaymanager.paren.maxiwwidth;
-            }
-    cClusterIcon.infoWindow = new google.maps.InfoWindow(infoWindowOptions);
-    overlaymanager.paren.lastMarker = cClusterIcon;
-    overlaymanager.paren.lastMarker.infoWindow.open(overlaymanager.paren.map);
-      overlaymanager.poppedUpCluster = cClusterIcon;
-      */
-};
-
-OverlayManager.ZoomIntoCluster = function (overlaymanager) {
-    /*
-    if (overlaymanager.poppedUpCluster) {
-        var mc = overlaymanager.poppedUpCluster.cluster_.getMarkerClusterer();
-        // This event is fired when a cluster marker is clicked.
-        google.maps.event.trigger(mc, mc.ClusterZoom_, overlaymanager.poppedUpCluster.cluster_);
-        google.maps.event.trigger(mc, "cluster"+mc.ClusterZoom_, overlaymanager.poppedUpCluster.cluster_); // deprecated name
-  
-        // The default dblclick handler follows. Disable it by setting
-  
-        // the zoomOnClick property to false.
-        if (mc.getZoomOnClick()) {
-          // Zoom into the cluster.
-          mz = mc.getMaxZoom();
-          theBounds = overlaymanager.poppedUpCluster.cluster_.getBounds();
-          mc.getMap().fitBounds(theBounds);
-          // There is a fix for Issue 170 here:
-          setTimeout(function () {
-            mc.getMap().fitBounds(theBounds);
-            // Don't zoom beyond the max zoom level
-            if (mz !== null && (mc.getMap().getZoom() > mz)) {
-              mc.getMap().setZoom(mz + 1);
-            }
-          }, 100);
-        }
-    }
-    */
-};
-
-OverlayManager.ZoomIntoMarker = function (marker) {
-    if (marker) {
-        marker.geoxml.map.setZoom(marker.geoxml.overlayman.ClusterMarkerZoom);
-        marker.geoxml.map.setCenter(marker.getPosition());
-    }
-};
-
-OverlayManager.prototype.getMapBounds = function (overlaymanager) {
-    var bounds;
-
-    if (overlaymanager.map.getZoom() > 1) {
-        var b = overlaymanager.map.getBounds();
-        if (!b || typeof b === "undefined")
-            bounds = new google.maps.LatLngBounds(new google.maps.LatLng(-85.08136444384544, -178.48388434375), new google.maps.LatLng(85.02070771743472, 178.00048865625));
-        else
-            bounds = new google.maps.LatLngBounds(b.getSouthWest(), b.getNorthEast());
-    } else {
-        bounds = new google.maps.LatLngBounds(new google.maps.LatLng(-85.08136444384544, -178.48388434375), new google.maps.LatLng(85.02070771743472, 178.00048865625));
-    }
-
-    var projection = overlaymanager.overlayview.getProjection();
-    if (projection) {
-        // Turn the bounds into latlng.
-        var tr = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getNorthEast().lng());
-        var bl = new google.maps.LatLng(bounds.getSouthWest().lat(), bounds.getSouthWest().lng());
-
-        // Convert the points to pixels and the extend out by the grid size.
-        var trPix = projection.fromLatLngToDivPixel(tr);
-        trPix.x += overlaymanager.gridSize;
-        trPix.y -= overlaymanager.gridSize;
-
-        var blPix = projection.fromLatLngToDivPixel(bl);
-        blPix.x -= overlaymanager.gridSize;
-        blPix.y += overlaymanager.gridSize;
-
-        // Convert the pixel points back to LatLng
-        var ne = projection.fromDivPixelToLatLng(trPix);
-        var sw = projection.fromDivPixelToLatLng(blPix);
-
-        // Extend the bounds to contain the new bounds.
-        bounds.extend(ne);
-        bounds.extend(sw);
-    }
-
-    return bounds;
-
-};
-
-OverlayManager.RePop = function (overlaymanager) {
-    //    if ( overlaymanager.poppedUpCluster!= null ){ 
-    //  OverlayManager.PopUp( overlaymanager.poppedUpCluster ); }
-};
-
-
-OverlayManager.PopDown = function (overlaymanager) {
-    overlaymanager.poppedUpCluster = null;
-    overlaymanager.paren.lastMarker = null;
-};
-
-
-OverlayManager.prototype.ClearGroup = function (group) {
-    var i, marker;
-
-    for (i = 0; i < group.markers.length; ++i) {
-        if (group.markers[i] != null) {
-            group.markers[i].inCluster = false;
-            group.markers[i] = null;
-        }
-    }
-    group.markers.length = 0;
-    group.markerCount = 0;
-    if (group == this.poppedUpCluster) {
-        this.map.closeInfoWindow();
-    }
-    if (group.onMap) {
-        group.marker.setMap(null);
-        group.onMap = false;
-    }
-};
-
-
-// This returns a function closure that calls the given routine with the
-// specified arg.
-OverlayManager.MakeCaller = function (func, arg) {
-    return function () { func(arg); };
-};
-
-MessageBox = function (map, paren, myvar, mb) {
-    this.map = map;
-    this.paren = paren;
-    this.myvar = paren.myvar + "." + myvar;
-    this.eraseMess = null;
-    this.centerMe = null;
-    this.mb = null;
-    if (mb) { this.mb = mb; }
-    this.id = this.myvar + "_message";
-};
-
-MessageBox.prototype.hideMess = function () {
-    if (this.paren.quiet) {
-        return;
-    }
-    this.mb.style.visiblity = "hidden";
-    this.mb.style.left = "-1200px";
-    this.mb.style.top = "-1200px";
-};
-
-MessageBox.prototype.centerThis = function () {
-    var c = {}
-    var left = $(mapid).offset().left;
-    var top = $(mapid).offset().top;
-    var width = $(mapid).width();
-    var height = $(mapid).height();
-    c.x = width / 2;
-    c.y = height / 2;
-    //alert(c.x);
-    if (!this.mb) {
-        this.mb = Lance$(this.id);
-    }
-    if (this.centerMe) { clearTimeout(this.centerMe); }
-    if (this.mb) {
-        var nw = this.mb.offsetWidth;
-        if (nw > width) {
-            nw = parseInt(2 * c.x / 3, 10);
-            this.mb.style.width = nw + "px";
-            this.centerMe = setTimeout(this.myvar + ".centerThis()", 5);
-            return;
-        }
-        this.mb.style.left = left + (c.x - (nw / 2)) + "px";
-        this.mb.style.top = top + (c.y - 20 - (this.mb.offsetHeight / 2)) + "px";
-    }
-    else {
-        this.centerMe = setTimeout(this.myvar + ".centerThis()", 10);
-    }
-};
-
-
-MessageBox.prototype.showMess = function (val, temp) {
-    if (this.paren.quiet) {
-        if (console) {
-            console.log(val);
-        }
-        return;
-    }
-    val = unescape(val);
-    if (this.eraseMess) { clearTimeout(this.eraseMess); }
-    if (!this.mb) { this.mb = Lance$(this.id); }
-    var left = $(mapid).offset().left;
-    var top = $(mapid).offset().top;
-    var width = $(mapid).width();
-    var height = $(mapid).height();
-    if (this.mb) {
-
-        this.mb.innerHTML = "<span>" + val + "</span>";
-        if (temp) {
-            this.eraseMess = setTimeout(this.myvar + ".hideMess();", temp);
-        }
-
-        var w = this.mb.offsetWidth / 2;
-        var h = this.mb.offsetHeight / 2;
-        this.mb.style.position = "absolute";
-        this.mb.style.left = parseInt(width / 2 - w) + left + "px";
-        this.mb.style.top = parseInt(height / 2 - h) + top + "px";
-        this.mb.style.width = "";
-        this.mb.style.height = "";
-        this.centerMe = setTimeout(this.myvar + ".centerThis()", 5);
-        this.mb.style.visibility = "visible";
-        //alert(this.mb.style.left+"x"+this.mb.style.top+"l"+left+"t"+top+"w"+width+"h"+height);
-        //if (parseInt(width/2 - w)+left<600)
-        //@ alert("l"+left+"t"+top+"w"+width+"h"+height);
-    }
-
-    else {
-        var d = document.createElement("div");
-        d.innerHTML = val;
-        var w = d.offsetWidth / 2;
-        var h = d.offsetHeight / 2;
-        d.id = this.myvar + "_message";
-        d.style.position = "absolute";
-        d.style.backgroundColor = this.style.backgroundColor || "silver";
-        d.style.opacity = this.style.opacity || 0.80;
-        if (document.all) {
-            d.style.filter = "alpha(opacity=" + parseInt(d.style.opacity * 100, 10) + ")";
-        }
-        d.style.color = this.style.color || "black";
-        d.style.padding = this.style.padding || "6px";
-        d.style.borderWidth = this.style.borderWidth || "3px";
-        d.style.borderColor = this.style.borderColor || "";
-        d.style.backgroundImage = this.style.backgroundImage || "";
-        d.style.borderStyle = this.style.borderStyle || "outset";
-        d.style.visibility = "visible";
-        d.style.left = parseInt(width / 2 - w) + left + "px";
-        d.style.top = parseInt(height / 2 - h) + top + "px";
-        //alert(this.myvar);
-        this.centerMe = setTimeout(this.myvar + ".centerThis()", 5);
-
-        d.style.zIndex = 1000;
-        document.body.appendChild(d);
-    }
-};
-
 GeoXml.prototype.loadJSONUrl = function (url, title2, latlon, desc, idx) {
     var that = this;
     GDownloadUrl(url, function (doc) {
@@ -5016,7 +4080,6 @@ GeoXml.prototype.loadXMLUrl = function (url, group, title2, latlon, desc, idx) {
         */
     }, title2, true);
 };
-
 
 GeoXml.prototype.upgradeLayer = function (n) {
     var mt = this.map.getMapTypes();
@@ -5283,20 +4346,6 @@ GeoXml.prototype.makeWMSTileLayer = function (getmapstring, on, title2, opac, at
     */
 };
 
-
-GeoXml.SEMI_MAJOR_AXIS = 6378137.0;
-GeoXml.ECCENTRICITY = 0.0818191913108718138;
-GeoXml.DEG2RAD = 180.0 / (Math.PI);
-GeoXml.merc2Lon = function (lon) {
-    return (lon * GeoXml.DEG2RAD) * GeoXml.SEMI_MAJOR_AXIS;
-};
-
-GeoXml.merc2Lat = function (lat) {
-    var rad = lat * GeoXml.DEG2RAD;
-    var sinrad = Math.sin(rad);
-    return (GeoXml.SEMI_MAJOR_AXIS * Math.log(Math.tan((rad + Math.PI / 2) / 2) * Math.pow(((1 - GeoXml.ECCENTRICITY * sinrad) / (1 + GeoXml.ECCENTRICITY * sinrad)), (GeoXml.ECCENTRICITY / 2))));
-};
-
 GeoXml.prototype.toggleLabels = function (on) {
     if (!on) {
         this.removeLabels();
@@ -5305,20 +4354,21 @@ GeoXml.prototype.toggleLabels = function (on) {
         this.addLabels();
     }
 };
+
 GeoXml.prototype.addLabels = function () {
     this.labels.onMap = true;
     this.labels.setMap(this.map);
 };
 
-GeoXml.prototype.removeLabels = function () {
+GeoXml.prototype.removeLabels = function() {
     this.labels.onMap = false;
     this.labels.setMap(null);
 };
 
-var useLegacyLocalLoad = true;
-
-GeoXml.prototype.DownloadURL = function (fpath, callback, title2, xmlcheck) {
-    if (!fpath) { return; }
+GeoXml.prototype.DownloadURL = function(fpath, callback, title2, xmlcheck) {
+    if (!fpath) {
+        return;
+    }
     fpath = geturl(fpath);
     var xmlDoc;
     var that = this;
@@ -5367,8 +4417,7 @@ GeoXml.prototype.DownloadURL = function (fpath, callback, title2, xmlcheck) {
             if (xmlDoc.parseError.errorCode != 0) {
                 var myErr = xmlDoc.parseError;
                 alert("GeoXml file appears incorrect\n" + myErr.reason + " at line:" + myErr.line);
-            }
-            else {
+            } else {
                 callback(xmlDoc.doc);
             }
             return;
@@ -5390,8 +4439,7 @@ GeoXml.prototype.DownloadURL = function (fpath, callback, title2, xmlcheck) {
     @end @*/
     if (!cmlreq && typeof XMLHttpRequest != 'undefined') {
         cmlreq = new XMLHttpRequest();
-    }
-    else {
+    } else {
         if (typeof ActiveXObject != "undefined") {
             cmlreq = new ActiveXObject("Microsoft.XMLHTTP");
         }
@@ -5399,67 +4447,67 @@ GeoXml.prototype.DownloadURL = function (fpath, callback, title2, xmlcheck) {
 
     var here = cmlurl;
     console.log("downloading " + here);
-    if (cmlreq.overrideMimeType) { cmlreq.overrideMimeType("text/xml"); }
+    if (cmlreq.overrideMimeType) {
+        cmlreq.overrideMimeType("text/xml");
+    }
     cmlreq.open("GET", here, true);
-    cmlreq.onreadystatechange = function () {
+    cmlreq.onreadystatechange = function() {
         //console.log("state:"+cmlreq.readyState+" status:"+cmlreq.status+" readystate "+here);
 
         switch (cmlreq.readyState) {
-            case 4:
-                that.mb.showMess(title2 + " received", 2000);
-                if (typeof ActiveXObject != "undefined") {
-                    xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-                    xmlDoc.async = "false";
-                    var response = cmlreq.responseText;
-                    callback(response);
-                }
-                else {
-                    //console.log(cmlreq.responseXML+" cmlreq.responseXML "+here);
-                    if (cmlreq.responseXML) {
-                        that.mb.showMess(title2 + " received", 2000);
-                        callback(cmlreq.responseText);
-                    }
-                    else {
-                        if (cmlreq.status == 200) {
-                            //console.log("GOOD:+"+here);
-                            var resp = cmlreq.responseText;
-                            var sresp = resp.substring(0, 400);
-                            var isXML = resp.substring(0, 5);
-                            if (!xmlcheck || (isXML == "<?xml" && sresp.indexOf("kml") != -1)) {
-                                that.mb.showMess(title2 + " response received", 2000);
-                                callback(resp);
-                            }
-                            else {
-                                //console.log("problem "+here);
-                                var pkmsg = resp.substring(0, 2) == "PK" ? " (compressed files are not supported)" : "";
-                                that.mb.showMess("File does not appear to be a valid GeoData:" + resp.substring(0, 4) + pkmsg, 600000);
-                            }
+        case 4:
+            that.mb.showMess(title2 + " received", 2000);
+            if (typeof ActiveXObject != "undefined") {
+                xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+                xmlDoc.async = "false";
+                var response = cmlreq.responseText;
+                callback(response);
+            } else {
+                //console.log(cmlreq.responseXML+" cmlreq.responseXML "+here);
+                if (cmlreq.responseXML) {
+                    that.mb.showMess(title2 + " received", 2000);
+                    callback(cmlreq.responseText);
+                } else {
+                    if (cmlreq.status == 200) {
+                        //console.log("GOOD:+"+here);
+                        var resp = cmlreq.responseText;
+                        var sresp = resp.substring(0, 400);
+                        var isXML = resp.substring(0, 5);
+                        if (!xmlcheck || (isXML == "<?xml" && sresp.indexOf("kml") != -1)) {
+                            that.mb.showMess(title2 + " response received", 2000);
+                            callback(resp);
+                        } else {
+                            //console.log("problem "+here);
+                            var pkmsg = resp.substring(0, 2) == "PK" ? " (compressed files are not supported)" : "";
+                            that.mb.showMess("File does not appear to be a valid GeoData:" +
+                                resp.substring(0, 4) +
+                                pkmsg,
+                                600000);
                         }
-                        else {
-                            console.log("ERROR! " + here);
-                            //if (cmlurl.search(webproxy)<0)
-                            //   that.DownloadURL(webproxy+cmlurl,callback,title2, xmlcheck);
-                            that.mb.showMess("Download error", 3000);
-                        }
+                    } else {
+                        console.log("ERROR! " + here);
+                        //if (cmlurl.search(webproxy)<0)
+                        //   that.DownloadURL(webproxy+cmlurl,callback,title2, xmlcheck);
+                        that.mb.showMess("Download error", 3000);
                     }
                 }
-                break;
-            case 3:
-                that.mb.showMess("Receiving " + title2 + "...", 2000);
-                break;
-            case 2:
-                that.mb.showMess("Waiting for " + title2, 2000);
-                break;
-            case 1:
-                that.mb.showMess("Sent request for " + title2, 2000);
-                break;
+            }
+            break;
+        case 3:
+            that.mb.showMess("Receiving " + title2 + "...", 2000);
+            break;
+        case 2:
+            that.mb.showMess("Waiting for " + title2, 2000);
+            break;
+        case 1:
+            that.mb.showMess("Sent request for " + title2, 2000);
+            break;
         }
     };
 
     try {
         cmlreq.send(null);
-    }
-    catch (err) {
+    } catch (err) {
         //console.log("local download "+here);
         if (cmlurl.substring(2, 3) == ":" && !useLegacyLocalLoad) {
             useLegacyLocalLoad = true;
@@ -5467,397 +4515,4 @@ GeoXml.prototype.DownloadURL = function (fpath, callback, title2, xmlcheck) {
         }
     }
 
-}
-
-function ILabel(pos, txt, map, scale, color) {
-    var fs = Math.round(10 * scale);
-    if (fs < 7) fs = 7;
-    if (fs > 12) fs = 12;
-    //alert("pre");
-    //alert(icon);
-    var image = {};
-
-    var z = zI;
-    var style = "b";
-    if (color == "") {
-        z = zI + 9999;
-        style = "b";
-        image.origin = new google.maps.Point(0, 0),
-            image.anchor = new google.maps.Point(-iconsize / 2, fs / 2)
-        color = "000000";
-    }
-    fgcolor = color;
-    bkcolor = "FFFFFF";
-    image.url = "http://chart.apis.google.com/chart?chst=d_text_outline&chld=" + fgcolor + "|" + String(fs) + "|h|" + bkcolor + "|" + style + "|" + urlencode(txt);
-
-    var m = new google.maps.Marker({ title2: "", map: map, position: pos, clickable: false, icon: image, zIndex: z, optimized: false });
-
-    /*
-    var m0 = new GeoXml.Label(point,name,""this.map,scale,-1, "white");
-    var m1 = new GeoXml.Label(point,name,"",this.map,scale,1, "white");
-    var m2 = new GeoXml.Label(point,name,"",this.map,scale,0, "black");
-    */
-    return m;
-}
-
-
-GeoXml.Label = function (pos, txt, cls, map, scale, index, color) {
-    this.pos = pos;
-    this.txt_ = txt;
-    this.cls_ = cls;
-    this.map_ = map;
-    this.scale_ = scale;
-    this.div_ = null;
-    this.index_ = index;
-    this.color_ = color;
-
-    // Explicitly call setMap() on this overlay
-    this.setMap(map);
-}
-
-GeoXml.Label.prototype = new google.maps.OverlayView();
-
-GeoXml.Label.prototype.onAdd = function () {
-    var div = document.createElement('DIV');
-    div.innerHTML = this.txt_;
-    var fs = 12 * this.scale_; if (fs < 8) fs = 8;
-    div.py = fs / 2 + this.index_;
-    div.px = -iconsize / 2 + this.index_; //(fs*this.txt_.length)/4;
-    // Set the overlay's div_ property to this DIV
-    //this.div_.style = this.style_;
-    div.style.color = this.color_;
-    div.style.fontSize = "10px";
-    div.style.fontFamily = "Arial";
-    div.style.fontWeight = "bold";
-    div.style.position = "absolute";
-    //div.style.background = "ff0000";
-    //div.style.opacity = 0.5;
-    //alert("ok2");
-
-    this.div_ = div;
-    var overlayProjection = this.getProjection();
-    var position = overlayProjection.fromLatLngToDivPixel(this.pos);
-    //  alert(this.pos);
-    div.style.left = position.x - div.px + 'px';
-    div.style.top = position.y - div.py + 'px';
-    // We add an overlay to a map via one of the map's panes.
-    var panes = this.getPanes();
-    panes.floatPane.appendChild(div);
-}
-
-GeoXml.Label.prototype.getPosition = function () {
-    return this.pos;
-}
-GeoXml.Label.prototype.draw = function () {
-    var overlayProjection = this.getProjection();
-    var position = overlayProjection.fromLatLngToDivPixel(this.pos);
-    var div = this.div_;
-    div.style.left = position.x - div.px + 'px';
-    div.style.top = position.y - div.py + 'px';
-}
-
-GeoXml.Label.prototype.onRemove = function () {
-    //console.log("label is being removed");
-    this.div_.parentNode.removeChild(this.div_);
-    this.div_ = null;
-}
-GeoXml.Label.prototype.hide = function () {
-    if (this.div_) {
-        this.div_.style.visibility = "hidden";
-        //console.log("label is being hidden");
-    }
-}
-
-GeoXml.Label.prototype.show = function () {
-    if (this.div_) {
-        this.div_.style.visibility = "visible";
-    }
-}
-
-GeoXml.Label.prototype.toggle = function () {
-    if (this.div_) {
-        if (this.div_.style.visibility == "hidden") {
-            this.show();
-        }
-        else {
-            this.hide();
-        }
-    }
-}
-
-GeoXml.Label.prototype.toggleDOM = function () {
-    if (this.getMap()) {
-        this.setMap(null);
-    }
-    else {
-        this.setMap(this.map_);
-    }
-}
-
-/*jslint browser: true, confusion: true, sloppy: true, vars: true, nomen: false, plusplus: false, indent: 2 */
-/*global window,google */
-
-/*
- * Elevation computation with Google Elevation Service added by Luca Chiarabini
- */
-
-var miperslope = 0.1;
-var samplesize = 200;
-var zeroelev = 0;
-var mousemarker;
-//var pelevations;
-
-
-var elevationService;
-
-function elevationinfowindowm(m) {
-    if (m.elevation != null)
-        return;
-
-    var latlngs = [];
-    var pt = m.getPosition();
-    latlngs.push(pt);
-
-    if (!elevationService)
-        elevationService = new google.maps.ElevationService();
-    if (elevationService)
-        elevationService.getElevationForLocations({ 'locations': latlngs }, function (results) {
-            // process elevation for marker
-            //var div = document.getElementById('elevation');
-            //if (div!=null) 
-            if (results[0]) {
-                var str = m.infoWindow.getContent(); //div.innerHTML;
-                var elev = Math.round(results[0].elevation * m2ft);
-                str = str.replace("#Computing#", ft(elev));
-                m.infoWindow.setContent(str); //div.innerHTML = str;
-            }
-            m.elevation = results;
-            //m.infoWindow.open(map);
-        });
-}
-
-
-
-
-// plots the elevation profile on a chart
-function plotelevation(results, ticks, conv) {
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Sample');
-    data.addColumn('number', 'Elevation');
-
-    for (var i = 0; i < results.length; i++) {
-        var slope = "";
-        if (results[i].g != 0)
-            slope = "Slope: " + xdeg(results[i].g) + "º " + results[i].g + "% " + ftxmi(results[i].g / 100 * mi2ft);
-        data.addRow([slope, Math.round(conv * results[i].elevation)]);
-    }
-
-    var elem = document.getElementById('elevationgraph');
-    elem.style.display = 'block';
-    var elem = document.getElementById('elevationgraph');
-    var chart = new google.visualization.AreaChart(elem);
-    chart.draw(data, {
-        //width: 100,
-        //height: height-5, //$("#elevationgraph").height(),
-        //backgroundColor: {fill: '#00ffff'},
-        legend: 'none',
-        //legend: {textStyle:  {fontName: 'TimesNewRoman',fontSize: 12,bold: false}},
-        //titleY: 'Elevation ('+ft+')',
-        vAxis: { textPosition: 'in', ticks: ticks }, //// gridlines: {color: '#ff0000'}}, //, viewWindow: {min:minelev, max:maxelev} },
-        chartArea: { left: 0, top: 0, width: '100%', height: '100%' },
-        //axisTitlesPosition: 'none',
-        focusBorderColor: '#00ffff',
-        //bar: { groupWidth: '100%' },
-        //vAxis: {textPosition: 'in' },
-        hAxis: { textPosition: 'none' },
-        focusTarget: 'category',
-        tooltip: { trigger: 'selection' }
-    });
-    google.visualization.events.addListener(chart, 'onmouseover', function (e) {
-        if (mousemarker == null) {
-            mousemarker = new google.maps.Marker({
-                position: results[e.row].location,
-                map: map,
-                icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-            });
-            mousemarker.infowindow = new google.maps.InfoWindow({ content: "" });
-            google.maps.event.addListener(mousemarker, 'click', function () {
-                //alert("click");
-                mousemarker.infowindow.open(map, mousemarker);
-            });
-        }
-        mousemarker.setPosition(results[e.row].location);
-        mousemarker.infowindow.setContent(Math.round(results[e.row].location.lat() * 1e5) / 1e5 + "," + Math.round(results[e.row].location.lng() * 1e5) / 1e5);
-    });
-}
-
-
-var elevationpl = [];
-function getnextelevation() {
-    if (elevationpl.length > 0)
-        elevationinfowindowp(elevationpl[0], getnextelevation);
-}
-function getelevation(pl) {
-    elevationpl.push(pl);
-    if (elevationpl.length == 1)
-        getnextelevation();
-}
-
-function elevationinfowindowp(pl, computeonly) {
-    function plotinfowindow(pl) {
-        // ticks
-        var hscale = 40 / 500; // 40px per 500ft
-        var pertick = metric ? 100 : 250;
-        var ticks = [];
-        var mint = Math.floor(pl.minelev / pertick) * pertick;
-        var maxt = Math.ceil(pl.maxelev / pertick) * pertick;
-        for (var t = mint; t <= maxt; t += pertick)
-            ticks.push(t);
-        //alert(ticks);
-        ticks[0] = pl.minelev;
-        var height = Math.round((ticks[ticks.length - 1] - ticks[0]) / pl.conv * hscale);
-        pl.ticks = ticks;
-
-        //var elem = document.getElementById('elevationgraph');
-        //elem.style.height = height;
-        $("#elevationgraph").height(height);
-
-        pl.infoWindow.setContent(document.getElementById('elevationiw').innerHTML);
-        pl.infoWindow.open(map);
-        google.maps.event.addListener(pl.infoWindow, 'domready', function () {
-            plotelevation(pl.elevation, pl.ticks, pl.conv);
-        });
-    }
-
-    function getresults(results) {
-        // unit conversion  
-        if (!results) {
-            console.log("getElevationAlongPath failed len:" + len);
-            return;
-        }
-        var dist = 0;
-        for (var i = 0; i < results.length; i++) {
-            results[i].elevation = Math.round(results[i].elevation * m2ft);
-            if (i > 0) dist += DistanceLength(results[i - 1].location, results[i].location);
-            results[i].distance = dist;
-        }
-        var gup = 0, gdn = 0, cup = 0, cdn = 0, gmax = 0, gmin = 0;
-        var miperslope2 = miperslope / 2;
-        for (var i = 0; i < results.length; i++) {
-            for (var j = i; j >= 0 && results[i].distance - results[j].distance < miperslope2; --j);
-            for (var k = i; k <= results.length - 1 && results[k].distance - results[i].distance < miperslope2; ++k);
-            results[i].g = 0;
-            if (j >= 0 && k < results.length) {
-                var g, h, d;
-                h = results[k].elevation - results[j].elevation;
-                d = results[k].distance - results[j].distance;
-                results[i].g = g = Math.round(h / (d * mi2ft) * 100);
-                if (g > 1) { gup += g; cup++; if (g > gmax) gmax = g; }
-                if (g < -1) { gdn += g; cdn++; if (g < gmin) gmin = g; }
-            }
-        }
-        gup = cup > 0 ? Math.round(gup / cup) : 0;
-        gdn = cdn > 0 ? Math.round(gdn / cdn) : 0;
-
-        var path = [];
-
-        var mini, maxi, minelev, maxelev, lastelev, gainelev = 0, losselev = 0;
-        minelev = maxelev = lastelev = results[maxi = mini = 0].elevation;
-        for (var i = 1; i < results.length; i++) {
-            var elev = results[i].elevation;
-            if (elev > maxelev) maxelev = elev, maxi = i;
-            if (elev < minelev) minelev = elev, mini = i;
-            var diffelev = elev - lastelev;
-            if (diffelev > zeroelev) gainelev += diffelev;
-            if (diffelev < -zeroelev) losselev += diffelev;
-            lastelev = elev;
-            path.push(results[i].location);
-        }
-
-        /*
-        polyline = new google.maps.Polyline({
-          path: path,
-          strokeColor: "#000000",
-          map: map});
-        */
-
-        var abselev = (maxelev - minelev) * (mini < maxi ? 1 : -1);
-        var bar = Lance$(pl.sidebarid);
-        if (bar && bar.innerHTML)
-            bar.innerHTML = bar.innerHTML.replace("</a></span>", " " + ft(abselev) + "</a> </span>");
-
-        var absdist = (results[maxi].distance - results[mini].distance) * (mini < maxi ? 1 : -1);
-        if (absdist < miperslope) absdist = miperslope;
-        var slope = Math.round(abselev / (absdist * mi2ft) * 100);
-
-        //var iwstr = pl.infoWindow.content; //
-        var div = document.getElementById('elevation');
-        if (div != null) {
-            //var str = iwstr; //
-            var str = div.innerHTML;
-            str = str.replace("####Computing1####", ft(minelev) + " - " + ft(maxelev));
-            //str = str.replace("#GL#", abselev>0 ? "Gain" : "Loss");
-            var absdistr = Math.round(absdist * 10) / 10;
-            str = str.replace("####Computing2####", ft(abselev) + " / " + mi(absdistr) + " = " + ftxmi(abselev / absdistr) + "ft/mi");
-            str = str.replace("####Computing3####", ft(gainelev) + " / " + ft(losselev));
-            str = str.replace("####Computing4####", xdeg(gup) + "º / " + xdeg(gdn) + "º (Max " + xdeg(gmax) + "º / " + xdeg(gmin) + "º)");
-            str = str.replace("####Computing5####", gup + "% / " + gdn + "% (Max " + gmax + "% / " + gmin + "%)");
-            str = str.replace("####Computing6####", ftxmi(gup / 100 * mi2ft) + " / " + ftxmi(gdn / 100 * mi2ft));
-            //iwstr = str; //
-            div.innerHTML = str;
-        }
-
-        pl.conv = metric ? 1 / m2ft : 1;
-        pl.minelev = Math.round(minelev * pl.conv);
-        pl.maxelev = Math.round(maxelev * pl.conv);
-        pl.elevation = results;
-
-        if (computeonly) {
-            elevationpl.shift();
-            getnextelevation();
-            return;
-        }
-
-        plotinfowindow(pl);
-    }
-
-    // already plotted
-    if (pl.ticks != null)
-        return;
-
-    // already computed 
-    if (pl.elevation != null) {
-        plotinfowindow(pl);
-        return;
-    }
-
-    // Create a new chart in the elevation_chart DIV.    
-    var latlngs = [];
-    var a = pl.getPath(), len = a.getLength();
-    var maxlen = len;
-    if (len > maxpathlen) len = maxpathlen;
-    for (var i = 0; i < len; i++) {
-        var ii = i;
-        if (len != maxlen)
-            ii = Math.round(i * maxlen / len);
-        var pt = a.getAt(ii);
-        latlngs.push(pt);
-    }
-
-    if (!elevationService)
-        elevationService = new google.maps.ElevationService();
-    if (elevationService)
-        elevationService.getElevationAlongPath({ path: latlngs, samples: samplesize }, getresults);
-}
-
-
-
-function vizloaded() {
-    //alert("loaded");
-}
-
-
-/**
- * @name MarkerClustererPlus for Google Maps V3
- * @version 2.0.15 [October 18, 2012]
- */
+};

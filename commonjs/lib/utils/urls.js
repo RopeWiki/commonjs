@@ -13,7 +13,7 @@ function urlAdjustSiteBase(str) {
     return str.replace("ropewiki.com", SITE_HOSTNAME);
 
     //certain queries call into semantic mediawiki to get links, such as the kml file list. 
-    //This template uses the "filepath" magic word to return links, which hardcodes 'ropewiki.com' and will cause a CORS exception
+    //This template uses the {{filepath:}} magic word to return links, which hardcodes 'ropewiki.com' and will cause a CORS exception
     //if trying to load the templates when running in localhost or similar.
 }
 
