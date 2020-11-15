@@ -45,6 +45,14 @@ function toggleRoutes(kmlfile, kmlgroup) {
         chk.checked = true;
     }
 
+    // if loading a new route and 'Show track data' is unchecked, check it and show overlay
+    var chk = document.getElementById("routeschk");
+    if (kmlfile && !chk.checked) {
+        chk.checked = true;
+        showRoutes = 'on';
+        gxml.overlayman.Show();
+    }
+
     var group = "KML";
     var url = kmlroutes.innerHTML.split('&amp;').join('&');
     if (!gxml || kmlfile) {

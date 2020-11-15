@@ -8,6 +8,15 @@ function urlencode(str)
     return encodeURIComponent(str);
 }
 
+function urlAdjustSiteBase(str) {
+    if (SITE_HOSTNAME === "ropewiki.com") return str;
+    return str.replace("ropewiki.com", SITE_HOSTNAME);
+
+    //certain queries call into semantic mediawiki to get links, such as the kml file list. 
+    //This template uses the "filepath" magic word to return links, which hardcodes 'ropewiki.com' and will cause a CORS exception
+    //if trying to load the templates when running in localhost or similar.
+}
+
 function urlget(url, idstr, defstr) {
     var str = defstr;
     var pos = url.indexOf(idstr);
