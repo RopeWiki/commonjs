@@ -158,7 +158,7 @@ function loadlist(list, fitbounds) {
         // add title
         contentString += '<b class="notranslate">' + sitelink(item.id, nonamespace(item.id)) + '</b>';
 
-        //if (kmladdbutton)
+        //if (kmladdbutton) <-this is the 'add to user's list' button. Placement needs fixing
         //    contentString += '<input class="submitoff addbutton" type="submit" onclick="addbutton(\'' + item.id.split("'").join("%27") + '\')" value="+">';
 
         // add elevation

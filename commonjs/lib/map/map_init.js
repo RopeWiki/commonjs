@@ -476,9 +476,7 @@ function loadInteractiveMap() {
                 clickable: false,
                 optimized: false
             };
-            // Add the circle for this city to the map.
-            setmarker(coords[0], coords[1], 90000);
-
+            
             if (kmlrect == null) {
                 var mapcircle = new google.maps.Circle(circleopt);
                 boundslist = mapcircle.getBounds();
