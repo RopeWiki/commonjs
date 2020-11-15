@@ -741,16 +741,8 @@ function loadInteractiveMap() {
         var controls = spstart + '<img class="gmnoprint" id="fullscreenchk" onclick="toggleFullScreen()">' + spend;
 
         if (kmllist) {
-            /*
-            // Cluster Engine
-            // http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/docs/reference.html
-            $.getScript("http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js", function(){
-              //alert("Script loaded and executed.");
-            });
-           //controls += spstart+'<label><input class="gmnoprint" id="clusterchk" type="checkbox" onclick="toggleCluster()">Cluster&nbsp;</label>'+spend;
-            */
 
-            controls += spstart + '<label><input class="gmnoprint" id="routeschk" type="checkbox" onclick="toggleRoutes()">Show&nbsp;KML&nbsp;</label>' + spend;
+            controls += spstart + '<label id="showKmlButton" style="display:none"><input class="gmnoprint" id="routeschk" type="checkbox" onclick="toggleRoutes()">Show&nbsp;KML&nbsp;</label>' + spend;
 
             // map search
             if (document.getElementById('locsearch')) {

@@ -14,7 +14,6 @@ function backFullScreen() {
 }
 
 function toggleFullScreen(force) {
-    var idchk = "fullscreenchk";
     var ide = document.getElementById("mapbox");
     if (!ide) return;
 
@@ -67,7 +66,7 @@ function toggleFullScreen(force) {
         toggleFS = null;
     }
 
-    chk = document.getElementById(idchk);
+    chk = document.getElementById("fullscreenchk");
     
     chk.onclick = toggleFS == null ? toggleFullScreen : backFullScreen;
     mapcover();
