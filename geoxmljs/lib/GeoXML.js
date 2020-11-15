@@ -5425,7 +5425,7 @@ GeoXml.prototype.DownloadURL = function (fpath, callback, title2, xmlcheck) {
                             console.log("ERROR! " + here);
                             //if (cmlurl.search(webproxy)<0)
                             //   that.DownloadURL(webproxy+cmlurl,callback,title2, xmlcheck);
-                            that.mb.showMess("Download error", 600000);
+                            that.mb.showMess("Download error", 3000);
                         }
                     }
                 }
