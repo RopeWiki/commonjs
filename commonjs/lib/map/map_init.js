@@ -973,7 +973,8 @@ function SetupMapLayers() {
                     "&z=" +
                     z;
             },
-            maxZoom: 16,
+            maxZoom: 17,
+            minZoom: 3,
             name: "Streets",
             opacity: 1,
             tileSize: new google.maps.Size(256, 256)
@@ -990,7 +991,8 @@ function SetupMapLayers() {
                     "&z=" +
                     z;
             },
-            maxZoom: 16,
+            maxZoom: 20,
+            minZoom: 3,
             name: "Satellite",
             opacity: 1,
             tileSize: new google.maps.Size(256, 256)
@@ -1009,6 +1011,7 @@ function SetupMapLayers() {
                     ".png";
             },
             maxZoom: 16,
+            minZoom: 5,
             name: "TopoUSA",
             opacity: 1,
             tileSize: new google.maps.Size(256, 256)
@@ -1027,6 +1030,7 @@ function SetupMapLayers() {
                     ".png?apikey=bdbb04f2d5df40cbb86e9e6e1acff6f7";
             },
             maxZoom: 18,
+            minZoom: 3,
             name: "TopoWorld",
             opacity: 1,
             tileSize: new google.maps.Size(256, 256)
@@ -1045,6 +1049,7 @@ function SetupMapLayers() {
                     "&FORMAT=image%2Fjpeg";
             },
             maxZoom: 17,
+            minZoom: 6,
             name: "TopoSpain",
             opacity: 1,
             tileSize: new google.maps.Size(256, 256)
