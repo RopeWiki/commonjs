@@ -144,9 +144,8 @@ function loadlist(list, fitbounds) {
         // set up extras
         {
             if (item.kmlfile && item.kmlfile != "") {
-                var kmlFileUrl = urlAdjustSiteBase(item.kmlfile);
                 sdescm += '<div><i>';
-                sdescm += '<a href="javascript:toggleRoutes(\'' + urlencode(kmlFileUrl) + '\',\'' + urlencode(item.id) + '\');">Show track data on map</a>';
+                sdescm += '<a href="javascript:toggleRoutes(\'' + urlencode(item.kmlfile) + '\',\'' + urlencode(item.id) + '\');">Show track data on map</a>';
                 sdescm += '</i></div>';
             }
             var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=Coord:' + item.location.lat + ',' + item.location.lng + '">Search nearby</a><p>';
