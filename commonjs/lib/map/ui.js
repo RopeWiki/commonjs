@@ -94,9 +94,7 @@ function mapcover() {
     var mw = $("#mapbox").width();
     var dw = $(window).width() - mw;
     if (!toggleFS && (dw < 50 || mw < 500))
-        //$("#mapcover").show();
         $("#mapcover").css({display: "block"});
     else
-        //$("#mapcover").hide();
         $("#mapcover").css({display: "none"});
 }

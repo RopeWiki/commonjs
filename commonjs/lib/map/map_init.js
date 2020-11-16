@@ -228,151 +228,10 @@ function loadInteractiveMap() {
         },
     };
 
-
-    // cover
-    var coverDiv = document.createElement('DIV');
-    coverDiv.id = "mapcover";
-    coverDiv.className = "gmnoprint";
-    coverDiv.style.cssText =
-        'position:fixed;left:0;top:0;width:100%;height:100%;background-color:transparent;border-color:yellow;border-style: inset;border-width:2px';
-    $(coverDiv).on('click',
-        function(e) {
-            //$("#mapbox").trigger(e);
-            toggleFullScreen(true);
-        });
-
-    // credits
-    var creditDiv = document.createElement('DIV');
-    creditDiv.style.cssText = "font-size:x-small;";
-
-    var credits = [];
     map = new google.maps.Map(mapbox, mapOptions);
-    map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(creditDiv);
 
-    // custom map
-    credits[google.maps.MapTypeId.TERRAIN] = " ";
-
-    //google streets is manually defined and doesn't use the google.maps.MapTypeId.DEFAULT value
-    //because when that one is included, 'terrain' becomes a checkbox, which is ugly
-    map.mapTypes.set("streets",
-        new google.maps.ImageMapType({
-            getTileUrl: function(p, z) {
-                return "https://mt.google.com/vt/lyrs=m&hl=en&x=" +
-                    slippyClip(p.x, z) +
-                    "&y=" +
-                    slippyClip(p.y, z) +
-                    "&z=" +
-                    z;
-            },
-            maxZoom: 16,
-            name: "Streets",
-            opacity: 1,
-            tileSize: new google.maps.Size(256, 256)
-        }));
-    credits["streets"] = " ";  
-
-    map.mapTypes.set("satellite2", //name this as '2' because this is actually the hybrid layer, 'satellite' is the google satellite layer
-        new google.maps.ImageMapType({
-            getTileUrl: function (p, z) {
-                return "https://mt.google.com/vt/lyrs=y&hl=en&x=" +
-                    slippyClip(p.x, z) +
-                    "&y=" +
-                    slippyClip(p.y, z) +
-                    "&z=" +
-                    z;
-            },
-            maxZoom: 16,
-            name: "Satellite",
-            opacity: 1,
-            tileSize: new google.maps.Size(256, 256)
-        }));
-    credits["streets"] = " ";  
-
-    map.mapTypes.set("topousa",
-        new google.maps.ImageMapType({
-            getTileUrl: function(p, z) {
-                return "http://s3-us-west-1.amazonaws.com/caltopo/topo/" +
-                    z +
-                    "/" +
-                    slippyClip(p.x, z) +
-                    "/" +
-                    slippyClip(p.y, z) +
-                    ".png";
-            },
-            maxZoom: 16,
-            name: "TopoUSA",
-            opacity: 1,
-            tileSize: new google.maps.Size(256, 256)
-        }));
-    credits["topo"] = "<a href='https://caltopo.com' target='_blank'>Topo map by CalTopo</a>";
-
-    map.mapTypes.set("wtopo",
-        new google.maps.ImageMapType({
-            getTileUrl: function(p, z) {
-                return "http://tile.thunderforest.com/outdoors/" +
-                    z +
-                    "/" +
-                    slippyClip(p.x, z) +
-                    "/" +
-                    slippyClip(p.y, z) +
-                    ".png?apikey=bdbb04f2d5df40cbb86e9e6e1acff6f7";
-            },
-            maxZoom: 18,
-            name: "TopoWorld",
-            opacity: 1,
-            tileSize: new google.maps.Size(256, 256)
-        }));
-    credits["wtopo"] = "<a href='http://thunderforest.com' target='_blank'>Topo map by Thunderforest</a>";
-
-    map.mapTypes.set("estopo",
-        new google.maps.ImageMapType({
-            getTileUrl: function(p, z) {
-                return "http://www.ign.es/wmts/mapa-raster?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX=" +
-                    z +
-                    "&TILEROW=" +
-                    slippyClip(p.y, z) +
-                    "&TILECOL=" +
-                    slippyClip(p.x, z) +
-                    "&FORMAT=image%2Fjpeg";
-            },
-            maxZoom: 17,
-            name: "TopoSpain",
-            opacity: 1,
-            tileSize: new google.maps.Size(256, 256)
-        }));
-    credits["estopo"] = "<a href='http://sigpac.mapa.es/fega/visor/' target='_blank'>Topo map by IGN</a>";
-
-    // relief is used in conjuction with TopoUSA to provide relief shading
-    var relief = new google.maps.ImageMapType({
-        getTileUrl: function (p, z) {
-            return "http://s3-us-west-1.amazonaws.com/ctrelief/relief/" +
-                z +
-                "/" +
-                slippyClip(p.x, z) +
-                "/" +
-                slippyClip(p.y, z) +
-                ".png";
-        },
-        maxZoom: 16,
-        name: "Topo",
-        opacity: 0.25,
-        tileSize: new google.maps.Size(256, 256)
-    });
-
-    // Map Change
-    google.maps.event.addListener(map,
-        "maptypeid_changed",
-        function() {
-            map.controls[google.maps.ControlPosition.BOTTOM_CENTER].clear();
-            if (map.getMapTypeId() == "topousa")
-                map.overlayMapTypes.setAt(0, relief);
-            else
-                map.overlayMapTypes.clear();
-            var credit = credits[map.getMapTypeId()];
-            if (!!credit && !!creditDiv)
-                creditDiv.innerHTML = credit;
-        });
-
+    SetupMapLayers();
+    
     // Map out
     google.maps.event.addListener(map,
         'mouseout',
@@ -392,12 +251,14 @@ function loadInteractiveMap() {
                 },
                 5000);
         });
+
     google.maps.event.addListener(map,
         'bounds_changed',
         function(evt) {
             loadingtiles2 = true;
             console.log('loadingtiles2 true');
         });
+
     google.maps.event.addListener(map,
         'idle',
         function(evt) {
@@ -426,6 +287,7 @@ function loadInteractiveMap() {
         }
     }
 
+    // set rectangle (if any) from "kmlrect"
     var kmlrect = document.getElementById("kmlrect");
     if (kmlrect != null) {
         var coords = kmlrect.innerHTML.split(',');
@@ -458,6 +320,7 @@ function loadInteractiveMap() {
         }
     }
 
+    // set circle (if any) from "kmlcircle"
     var kmlcircle = document.getElementById("kmlcircle");
     if (kmlcircle != null) {
         var coords = kmlcircle.innerHTML.split(',');
@@ -486,10 +349,10 @@ function loadInteractiveMap() {
             map.panToBounds(boundslist);
         }
     }
-
-
+    
     kmlsummary = document.getElementById("kmlsummary");
 
+    // set list (if any) from "kmllist"
     var kmllist = document.getElementById("kmllist");
     if (kmllist != null) {
         var kmlicons = document.getElementById("kmlicons");
@@ -533,6 +396,7 @@ function loadInteractiveMap() {
         loadlist(objlist, true);
     }
 
+    // set query (if any) from "kmlquery"
     var kmllistquery = document.getElementById("kmllistquery");
     if (kmllistquery != null) {
         kmlmap = "kmllistquery";
@@ -595,7 +459,6 @@ function loadInteractiveMap() {
             var nwll = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng());
             //console.log("nwll "+nwll);
             var nw = proj.fromLatLngToPoint(nwll);
-
             //console.log("nw "+nw);
 
             function fromLatLngToPixel(position) {
@@ -611,8 +474,7 @@ function loadInteractiveMap() {
                 point.y = pixel.y / scale + nw.y;
                 return proj.fromPointToLatLng(point);
             }
-
-
+            
             // compute pixel locations
             for (var i = 0; i < markers.length; i++) {
                 var m = markers[i];
@@ -674,6 +536,7 @@ function loadInteractiveMap() {
                 else
                     console.log("error " + m.name + ":" + m.p + " -> " + ll.lat + "," + ll.lng);
             }
+
             setTimeout(function() {
                     loadingquery2 = false;
                     console.log("loadingquery2 false");
@@ -682,24 +545,6 @@ function loadInteractiveMap() {
         }
 
         google.maps.event.addListener(map, "zoom_changed", spiderfy);
-        //google.map.event.addListener(map, "projection_changed", spiderfy);
-        /* //Debug
-        var customrepeat = 0;
-        $(document).keydown(function(event) { //'#mapbox'
-              switch(event.which) {
-                case 88: // X
-                    if (customrepeat<50)
-                       ++customrepeat;
-                    spiderfy(customrepeat);
-                    break;
-                case 90: // Z
-                    if (customrepeat>0)
-                       --customrepeat;
-                    spiderfy(customrepeat);
-                    break;
-              }
-        });
-        */
     }
 
     // null map
@@ -719,7 +564,9 @@ function loadInteractiveMap() {
         map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
     }
 
-    // set kml (if any) from "kmlfile"
+    // set title (if any) from "kmltitle"
+    // note: I believe kmltitle is set by the {{{title}}} parameter, and refers to [[Category:Books]]. I don't see how the code is used however.
+    // ropewiki.com/Category:Books
     var kmltitle = document.getElementById("kmltitle");
     if (kmltitle != null) {
         var controlsDiv = document.createElement('DIV');
@@ -733,11 +580,12 @@ function loadInteractiveMap() {
         map.controls[google.maps.ControlPosition.TOP_CENTER].push(controlsDiv);
     }
 
-    // add special controls
+    // add additional controls (i.e. fullscreen, Show track data, Search Map, TrkLabels (for Books), Metric)
     {
         var spstart = '<div class="gmnoprint maptopcontrols">', spend = '</div>';
         //var controls = '<div style="position:absolute;left:0;right:0;width:99%;height:99%;border-color:red;border-width:50px;border-style: solid;background-color:transparent"></div>';
 
+        // this is the fullscreen button, which used to have an image, but is removed. This code is still here or mobile 'click to maximize' doesn't work
         var controls = spstart + '<img class="gmnoprint" id="fullscreenchk" onclick="toggleFullScreen()">' + spend;
 
         if (kmllist) {
@@ -747,8 +595,10 @@ function loadInteractiveMap() {
             // map search
             if (document.getElementById('locsearch')) {
                 var controlsDiv2 = document.createElement('DIV');
+
                 controlsDiv2.innerHTML =
                     '<div id="searchmap"><span id="searchinfo"></span><button type="search" value="" onclick="searchmap()">Search Map</button></div>';
+
                 map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlsDiv2);
                 searchmaprectangle = new google.maps.Rectangle({
                     strokeColor: '#FF0000',
@@ -788,26 +638,28 @@ function loadInteractiveMap() {
                             searchmaprectangle.setBounds(bounds);
                             searchmaprectangle.setMap(map);
                         }
-
                     });
             }
         }
         else {
             if (kmltitle)
-                controls += spstart +
-                    '<label><input class="gmnoprint" id="labelschk" type="checkbox" onclick="toggleLabels()" ' +
-                    (labels ? 'checked' : '') +
-                    '>TrkLabels&nbsp;</label>' +
-                    spend;
+                controls += spstart + '<label><input class="gmnoprint" id="labelschk" type="checkbox" onclick="toggleLabels()" ' + (labels ? 'checked' : '') + '>TrkLabels&nbsp;</label>' + spend;
         }
 
         //controls += spstart+'<label><input class="gmnoprint" id="metricchk" type="checkbox" onclick="toggleMetric()" '+(metric ? 'checked' : '')+'>Metric&nbsp;</label>'+spend;
+
         var controlsDiv = document.createElement('DIV');
         controlsDiv.style.cssText = "z-index:9999;";
         controlsDiv.innerHTML = controls;
         map.controls[google.maps.ControlPosition.TOP_LEFT].push(controlsDiv);
     }
 
+    // cover
+    var coverDiv = document.createElement('DIV');
+    coverDiv.id = "mapcover";
+    coverDiv.className = "gmnoprint";
+    coverDiv.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;background-color:transparent;border-color:yellow;border-style: inset;border-width:2px';
+    $(coverDiv).on('click', function() { toggleFullScreen(true); });
     map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(coverDiv);
 
     // set kml (if any) from "kmlfile"
@@ -845,22 +697,12 @@ function loadInteractiveMap() {
                             ++counter;
                     if (counter > 1)
                         domain += "#" + counter;
-                    text += '<div class="dropDownItemDiv" onClick="loadSource(\'' +
-                        link +
-                        '\',\'' +
-                        domain +
-                        '\')" style="' +
-                        style +
-                        '">' +
-                        domain +
-                        '</div>';
+                    text += '<div class="dropDownItemDiv" onClick="loadSource(\'' + link + '\',\'' + domain + '\')" style="' + style + '">' + domain + '</div>';
                 }
                 var big = document.getElementsByTagName('BIG');
                 if (big && big.length > 0 && selection.length > 1) {
                     var link = urlencode(big[0].innerHTML);
-                    text += '<div class="dropDownItemDiv" onClick="loadSource(\'' +
-                        link +
-                        '\',\'ALL COMBINED\')" style="font-weight:bold">ALL COMBINED</div>';
+                    text += '<div class="dropDownItemDiv" onClick="loadSource(\'' + link + '\',\'ALL COMBINED\')" style="font-weight:bold">ALL COMBINED</div>';
                 }
                 text += '</div>';
                 var name = getdomain(selection[0]);
@@ -1076,34 +918,169 @@ function loadInteractiveMap() {
             toggleFullScreen(true);
         else
             centermap();
+
         smallstyle();
         mapcover();
     });
 }
 
+// set map type layers to include in the dropdown
 function GetMapTypeIds() {
-    // set map types to display from "kmltype"
-    var embeddedMaptype;
-    var pagename = mw.config.get("wgPageName");
-    var parentRegionEnable = ($("[title='United States']").length > 0 || $("[title='Canada']").length > 0) && pagename !== 'North_America'
+    var embeddedMapType;
     var kmlType = document.getElementById("kmltype");
     if (kmlType != null) {
-        var mapset = kmlType.innerHTML.split('@');
-        embeddedMaptype = mapset[0];
+        var mapSet = kmlType.innerHTML.split('@');
+        embeddedMapType = mapSet[0];
     }
 
+    var pageName = mw.config.get("wgPageName");
+    var parentRegionEnable = ($("[title='United States']").length > 0 || $("[title='Canada']").length > 0) && pageName !== 'North_America';
+
     var mapTypeIds = [google.maps.MapTypeId.TERRAIN];
-    if (embeddedMaptype === "topo"
-        || pagename === "United_States" || pagename === "Canada" || pagename === "Pacific_Northwest" //region pages
+    if (embeddedMapType === "topo"
+        || pageName === "United_States" || pageName === "Canada" || pageName === "Pacific_Northwest" //region pages
         || parentRegionEnable) //sub-region under US or Canada
         mapTypeIds.push("topousa");
 
-    if (embeddedMaptype === "estopo")
+    if (embeddedMapType === "estopo")
         mapTypeIds.push("estopo");
 
     mapTypeIds.push("wtopo", "streets", 'satellite2');
 
     return mapTypeIds;
+}
+
+function SetupMapLayers() {
+
+    // credits
+    var creditDiv = document.createElement('DIV');
+    creditDiv.style.cssText = "font-size:x-small;";
+    map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(creditDiv);
+
+    // setup map layers
+    var credits = [];
+    credits[google.maps.MapTypeId.TERRAIN] = " ";
+
+    //google streets is manually defined and doesn't use the google.maps.MapTypeId.DEFAULT value
+    //because when that one is included, 'terrain' becomes a checkbox, which is ugly
+    map.mapTypes.set("streets",
+        new google.maps.ImageMapType({
+            getTileUrl: function (p, z) {
+                return "https://mt.google.com/vt/lyrs=m&hl=en&x=" +
+                    slippyClip(p.x, z) +
+                    "&y=" +
+                    slippyClip(p.y, z) +
+                    "&z=" +
+                    z;
+            },
+            maxZoom: 16,
+            name: "Streets",
+            opacity: 1,
+            tileSize: new google.maps.Size(256, 256)
+        }));
+    credits["streets"] = " ";
+
+    map.mapTypes.set("satellite2", //name this as '2' because this is actually the hybrid layer, 'satellite' is the google satellite layer
+        new google.maps.ImageMapType({
+            getTileUrl: function (p, z) {
+                return "https://mt.google.com/vt/lyrs=y&hl=en&x=" +
+                    slippyClip(p.x, z) +
+                    "&y=" +
+                    slippyClip(p.y, z) +
+                    "&z=" +
+                    z;
+            },
+            maxZoom: 16,
+            name: "Satellite",
+            opacity: 1,
+            tileSize: new google.maps.Size(256, 256)
+        }));
+    credits["streets"] = " ";
+
+    map.mapTypes.set("topousa",
+        new google.maps.ImageMapType({
+            getTileUrl: function (p, z) {
+                return "http://s3-us-west-1.amazonaws.com/caltopo/topo/" +
+                    z +
+                    "/" +
+                    slippyClip(p.x, z) +
+                    "/" +
+                    slippyClip(p.y, z) +
+                    ".png";
+            },
+            maxZoom: 16,
+            name: "TopoUSA",
+            opacity: 1,
+            tileSize: new google.maps.Size(256, 256)
+        }));
+    credits["topo"] = "<a href='https://caltopo.com' target='_blank'>Topo map by CalTopo</a>";
+
+    map.mapTypes.set("wtopo",
+        new google.maps.ImageMapType({
+            getTileUrl: function (p, z) {
+                return "http://tile.thunderforest.com/outdoors/" +
+                    z +
+                    "/" +
+                    slippyClip(p.x, z) +
+                    "/" +
+                    slippyClip(p.y, z) +
+                    ".png?apikey=bdbb04f2d5df40cbb86e9e6e1acff6f7";
+            },
+            maxZoom: 18,
+            name: "TopoWorld",
+            opacity: 1,
+            tileSize: new google.maps.Size(256, 256)
+        }));
+    credits["wtopo"] = "<a href='http://thunderforest.com' target='_blank'>Topo map by Thunderforest</a>";
+
+    map.mapTypes.set("estopo",
+        new google.maps.ImageMapType({
+            getTileUrl: function (p, z) {
+                return "http://www.ign.es/wmts/mapa-raster?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX=" +
+                    z +
+                    "&TILEROW=" +
+                    slippyClip(p.y, z) +
+                    "&TILECOL=" +
+                    slippyClip(p.x, z) +
+                    "&FORMAT=image%2Fjpeg";
+            },
+            maxZoom: 17,
+            name: "TopoSpain",
+            opacity: 1,
+            tileSize: new google.maps.Size(256, 256)
+        }));
+    credits["estopo"] = "<a href='http://sigpac.mapa.es/fega/visor/' target='_blank'>Topo map by IGN</a>";
+
+    // relief is used in conjuction with TopoUSA to provide relief shading
+    var relief = new google.maps.ImageMapType({
+        getTileUrl: function (p, z) {
+            return "http://s3-us-west-1.amazonaws.com/ctrelief/relief/" +
+                z +
+                "/" +
+                slippyClip(p.x, z) +
+                "/" +
+                slippyClip(p.y, z) +
+                ".png";
+        },
+        maxZoom: 16,
+        name: "Topo",
+        opacity: 0.25,
+        tileSize: new google.maps.Size(256, 256)
+    });
+
+    // Map Change
+    google.maps.event.addListener(map,
+        "maptypeid_changed",
+        function () {
+            if (map.getMapTypeId() == "topousa")
+                map.overlayMapTypes.setAt(0, relief);
+            else
+                map.overlayMapTypes.clear();
+
+            var credit = credits[map.getMapTypeId()];
+            if (!!credit && !!creditDiv)
+                creditDiv.innerHTML = credit;
+        });
 }
 
 function waterflowinit() {
@@ -1231,7 +1208,6 @@ function loadSource(link, domain) {
                     links[l].href = link;
                     links[l].innerHTML = domain;
                 }
-
             }
         }
     }
