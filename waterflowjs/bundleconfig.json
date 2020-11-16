@@ -1,0 +1,12 @@
+[
+  {
+    "outputFileName": "out/waterflow.min.js",
+    "inputFiles": [
+      "lib/waterflow.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "commentMode": "all"
+    }
+  }
+]
