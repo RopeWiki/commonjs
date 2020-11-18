@@ -305,6 +305,7 @@ function dropDownControl(options) {
         function(event) {
             var targetElement = event.target || event.srcElement;
             if (targetElement.id !== 'currentMapType' &&
+                targetElement.id !== 'Map Type' &&
                 targetElement.parentElement.id !== 'mapCustomTypeControl' &&
                 targetElement.parentElement.parentElement.id !== 'mapCustomTypeControl') {
                 if (document.getElementById(options.dropDown.id).style.display === 'block')
