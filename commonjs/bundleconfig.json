@@ -16,6 +16,7 @@
       "lib/map/constants.js",
       "lib/map/fullscreen.js",
       "lib/map/layers.js",
+      "lib/map/layers_weather.js",
       "lib/map/map.js",
       "lib/map/map_init.js",
       "lib/map/search.js",

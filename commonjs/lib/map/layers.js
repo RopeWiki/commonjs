@@ -1,6 +1,3 @@
-var radarStep = 0;
-var radarInterval;
-var radarTimes = ['900913-m50m', '900913-m45m', '900913-m40m', '900913-m35m', '900913-m30m', '900913-m25m', '900913-m20m', '900913-m15m', '900913-m10m', '900913-m05m', '900913'];
 
 function SetupMapLayers() {
 
@@ -70,7 +67,7 @@ function SetupMapLayers() {
         }));
     credits["topo"] = "<a href='https://caltopo.com' target='_blank'>Topo map by CalTopo</a>";
 
-    map.mapTypes.set("wtopo",
+    map.mapTypes.set("topoworld",
         new google.maps.ImageMapType({
             getTileUrl: function (p, z) {
                 return "http://tile.thunderforest.com/outdoors/" +
@@ -87,7 +84,7 @@ function SetupMapLayers() {
             opacity: 1,
             tileSize: new google.maps.Size(256, 256)
         }));
-    credits["wtopo"] = "<a href='http://thunderforest.com' target='_blank'>Topo map by Thunderforest</a>";
+    credits["topoworld"] = "<a href='http://thunderforest.com' target='_blank'>Topo map by Thunderforest</a>";
 
     map.mapTypes.set("estopo",
         new google.maps.ImageMapType({
@@ -120,7 +117,7 @@ function SetupMapLayers() {
                 ".png";
         },
         maxZoom: 16,
-        name: "Topo",
+        name: "relief",
         opacity: 0.25,
         tileSize: new google.maps.Size(256, 256)
     });
@@ -129,10 +126,13 @@ function SetupMapLayers() {
     google.maps.event.addListener(map,
         "maptypeid_changed",
         function () {
-            if (map.getMapTypeId() == "topousa")
-                map.overlayMapTypes.setAt(0, relief);
-            else
-                map.overlayMapTypes.clear();
+            if (map.getMapTypeId() == "topousa") {
+                relief.setOpacity(0.60);
+                map.overlayMapTypes.insertAt(0, relief);
+            } else {
+                if (map.overlayMapTypes.length > 0 && map.overlayMapTypes.getAt(0).name === 'relief')
+                    map.overlayMapTypes.removeAt(0);
+            }
 
             var credit = credits[map.getMapTypeId()];
             if (!!credit && !!creditDiv)
@@ -140,94 +140,8 @@ function SetupMapLayers() {
         });
 }
 
-function addWeatherControl(controlDiv) {
-    // Set CSS for the control border.
-    const controlUI = document.createElement("div");
-    controlUI.style.backgroundColor = "#fff";
-    controlUI.style.border = "2px solid #fff";
-    controlUI.style.borderRadius = "3px";
-    controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
-    controlUI.style.cursor = "pointer";
-    //controlUI.style.marginBottom = "22px";
-    controlUI.style.marginTop = "9px";
-    controlUI.style.marginRight = "10px";
-    controlUI.style.textAlign = "center";
-    controlUI.title = "Click to display weather";
-
-    // Set CSS for the control interior.
-    const controlText = document.createElement("div");
-    controlText.style.color = "rgb(25,25,25)";
-    controlText.style.fontFamily = "Roboto,Arial,sans-serif";
-    controlText.style.fontSize = "16px";
-    controlText.style.lineHeight = "38px";
-    controlText.style.paddingLeft = "5px";
-    controlText.style.paddingRight = "5px";
-    controlText.innerHTML = "Weather";
-    controlUI.appendChild(controlText);
-
-    // Setup the click event listeners: simply set the map to Chicago.
-    controlUI.addEventListener("click", function () {
-        showRadarLayer();
-    });
-
-    controlDiv.appendChild(controlUI);
-}
-
-// turn on/off weather radar
-var showing;
-function showRadarLayer() {
-
-    if (!showing) {
-        radarStep = 0;
-        $(this).val('Turn off Weather Radar');
-        radarInterval = setInterval(startAnimation, 500);
-        showing = 'true';
-
-        zoomOut();        
-    } else {
-        $(this).val('Turn on Weather Radar');
-        clearInterval(radarInterval);
-        map.overlayMapTypes.clear();
-        showing = null;
-    }
-}
-
-// animate the Weather Radar
-function startAnimation() {
-    var layer = radarStep;
-    if (layer <= 10) {
-
-        tileNEX = new google.maps.ImageMapType({
-            getTileUrl: function (tile, zoom) {
-                return "https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-" +
-                    radarTimes[layer]
-                    //"q2-p24h-900913"
-                    + "/" + zoom + "/" + tile.x + "/" + tile.y + ".png";
-            },
-            tileSize: new google.maps.Size(256, 256),
-            opacity: 0.60,
-            name: 'NEXRAD',
-            isPng: true
-        });
-        map.overlayMapTypes.setAt("0", tileNEX);
-    }
-
-    radarStep++;
-    if (radarStep > 17) { //pause at the current time for a few steps
-        radarStep = 0;
-    }
-}
-
-function zoomOut() {
-    if (map.getZoom() > 8) {
-        map.setZoom(map.getZoom() - 1);
-        var millisecondsToWait = 200;
-        setTimeout(zoomOut, millisecondsToWait);
-    };
-}
-
 // set map type layers to include in the dropdown
-function GetMapTypeIds() {    
+function GetMapTypeIds() {
     var mapTypeIds = [google.maps.MapTypeId.TERRAIN];
 
     if (isUSAorCanada())
@@ -236,7 +150,7 @@ function GetMapTypeIds() {
     if (isSpain())
         mapTypeIds.push("estopo");
 
-    mapTypeIds.push("wtopo", "streets", 'satellite2');
+    mapTypeIds.push("topoworld", "streets", 'satellite2');
 
     return mapTypeIds;
 }
