@@ -923,11 +923,10 @@ function loadInteractiveMap() {
         mapcover();
     });
 
-    if (isUSAorCanada()) {
-        var weatherControlDiv = document.createElement("div");
-        addWeatherControl(weatherControlDiv);
-        map.controls[google.maps.ControlPosition.RIGHT_TOP].push(weatherControlDiv);
-    }
+    // weather control
+    var weatherControlDiv = document.createElement("div");
+    addWeatherControl(weatherControlDiv);
+    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(weatherControlDiv);
 }
 
 function waterflowinit() {

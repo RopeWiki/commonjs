@@ -36,18 +36,39 @@ function addWeatherControl(controlDiv) {
 // turn on/off weather radar
 
 var radarInterval;
+var radarTimes;
 var radarTimesNexrad = ['900913-m50m', '900913-m45m', '900913-m40m', '900913-m35m', '900913-m30m', '900913-m25m', '900913-m20m', '900913-m15m', '900913-m10m', '900913-m05m', '900913'];
+var weatherGetTileUrl;
 
 var showing;
 function showRadarLayer() {
+    var i;
+
+    var showNexrad = isUSAorCanada();
 
     if (!showing) {
         showing = 'true';
+
+        radarTimes = [];
+
+        if (showNexrad) {
+            for (i = 0; i < radarTimesNexrad.length; i++) {
+                radarTimes[i] = radarTimesNexrad[i];
+            }
+
+        } else {
+            $.getJSON('https://api.rainviewer.com/public/maps.json', function (data) {
+                radarTimes = data;
+            });
+        }
+
+        SetWeatherLayerType(showNexrad);
+
         zoomOutThenStartAnimation();
     } else {
         clearInterval(radarInterval);
         var len = radarTimesNexrad.length;
-        for (var i = 0; i < len; i++) {
+        for (i = 0; i < len; i++) {
             map.overlayMapTypes.pop();
         }
         showing = null;
@@ -55,30 +76,18 @@ function showRadarLayer() {
     }
 }
 
-var radarTimes2;
-function showRadarLayer2() {
+function showRadarLayerStatic() {
     if (!showing) {
-        $.getJSON('https://api.rainviewer.com/public/maps.json', function (data) {
-            radarTimes2 = data;
-        });
 
-        //this layer isn't so bad for worldwide. Not the same as doppler radar, but shows precipitation
-        tileRainViewer = new google.maps.ImageMapType({
-            getTileUrl: function (p, z) {
-                if (!radarTimes2) return "";
-                var timeStamp = radarTimes2[radarTimes2.length - 1];
-                return "https://tilecache.rainviewer.com/v2/radar/" + timeStamp + "/256" +
-                    "/" + z +
-                    "/" + slippyClip(p.x, z) +
-                    "/" + slippyClip(p.y, z) +
-                    "/1/1_1.png";
-            },
+        var radarLayer = new google.maps.ImageMapType({
+            getTileUrl: Function("tile", "zoom", url),
             tileSize: new google.maps.Size(256, 256),
-            opacity: 0.60,
-            name: 'NEXRAD',
+            opacity: 0.00,
+            name: radarTimes[i],
             isPng: true
         });
-        map.overlayMapTypes.push(tileRainViewer);
+
+        map.overlayMapTypes.push(radarLayer);
         showing = 'true';
 
         zoomOut();
@@ -88,40 +97,56 @@ function showRadarLayer2() {
     }
 }
 
+function SetWeatherLayerType(showNexrad) {
+    if (showNexrad) {
+        //iowa state nexrad weather radar
+        weatherGetTileUrl =
+            "return 'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-[time]/' + zoom + '/' + tile.x + '/' + tile.y + '.png';";
+    } else {
+        //this layer isn't so bad for worldwide. Not as good as the doppler radar, but shows precipitation
+        weatherGetTileUrl =
+            "return 'https://tilecache.rainviewer.com/v2/radar/[time]/256/' + zoom + '/' + tile.x + '/' + tile.y + '/1/1_1.png';";
+    }
+}
+
 var weatherLayersLoaded;
 function loadWeatherLayers() {
     if (weatherLayersLoaded) return;
-
-    var len = radarTimesNexrad.length;
+    
+    var len = radarTimes.length;
     for (var i = 0; i < len; i++) {
-        console.log(radarTimesNexrad[i]);
-
+        var url = weatherGetTileUrl.replace("[time]", radarTimes[i]);
         var radarLayer = new google.maps.ImageMapType({
-            getTileUrl: Function("tile",
-                "zoom",
-                "console.log('tile load: '+ tile +', ' + zoom); return 'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-" +
-                radarTimesNexrad[i] + "' + '/' + zoom + '/' + tile.x + '/' + tile.y + '.png';"),
+            getTileUrl: Function("tile", "zoom", url),
             tileSize: new google.maps.Size(256, 256),
             opacity: 0.00,
-            name: radarTimesNexrad[i],
+            name: radarTimes[i],
             isPng: true
         });
 
         map.overlayMapTypes.push(radarLayer);
     }
+
+    radarStep = radarTimes.length - 1; //set to 'current time' layer
+
     weatherLayersLoaded = true;
 }
 
 // animate the Weather Radar
 var radarStep = 0;
 function animateNextLayer() {
+    var len = radarTimes.length;
+    if (len === 0) return;
+
+    if (!weatherLayersLoaded)
+        loadWeatherLayers();
+
     var layer = radarStep;
     var startIndex = 0;
-    var len = radarTimesNexrad.length;
     if (map.overlayMapTypes.length > len) {
         startIndex++; //increase by 1 because relief layer is current part of map and is in position '0'
     }
-    if (layer + 1 <= len) { //layer will keep incrementing beyond len, as it is equal to radarStep, but we want to pause on the current time layer
+    if (layer + 1 <= len) { //layer will keep incrementing beyond len, as it is equal to radarStep, but we want to pause on the 'current time' layer
         
         var previousLayer = layer - 1;
         if (previousLayer < 0)
@@ -133,7 +158,7 @@ function animateNextLayer() {
     }
 
     radarStep++;
-    if (radarStep > 17) { //pause at the current time for a few steps
+    if (radarStep > len + 6) { //pause at the current time for a few steps
         radarStep = 0;
     }
 }
@@ -143,9 +168,6 @@ function zoomOutThenStartAnimation() {
         map.setZoom(map.getZoom() - 1);
         setTimeout(zoomOutThenStartAnimation, 200);
     } else {
-        loadWeatherLayers();
-
-        radarStep = radarTimesNexrad.length - 1;
         animateNextLayer();
         radarInterval = setInterval(animateNextLayer, 500);
     }
