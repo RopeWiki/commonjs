@@ -211,12 +211,7 @@ function loadInteractiveMap() {
         scaleControl: true,
         keyboardShortcuts: false,
         mapTypeId: google.maps.MapTypeId.TERRAIN,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-            mapTypeIds: GetMapTypeIds(),
-            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-            position: google.maps.ControlPosition.TOP_RIGHT
-        },
+        mapTypeControl: false, //using custom control in 'control_maptype.js'
         zoomControl: true,
         zoomControlOptions: {
             position: google.maps.ControlPosition.LEFT_CENTER
@@ -655,12 +650,12 @@ function loadInteractiveMap() {
     }
 
     // cover
-    var coverDiv = document.createElement('DIV');
-    coverDiv.id = "mapcover";
-    coverDiv.className = "gmnoprint";
-    coverDiv.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;background-color:transparent;border-color:yellow;border-style: inset;border-width:2px';
-    $(coverDiv).on('click', function() { toggleFullScreen(true); });
-    map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(coverDiv);
+    //var coverDiv = document.createElement('DIV');
+    //coverDiv.id = "mapcover";
+    //coverDiv.className = "gmnoprint";
+    //coverDiv.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;background-color:transparent;border-color:yellow;border-style: inset;border-width:2px';
+    //$(coverDiv).on('click', function() { toggleFullScreen(true); });
+    //map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(coverDiv);
 
     // set kml (if any) from "kmlfile"
     var kmlfilep = document.getElementById("kmlfilep");
@@ -923,10 +918,7 @@ function loadInteractiveMap() {
         mapcover();
     });
 
-    // weather control
-    var weatherControlDiv = document.createElement("div");
-    addWeatherControl(weatherControlDiv);
-    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(weatherControlDiv);
+    addCustomMapTypeDropdown();
 }
 
 function waterflowinit() {

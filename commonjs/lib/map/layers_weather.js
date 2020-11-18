@@ -1,53 +1,18 @@
 ﻿
 // Section for managing and animating weather radar layers
 
-function addWeatherControl(controlDiv) {
-    // Set CSS for the control border.
-    var controlUI = document.createElement("div");
-    controlUI.style.backgroundColor = "#fff";
-    controlUI.style.border = "2px solid #fff";
-    controlUI.style.borderRadius = "3px";
-    controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
-    controlUI.style.cursor = "pointer";
-    //controlUI.style.marginBottom = "22px";
-    controlUI.style.marginTop = "9px";
-    controlUI.style.marginRight = "10px";
-    controlUI.style.textAlign = "center";
-    controlUI.title = "Click to display weather";
-
-    // Set CSS for the control interior.
-    var controlText = document.createElement("div");
-    controlText.style.color = "rgb(25,25,25)";
-    controlText.style.fontFamily = "Roboto,Arial,sans-serif";
-    controlText.style.fontSize = "16px";
-    controlText.style.lineHeight = "38px";
-    controlText.style.paddingLeft = "5px";
-    controlText.style.paddingRight = "5px";
-    controlText.innerHTML = "Weather";
-    controlUI.appendChild(controlText);
-
-    controlUI.addEventListener("click", function () {
-        showRadarLayer();
-    });
-
-    controlDiv.appendChild(controlUI);
-}
-
-// turn on/off weather radar
-
 var radarInterval;
 var radarTimes;
 var radarTimesNexrad = ['900913-m50m', '900913-m45m', '900913-m40m', '900913-m35m', '900913-m30m', '900913-m25m', '900913-m20m', '900913-m15m', '900913-m10m', '900913-m05m', '900913'];
 var weatherGetTileUrl;
 
-var showing;
-function showRadarLayer() {
+// turn on/off weather radar
+function displayWeatherLayer(showing) {
     var i;
 
     var showNexrad = isUSAorCanada();
 
-    if (!showing) {
-        showing = 'true';
+    if (showing) {
 
         radarTimes = [];
 
@@ -71,12 +36,11 @@ function showRadarLayer() {
         for (i = 0; i < len; i++) {
             map.overlayMapTypes.pop();
         }
-        showing = null;
         weatherLayersLoaded = null;
     }
 }
 
-function showRadarLayerStatic() {
+function toggleWeatherLayerStatic() {
     if (!showing) {
 
         var radarLayer = new google.maps.ImageMapType({

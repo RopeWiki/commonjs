@@ -150,7 +150,7 @@ function GetMapTypeIds() {
     if (isSpain())
         mapTypeIds.push("estopo");
 
-    mapTypeIds.push("topoworld", "streets", 'satellite2');
+    mapTypeIds.push("topoworld", google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID);
 
     return mapTypeIds;
 }
