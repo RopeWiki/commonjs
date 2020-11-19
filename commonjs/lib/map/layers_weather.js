@@ -10,13 +10,13 @@ var weatherGetTileUrl;
 function displayWeatherLayer(showing) {
     var i;
 
-    var showNexrad = isUSAorCanada();
+    var showIaState = false; //isUSAorCanada();
 
     if (showing) {
 
         radarTimes = [];
 
-        if (showNexrad) {
+        if (showIaState) {
             for (i = 0; i < radarTimesNexrad.length; i++) {
                 radarTimes[i] = radarTimesNexrad[i];
             }
@@ -27,7 +27,7 @@ function displayWeatherLayer(showing) {
             });
         }
 
-        SetWeatherLayerType(showNexrad);
+        SetWeatherLayerType(showIaState);
 
         zoomOutThenStartAnimation();
     } else {
@@ -37,6 +37,7 @@ function displayWeatherLayer(showing) {
             map.overlayMapTypes.pop();
         }
         weatherLayersLoaded = null;
+        radarTimes = null;
     }
 }
 
@@ -61,21 +62,23 @@ function toggleWeatherLayerStatic() {
     }
 }
 
-function SetWeatherLayerType(showNexrad) {
-    if (showNexrad) {
+function SetWeatherLayerType(showIaState) {
+    if (showIaState) {
         //iowa state nexrad weather radar
         weatherGetTileUrl =
             "return 'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-[time]/' + zoom + '/' + tile.x + '/' + tile.y + '.png';";
     } else {
-        //this layer isn't so bad for worldwide. Not as good as the doppler radar, but shows precipitation
+        //for different color schemes (and rest of api info), see www.rainviewer.com/api.html
+        var colorScheme = 4; //The Weather Channel color scheme
         weatherGetTileUrl =
-            "return 'https://tilecache.rainviewer.com/v2/radar/[time]/256/' + zoom + '/' + tile.x + '/' + tile.y + '/1/1_1.png';";
+            "return 'https://tilecache.rainviewer.com/v2/radar/[time]/256/' + zoom + '/' + tile.x + '/' + tile.y + '/" + colorScheme + "/1_1.png';";
     }
 }
 
 var weatherLayersLoaded;
 function loadWeatherLayers() {
     if (weatherLayersLoaded) return;
+    if (!radarTimes) return;
     
     var len = radarTimes.length;
     for (var i = 0; i < len; i++) {
