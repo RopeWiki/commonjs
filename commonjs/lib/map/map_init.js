@@ -212,12 +212,12 @@ function loadInteractiveMap() {
         keyboardShortcuts: false,
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         mapTypeControl: false, //using custom control in 'control_maptype.js'
-        zoomControl: true,
+        zoomControl: !iOS(),
         zoomControlOptions: {
             position: google.maps.ControlPosition.LEFT_CENTER
         },
 
-        streetViewControl: true,
+        streetViewControl: !iOS(),
         streetViewControlOptions: {
             position: google.maps.ControlPosition.LEFT_CENTER
         },

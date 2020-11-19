@@ -276,6 +276,8 @@ function dropDownControl(options) {
     options.dropDown.setAttribute("style", "width:130px");
     options.dropDown.style.display = 'none';
 
+    container.style.cssText = "z-index:1000;";
+    
     options.gmap.controls[options.position].push(container);
 
     google.maps.event.addDomListener(control,
