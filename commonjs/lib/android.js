@@ -6,6 +6,20 @@ function isAndroid() {
     return false;
 }
 
+function iOS() {
+    return [
+            'iPad Simulator',
+            'iPhone Simulator',
+            'iPod Simulator',
+            'iPad',
+            'iPhone',
+            'iPod'
+        ].includes(navigator.platform)
+        // iPad on iOS 13 detection
+        ||
+        (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+}
+
 // TODO: It seems unlikely this function is correct; seems like it's a holdover from debugging.
 function kmlurl(url) {
     if (typeof Android != "undefined")

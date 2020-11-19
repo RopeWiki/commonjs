@@ -1,7 +1,7 @@
 ﻿//gdropdown
 
 
-function addCustomMapTypeDropdown() {
+function initMapTypeControl() {
 
     var mapTypeIds = GetMapTypeIds();
 
@@ -284,14 +284,14 @@ function dropDownControl(options) {
             if (document.getElementById(options.dropDown.id).style.display === 'none')
                 document.getElementById(options.dropDown.id).style.display = 'block';
             else
-                document.getElementById(options.dropDown.id).style.display = 'none';
+                hideMapTypeOptions(options);
         });
 
     google.maps.event.addDomListener(container,
         'mouseleave',
         function () {
             ddTimeoutHide = setTimeout(function () {
-                document.getElementById(options.dropDown.id).style.display = 'none';
+                hideMapTypeOptions(options);
             }, 1000);
 
         });
@@ -306,10 +306,11 @@ function dropDownControl(options) {
             var targetElement = event.target || event.srcElement;
             if (targetElement.id !== 'currentMapType' &&
                 targetElement.id !== 'Map Type' &&
-                targetElement.parentElement.id !== 'mapCustomTypeControl' &&
-                targetElement.parentElement.parentElement.id !== 'mapCustomTypeControl') {
-                if (document.getElementById(options.dropDown.id).style.display === 'block')
-                    document.getElementById(options.dropDown.id).style.display = 'none';
+                targetElement.parentElement && targetElement.parentElement.id !== 'mapCustomTypeControl' &&
+                targetElement.parentElement.parentElement && targetElement.parentElement.parentElement.id !== 'mapCustomTypeControl') {
+                var dd = document.getElementById(options.dropDown.id);
+                if (dd && dd.style.display === 'block')
+                    hideMapTypeOptions(options);
             }
         });
 }
@@ -326,4 +327,13 @@ function setMapTypeSelection(selected) {
     }
 
     element.style.fontWeight = "bold";
+}
+
+function hideMapTypeOptions(options) {
+    document.getElementById(options.dropDown.id).style.display = 'none';
+    //var fullScreens = document.getElementsByClassName("gm-control-active gm-fullscreen-control"); // this code is only needed if using built-in fullscreen button
+    //for (var i = 0; i < fullScreens.length; i++) {
+    //    fullScreens[i].style.top = "54px";  //will need to adjust this if 'Map Type' control size above changes
+    //    fullScreens[i].style.display = 'block';
+    //}
 }

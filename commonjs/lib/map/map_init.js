@@ -221,6 +221,8 @@ function loadInteractiveMap() {
         streetViewControlOptions: {
             position: google.maps.ControlPosition.LEFT_CENTER
         },
+
+        fullscreenControl: false //we implement our own because the default doesn't display on iOS devices
     };
 
     map = new google.maps.Map(mapbox, mapOptions);
@@ -918,7 +920,8 @@ function loadInteractiveMap() {
         mapcover();
     });
 
-    addCustomMapTypeDropdown();
+    initMapTypeControl();
+    initFullscreenControl();
 }
 
 function waterflowinit() {
