@@ -47,6 +47,7 @@ function isFullscreen(element) {
 }
 
 function requestFullscreen(element) {
+    map.set('gestureHandling', 'greedy');
     if (element.requestFullscreen) {
         element.requestFullscreen();
     } else if (element.webkitRequestFullScreen) {

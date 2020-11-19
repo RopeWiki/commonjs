@@ -817,7 +817,7 @@ function loadUserInterface(document) {
             if (!tt) {
                 tt = document.createElement('div');
                 tt.style.cssText =
-                    "background-color:none; position: fixed; top:5%; left:5%; zIndex:9999; width:90%; height: 90%; text-align:center; display:none";
+                    "background-color:inherit; position: fixed; top:5%; left:5%; zIndex:9999; width:90%; height: 90%; text-align:center; display:none";
                 it = document.createElement('img');
                 it.style.cssText =
                     "width:auto; height:100%;border: 1px solid #404040;margin:10px;background-color:#f0f0f0";
