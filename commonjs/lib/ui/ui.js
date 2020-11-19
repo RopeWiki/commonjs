@@ -22,7 +22,6 @@ function toggleStarrate(force) {
         document.body.style.cursor = 'wait';
         window.location.reload();
     }
-    //google.map.event.trigger(map,'resize');
 }
 
 function toggleLabels(force) {
@@ -30,7 +29,6 @@ function toggleLabels(force) {
     setCookie("labels", labels ? "on" : "", 360*10); // 10 years
     document.body.style.cursor = 'wait';
     window.location.reload();
-    //google.map.event.trigger(map,'resize');
 }
 
 function toggleSlideshow(force) {
@@ -113,20 +111,17 @@ function loadUserInterface(document) {
         var tablink1 = tablinks[0].getElementsByTagName('A');
         if (tablink1.length > 0)
             tabmain[0].innerHTML = '<div class="tabIframeWrapper"><iframe class="tabContent" name="tabIframe2" src="' +
-                tablink1[0].href +
-                '" marginheight="8" marginwidth="8" frameborder="0"></iframe></div>';
+                tablink1[0].href + '" marginheight="8" marginwidth="8" frameborder="0"></iframe></div>';
     }
 
     // nofollow
     var nofollow = document.getElementsByClassName('nofollow');
     for (var i = 0; i < nofollow.length; i++) {
         var links = nofollow[i].getElementsByTagName('A');
-        {
-            for (var j = 0; j < links.length; j++) {
-                var link = links[j];
-                link.rel = "nofollow";
-                //link.innerHTML = link.innerHTML+' X';
-            }
+
+        for (var j = 0; j < links.length; j++) {
+            var link = links[j];
+            link.rel = "nofollow";
         }
     }
 
@@ -134,13 +129,11 @@ function loadUserInterface(document) {
     var popups = document.getElementsByClassName('popwin');
     for (var i = 0; i < popups.length; i++) {
         var links = popups[i].getElementsByTagName('A');
-        {
-            for (var j = 0; j < links.length; j++) {
-                var link = links[j];
-                var url = link.href;
-                link.href = popupwin(url);
-                //link.innerHTML = link.innerHTML+' X';
-            }
+
+        for (var j = 0; j < links.length; j++) {
+            var link = links[j];
+            var url = link.href;
+            link.href = popupwin(url);
         }
     }
 
@@ -152,7 +145,6 @@ function loadUserInterface(document) {
             for (var j = 0; j < links.length; j++) {
                 var link = links[j];
                 link.target = '_blank';
-                //link.innerHTML = link.innerHTML+' X';
             }
         }
     }
@@ -167,18 +159,12 @@ function loadUserInterface(document) {
                 var str = href.value;
                 str = str.replace('Special:FormEdit\/File', 'Special:Upload'); //\/File
                 href.value = str;
-                //console.log("new href: "+href.value);
             }
-            /*
-                  links[l].className = 'popupformlink'; //'sfFancyBox';
-                  links[l].target = '_self'
-                  //links[l].rev =  "width:650 height:500";
-            */
         }
     }
 
     // setfield
-    var setfield = $('ul.setfield'); //document.getElementsByClassName('setfield');
+    var setfield = $('ul.setfield');
     for (var i = 0; i < setfield.length; i++) {
         var sp = setfield[i].innerHTML.split('<li>');
         for (var j = 1; j < sp.length; ++j) {
@@ -191,7 +177,7 @@ function loadUserInterface(document) {
     }
 
     // regionfield
-    var setfield = $('ul.regioncount'); //document.getElementsByClassName('setfield');
+    var setfield = $('ul.regioncount');
     for (var i = 0; i < setfield.length; i++) {
         var sp = setfield[i].innerHTML.split('<li>');
         for (var j = 1; j < sp.length; ++j) {
@@ -270,52 +256,34 @@ function loadUserInterface(document) {
         elem[i].className += " notranslate";
         elem[i].innerHTML = '<input id="' +
             elem[i].id +
-            '" class="gmnoprint" type="checkbox" onclick="toggleUrlcheckbox(this)" ' +
-            (on == 'on' ? 'checked' : '') +
-            '>';
+            '" class="gmnoprint" type="checkbox" onclick="toggleUrlcheckbox(this)" ' + (on == 'on' ? 'checked' : '') + '>';
     }
 
     elem = document.getElementsByClassName('uchk');
     for (var i = 0; i < elem.length; i++) {
         elem[i].className += " notranslate";
-        elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()" ' +
-            (metric ? 'checked' : '') +
-            '>Metric</label>';
+        elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()" ' + (metric ? 'checked' : '') + '>Metric</label>';
     }
 
     elem = document.getElementsByClassName('fchk');
     for (var i = 0; i < elem.length; i++) {
         elem[i].className += " notranslate";
         var label = elem[i].innerHTML;
-        elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()" ' +
-            (french ? 'checked' : '') +
-            '>' +
-            label +
-            '</label>';
+        elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()" ' + (french ? 'checked' : '') + '>' + label + '</label>';
     }
 
     elem = document.getElementsByClassName('wchk');
     for (var i = 0; i < elem.length; i++) {
         var id = elem[i].id;
         var label = elem[i].innerHTML;
-        elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="togglewchk(\'' +
-            id +
-            '\')" ' +
-            (eval(id) ? 'checked' : '') +
-            '>' +
-            label +
-            '</label>';
+        elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="togglewchk(\'' + id + '\')" ' + (eval(id) ? 'checked' : '') + '>' + label + '</label>';
     }
 
     elem = document.getElementsByClassName('schk');
     for (var i = 0; i < elem.length; i++) {
         elem[i].className += " notranslate";
         var label = elem[i].innerHTML;
-        elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()" ' +
-            (starrate ? 'checked' : '') +
-            '>' +
-            label +
-            '</label>';
+        elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()" ' + (starrate ? 'checked' : '') + '>' + label + '</label>';
     }
     elem = document.getElementsByClassName('schkon');
     for (var i = 0; i < elem.length; i++)
@@ -330,20 +298,7 @@ function loadUserInterface(document) {
             var ourl = link.href;
             ourl.replace("&", "%26");
             div = document.createElement("SPAN");
-            //div.id = "transnode";
-            div.innerHTML =
-                ' <a rel="nofollow" class="external text" style="display:none" href="http://translate.google.com/translate?' +
-                '&hl=' +
-                to +
-                '&sl=' +
-                from +
-                '&tl=' +
-                to +
-                '&u=' +
-                ourl +
-                '">' +
-                '[Translated]</a>';
-            //elem[i].appendChild(div);
+            div.innerHTML = ' <a rel="nofollow" class="external text" style="display:none" href="http://translate.google.com/translate?' + '&hl=' + to + '&sl=' + from + '&tl=' + to + '&u=' + ourl + '">' + '[Translated]</a>';
             link.parentNode.insertBefore(div, link.nextSibling);
         }
     }
@@ -351,9 +306,7 @@ function loadUserInterface(document) {
     // Facebook user name
     var fbuser = document.getElementById('fbuser');
     if (fbuser)
-        fbuser.innerHTML = '<input class="submitoff" type="submit" onclick="fbusersearch()" value="' +
-            fbuser.innerHTML +
-            '">';
+        fbuser.innerHTML = '<input class="submitoff" type="submit" onclick="fbusersearch()" value="' + fbuser.innerHTML + '">';
 
     // PDF button only for credited pages
     var hdr = document.getElementById('firstHeading');
@@ -361,20 +314,14 @@ function loadUserInterface(document) {
     var kml = document.getElementById('kmlmapdisplay');
     var edit = window.location.href.toString().indexOf("&action=") > 0;
     if (hdr && pdf && kml && !edit) {
-        var text = ' <select class="notranslate" style="width:27px;height:32px;background-image:url(' +
-            SITE_BASE_URL +
-            '/images/a/ad/DownIcon.png);" id="pdfselect" value="" onchange="pdfselect(this)">';
+        var text = ' <select class="notranslate" style="width:27px;height:32px;background-image:url(' + SITE_BASE_URL + '/images/a/ad/DownIcon.png);" id="pdfselect" value="" onchange="pdfselect(this)">';
         text += '<option selected disabled hidden style="display: none" value=""></option>';
-        //text += '<option value="" disabled>Download</option>'
         text += '<option value="P">PDF: Page</option>';
-        text +=
-            '<option value="PM">PDF: Map</option><option value="KM">KML: Map</option><option value="GM">GPX: Map</option>';
+        text += '<option value="PM">PDF: Map</option><option value="KM">KML: Map</option><option value="GM">GPX: Map</option>';
         text += '<option value="ZPM">ZIP: Page + Maps</option><option value="ZALL">ZIP: P + M + Links</option>';
         text += '<option value="S">*: Settings</option></select>';
-        text += '<img id="ptext" height="32" style="display:none;vertical-align:top" src="' +
-            SITE_BASE_URL +
-            '/extensions/SemanticForms/skins/loading.gif"/>';
-        //text += '<span id="processing" class="rwwarningbox" style="display:none">Processing...</span>';
+        text += '<img id="ptext" height="32" style="display:none;vertical-align:top" src="' + SITE_BASE_URL + '/extensions/SemanticForms/skins/loading.gif"/>';
+
         var div = document.createElement('SPAN');
         div.className = "gmnoprint";
         div.title = "Download";
@@ -502,12 +449,6 @@ function loadUserInterface(document) {
         }
         var link = lines[i].parentNode.getElementsByTagName('A')[0];
         lines[i].id = id = link.innerHTML; //link.title;
-        //lines[i].title = "Show location on map";
-        //link.title = "Double click to display canyon location on the map";
-
-        //console.log(lines[i].id);
-        //lines[i].title
-        //lines[i].style.cursor="pointer";
         lines[i].innerHTML = pinicon(lines[i].id, icon) + lines[i].innerHTML;
     }
 
@@ -693,7 +634,7 @@ function loadUserInterface(document) {
     var maptype = document.getElementById("kmltype");
     var waterflowdiv = document.getElementById('waterflowdiv');
     if (coords.length > 0 && waterflowdiv)
-        if (maptype && (maptype.innerHTML == 'topo' || staticdebug)) // USA & Canada
+        if (maptype && (isUSAorCanada() || staticdebug)) // USA & Canada
         {
             function extractVal(str, label) {
                 var s = str.indexOf(label);
@@ -730,56 +671,16 @@ function loadUserInterface(document) {
                             else if (num > 25)
                                 w += '<hr id="cd3" title="May flood with heavy rains">';
                         }
-                        //var avg = extractVal(str,'Avg');
-                        //if (avg!="")
-                        //  w += ' [~'+avg+']';
                     }
                     waterflowdiv.className = ''; // no noprint
                     waterflowdiv.innerHTML += ' ' + w;
                 });
         }
 
-    /*
-   var nearbydiv = document.getElementById('nearbydiv');
-   if (coords.length>0 && nearbydiv)
-   {
-       var distmi = [ '5mi', '10mi', '25mi', '50mi', '100mi' ];
-       var distkm = [ '5km', '10km', '25km', '50km', '100km' ];
-       var dist = metric ? distkm : distmi;
-       var def = Math.floor(dist.length / 2);
-       var text = ' <select id="nearbyselect" value="'+dist[def]+'" onchange="nearbyselect(this)">';
-       //text += '<option selected disabled hidden style="display: none" value=""></option>';
-       for (var i=0; i<dist.length; ++i)
-         text += '<option '+(i==def ? ' selected ' : '')+'value="'+dist[i]+'">'+dist[i]+'</option>';
-      text += '</select>';
-
-      var a = nearbydiv.getElementsByTagName('A');
-      if (a && a.length>0)
-         {
-       var href = a[0].href;
-       var e = href.indexOf(locdist);
-       a[0].href = href.substring(0, e)+locdist+dist[def];
-          }
-
-    nearbydiv.innerHTML += text;
-   }
-  */
-
     //gallerybox
     var tt, it, isrc = null, ttmove = 0, ttshow = 0;
     var boxes = document.getElementsByClassName('galleryboxview');
 
-    /*
-    setInterval(function(){
-       if (isrc && tt && it && ttshow>0)
-         {
-         ttmove = -10;
-         it.src = isrc;
-         tt.style.display = "block";
-         }
-       ++ttshow;
-       }, 100);
-    */
 
     document.onmousemove = function() {
         //console.log("move");
@@ -796,23 +697,11 @@ function loadUserInterface(document) {
             isrc = null;
         }
         boxes[i].onmouseover = function() {
-            /*
-            // user srcset to get higher res image
-            var img = this.getElementsByTagName('IMG');
-            if (!img) return;
-            var srcset = img[0].getAttribute("srcset");
-            if (!srcset) return;
-            var src = srcset.split(',');
-            var imgsrc = src[src.length-1].trim().split(' ');
-            isrc = SITE_BASE_URL + '/' + imgsrc[0];
-            */
-
+            
             // use a highres div
             var img = $(this).find('#highres');
             if (!img || img.length == 0) return;
             isrc = img[0].innerHTML;
-
-            //console.log("over "+isrc);
 
             if (!tt) {
                 tt = document.createElement('div');
@@ -826,8 +715,6 @@ function loadUserInterface(document) {
                 tt.appendChild(it);
                 document.body.appendChild(tt);
             }
-
-            //tt.style.cssText({"background-color:red; position: fixed; top:0; left:0; zIndex:9999; width:"+ $(window).width()-3 +"px; height: "+ $(window).height()-3 +"px; display: block;" );
         }
     }
 }
@@ -852,7 +739,6 @@ function loadFormInterface() {
     // location search
     var locfind = document.getElementById('locfind');
     if (locfind) {
-        //<form name="input" action="Location" method="get">
         setinput('locname', '<input id="locnameval" class="submitoff" autocomplete="on" style="width:90%;', 'locsearch');
         setinput('locdist', '<input id="locdistval" class="submitoff" autocomplete="on" size="15" style="', 'locsearch');
         locfind.innerHTML = '<input class="submitoff" type="submit" onclick="locsearch()" value="' + locfind.innerHTML + '">';
@@ -860,13 +746,11 @@ function loadFormInterface() {
         var mapfind = document.getElementById('mapfind');
         if (mapfind)
             mapfind.innerHTML = '<input class="submitoff" type="submit" onclick="mapsearch()" value="' + mapfind.innerHTML + '">';
-        //</form>;
     }
 
     // region search
     var regfind = document.getElementById('regfind');
     if (regfind) {
-        //<form name="input" action="Location" method="get">
         setinput('regname', '<input id="regnameval" class="submitoff" autocomplete="on" style="width:30em;', 'regsearch');
         regfind.innerHTML = '<input class="submitoff" type="submit" onclick="regsearch()" value="' + regfind.innerHTML + '">';
 
@@ -877,7 +761,6 @@ function loadFormInterface() {
             if (url.split('?').length > 1)
                 elem.focus();
         }
-        //</form>;
     }
 
     // read option on/off from url (but only on filter page)
@@ -887,7 +770,6 @@ function loadFormInterface() {
         for (var i = 0; i < chks.length; i++) {
             var id = chks[i].id + 'chk';
             var checked = url.indexOf('&' + id) > 0;
-            //eval('if (typeof '+id+' != "undefined") checked='+id+'!="";');
             chks[i].innerHTML = '<label style="white-space: nowrap;"><input id="' + id + '" class="optionschk submitoff" type="checkbox" onclick="toggle' + id + '(' + "'" + id + "'" + ')" ' + (checked ? 'checked' : '') + '>' + chks[i].innerHTML + '</label>';
             toggleOption(id, checked);
         }
@@ -908,9 +790,6 @@ function loadFormInterface() {
 
             chks[i].className += " notranslate";
             chks[i].style.cssText += 'cursor: pointer; background-repeat: no-repeat; background-position: center right; padding-right:9px; padding-left:0px; background-image: url(https://sites.google.com/site/rwicons/' + img + ');';
-
-            //"rwSortDn";
-            //chks[i].className = "rwSortDown";
 
             chks[i].onclick = function rwsort(event) {
                 var offset = $(this).offset();
@@ -940,7 +819,6 @@ function loadFormInterface() {
         var param = urlget(url, chks[i].id + '=', '').split(',');
         var cookie = getCookie(mid).split(',');
         for (var l = 0; l < list.length; ++l) {
-            //console.log("id:"+id);
             // set checked if cookie or url said so
             var checked = cookie.indexOf(list[l]) >= 0;
             if (param.length > 0 && param[0] != "") checked = param.indexOf(list[l]) >= 0;
@@ -983,14 +861,6 @@ function loadFormInterface() {
     // starshowhide
     var starsh = document.getElementById('starshowhide');
     if (starsh && filters) {
-        /*
-        // hidden apply button
-        var applybutton = document.createElement('span');
-        applybutton.innerHTML = filter.innerHTML;
-        applybutton.style.display = "none";
-        starsh.appendChild(applybutton);
-        */
-
         // clickable filters
         var links = starsh.getElementsByTagName('A');
         for (var i = 0; i < links.length; ++i)
@@ -1007,11 +877,7 @@ function loadFormInterface() {
             children[i].onclick = function showhide(event) {
                 this.active = !this.active
                 this.style.cssText = this.active ? border : "";
-                //for (var j=0; j<children.length; ++j) {
-                //  toggleFilter('starflt_'+children[j].q, children[j].active);
-                //  }
-                //applybutton.style.display = "inline";
-                //toggleOption('filterschk', true);
+
                 // show/hide map markers
                 var qmap = qmaps[this.q] = this.active ? map : null;
                 for (var j = 0; j < markers.length; ++j) {
@@ -1030,8 +896,6 @@ function loadFormInterface() {
     if (locdefault) {
         var id = 'locsearchchk';
         toggleOption(id, true);
-        //var locsearchchk = document.getElementById('locsearchchk');
-        //if (locsearchchk) locsearchchk.style.display = "none";
     }
 
     // slideshow on/off
