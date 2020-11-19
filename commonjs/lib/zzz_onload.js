@@ -16,7 +16,7 @@ loadSkin();
 
 adjustFaviconElements();
 
-addHashChangeListener();
+//addHashChangeListener();
 initBasicEditor();
 initToolbarCustomization();
 
