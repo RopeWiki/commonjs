@@ -52,7 +52,7 @@ function initMapTypeControl() {
         id: "mapCustomTypeControl"
     }
 
-    var dropDownDiv = new dropDownOptionsDiv(ddDivOptions);
+    var dropDownDiv = new dropDownItemsList(ddDivOptions);
 
     var dropDownOptions = {
         gmap: map,
@@ -77,7 +77,7 @@ function addLayerTerrain(ddEntries) {
             setMapTypeSelection("mapSelectTerrain");
         }
     }
-    ddEntries.push(new ddOption(options));
+    ddEntries.push(new ddItem(options));
 }
 
 function addLayerStreetmap(ddEntries) {
@@ -91,7 +91,7 @@ function addLayerStreetmap(ddEntries) {
             setMapTypeSelection("mapSelectStreets");
         }
     }
-    ddEntries.push(new ddOption(options));
+    ddEntries.push(new ddItem(options));
 }
 
 function addLayerHybrid(ddEntries) {
@@ -105,7 +105,7 @@ function addLayerHybrid(ddEntries) {
             setMapTypeSelection("mapSelectHyrid");
         }
     }
-    ddEntries.push(new ddOption(options));
+    ddEntries.push(new ddItem(options));
 }
 
 function addLayerTopoUsa(ddEntries) {
@@ -119,7 +119,7 @@ function addLayerTopoUsa(ddEntries) {
             setMapTypeSelection("mapSelectTopoUsa");
         }
     }
-    ddEntries.push(new ddOption(options));
+    ddEntries.push(new ddItem(options));
 }
 
 function addLayerTopoWorld(ddEntries) {
@@ -133,7 +133,7 @@ function addLayerTopoWorld(ddEntries) {
             setMapTypeSelection("mapSelectTopoWorld");
         }
     }
-    ddEntries.push(new ddOption(options));
+    ddEntries.push(new ddItem(options));
 }
 
 function addLayerTopoSpain(ddEntries) {
@@ -147,7 +147,7 @@ function addLayerTopoSpain(ddEntries) {
             setMapTypeSelection("mapSelectTopoSpain");
         }
     }
-    ddEntries.push(new ddOption(options));
+    ddEntries.push(new ddItem(options));
 }
 
 
@@ -155,20 +155,14 @@ function addLayerTopoSpain(ddEntries) {
  Classes to set up the drop-down control
  ************/
 
-function ddOption(options) {
+function ddItem(options) {
     var control = document.createElement('DIV');
-    control.className = "dropDownItemDiv";
+    control.className = "map-type-control item";
     control.title = options.title;
     control.id = options.id;
 
     // Set CSS for the control interior.
-    var controlText = document.createElement("div");
-    controlText.style.color = "rgb(25,25,25)";
-    controlText.style.fontFamily = "Roboto,Arial,sans-serif";
-    controlText.style.fontSize = "18px";
-    controlText.style.lineHeight = "38px";
-    controlText.style.paddingLeft = "10px";
-    controlText.style.paddingRight = "10px";
+    var controlText = document.createElement("DIV");
     controlText.innerHTML = options.name;
     control.appendChild(controlText);
 
@@ -178,27 +172,20 @@ function ddOption(options) {
 
 function ddCheckBox(options) {
     var container = document.createElement('DIV');
-    container.className = "checkboxContainer";
+    container.className = "map-type-control checkbox";
     container.title = options.title;
 
     var span = document.createElement('SPAN');
     span.role = "checkbox";
-    span.className = "checkboxSpan";
 
     var chk = document.createElement("INPUT");
-    chk.id = options.id;
     chk.setAttribute("type", "checkbox");
-
-    var controlText = document.createElement("Label");
-    controlText.style.color = "rgb(25,25,25)";
-    controlText.style.fontFamily = "Roboto,Arial,sans-serif";
-    controlText.style.fontSize = "18px";
-    controlText.style.lineHeight = "38px";
-    controlText.style.paddingLeft = "2px";
-    controlText.style.paddingRight = "5px";
-    controlText.innerHTML = options.label;
+    chk.id = options.id;
+    
+    var controlText = document.createElement("LABEL");
     controlText.setAttribute("for", chk.id);
-
+    controlText.innerHTML = options.label;
+    
     container.appendChild(chk);
     container.appendChild(controlText);
 
@@ -213,14 +200,13 @@ function ddCheckBox(options) {
 
 function separator() {
     var sep = document.createElement('hr');
-    sep.style.marginTop = "0px";
-    sep.style.marginBottom = "0px";
+    sep.className = "map-type-control separator";
     return sep;
 }
 
-function dropDownOptionsDiv(options) {
+function dropDownItemsList(options) {
     var container = document.createElement('DIV');
-    container.className = "dropDownOptionsDiv";
+    container.className = "map-type-control items-list";
     container.id = options.id;
 
     for (i = 0; i < options.items.length; i++) {
@@ -234,57 +220,36 @@ var ddTimeoutHide;
 
 function dropDownControl(options) {
     var container = document.createElement('DIV');
-    container.className = 'container';
-    container.setAttribute("style", "width:140px");
+    container.className = 'map-type-control';
+    container.style.cssText = "z-index:1000;"; //we want this to overlay the 'legend' if it present
 
     var control = document.createElement('DIV');
-    control.classList.add("dropDownControl");
+    control.className = 'map-type-control selection';
     control.id = options.name;
-
-    control.style.border = "2px solid #fff";
-    control.style.borderRadius = "3px";
-    control.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
-    control.style.cursor = "pointer";
-    control.style.marginTop = "10px";
-    control.style.marginRight = "10px";
-    control.style.textAlign = "center";
-
-    var controlText = document.createElement("span");
+    
+    var controlText = document.createElement("SPAN");
+    controlText.className = 'map-type-control selection-text';
     controlText.id = "currentMapType";
-    controlText.style.color = "rgb(25,25,25)";
-    controlText.style.fontFamily = "Roboto,Arial,sans-serif";
-    controlText.style.fontSize = "18px";
-    controlText.style.fontWeight = "bold";
-    controlText.style.lineHeight = "38px";
-    controlText.style.paddingLeft = "5px";
-    controlText.style.paddingRight = "5px";
-    controlText.style.width = "200px;"
     controlText.innerHTML = options.dropDown.firstChild.firstChild.innerHTML;
     control.appendChild(controlText);
 
     var arrow = document.createElement('IMG');
     arrow.src = "http://maps.gstatic.com/mapfiles/arrow-down.png";
-    arrow.className = 'dropDownArrow';
-    arrow.style.marginBottom = "4px";
-    arrow.style.marginRight = "4px";
-    arrow.style.marginTop = "17px";
-    arrow.align = "right";
+    arrow.className = 'map-type-control arrow';
     control.appendChild(arrow);
 
     container.appendChild(control);
     container.appendChild(options.dropDown);
-    options.dropDown.setAttribute("style", "width:130px");
-    options.dropDown.style.display = 'none';
 
-    container.style.cssText = "z-index:1000;";
     
     options.gmap.controls[options.position].push(container);
 
     google.maps.event.addDomListener(control,
         'click',
-        function () {
-            if (document.getElementById(options.dropDown.id).style.display === 'none')
-                document.getElementById(options.dropDown.id).style.display = 'block';
+        function() {
+            if (document.getElementById(options.dropDown.id).style.display === "" ||
+                document.getElementById(options.dropDown.id).style.display === "none")
+                document.getElementById(options.dropDown.id).style.display = "block";
             else
                 hideMapTypeOptions(options);
         });
@@ -318,24 +283,19 @@ function dropDownControl(options) {
 }
 
 function setMapTypeSelection(selected) {
-    var element = document.getElementById(selected).firstChild;
-    document.getElementById("currentMapType").innerHTML = element.innerHTML;
+    var element = document.getElementById(selected);
+    document.getElementById("currentMapType").innerHTML = element.firstChild.innerHTML;
     var fullList = document.getElementById("mapCustomTypeControl").childNodes;
     for (var i = 0; i < fullList.length; i++) {
         var item = fullList[i];
-        if (item.className === "dropDownItemDiv") {
-            item.firstChild.style.fontWeight = "normal";
+        if (item.className === "map-type-control item selected") {
+            item.classList.remove("selected");
         }
     }
 
-    element.style.fontWeight = "bold";
+    element.classList.add("selected");
 }
 
 function hideMapTypeOptions(options) {
     document.getElementById(options.dropDown.id).style.display = 'none';
-    //var fullScreens = document.getElementsByClassName("gm-control-active gm-fullscreen-control"); // this code is only needed if using built-in fullscreen button
-    //for (var i = 0; i < fullScreens.length; i++) {
-    //    fullScreens[i].style.top = "54px";  //will need to adjust this if 'Map Type' control size above changes
-    //    fullScreens[i].style.display = 'block';
-    //}
 }
