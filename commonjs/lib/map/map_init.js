@@ -919,7 +919,7 @@ function loadInteractiveMap() {
         smallstyle();
         mapcover();
 
-        if (isFullscreen(null)) { //this is set to the inverse until after window is drawn, so use inverse logic
+        if (isFullscreen(null) && !iOS()) { //this is set to the inverse until after window is drawn, so use inverse logic
             map.set('gestureHandling', 'cooperative');
         }
     });
