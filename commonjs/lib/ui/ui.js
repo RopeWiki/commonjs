@@ -452,189 +452,18 @@ function loadUserInterface(document) {
         lines[i].innerHTML = pinicon(lines[i].id, icon) + lines[i].innerHTML;
     }
 
-    //inline weather
+    // load inline weather
+    loadInlineWeather();
+
+    // waterflow
+    var maptype = document.getElementById("kmltype");
+    var waterflowdiv = document.getElementById('waterflowdiv');
     var coords = "";
     var kmlmarker = document.getElementById('kmlmarker');
     if (kmlmarker)
         coords = kmlmarker.innerHTML.toString().split(' ').join('');
-    var staticdebug = (typeof staticscripts) != 'undefined'; // debug
-
-    var weatherdiv = document.getElementById('weatherdiv');
-    if (coords.length > 0 && weatherdiv && weather) {
-        var url = "http://api.wunderground.com/api/bc1f237fb64ef165/alerts/forecast10day/geolookup/q/" +
-            coords +
-            ".json";
-        if (staticdebug) // debug
-            url = SITE_BASE_URL + "/rw/umpqua.json";
-        $.getJSON(geturl(url),
-            function(data) {
-                // forecast.txt_forecast.forecastday.   period, icon_url, title, metric ? fcttext_metric : fcttext  Night
-                // simpleforecast
-
-                if (data &&
-                    data.forecast &&
-                    data.forecast.simpleforecast &&
-                    data.forecast.simpleforecast.forecastday &&
-                    data.forecast.simpleforecast.forecastday.length > 0) {
-                    var link;
-                    var a = weatherdiv.getElementsByTagName('A');
-                    if (a && a.length > 0 && a[0].href)
-                        link = a[0].href;
-                    var periods = data.forecast.simpleforecast.forecastday;
-                    var w = "";
-                    //var weatherchk =document.getElementById('weather');
-                    //weatherchk.innerHTML += '<div class="wstlogo noprint">Powered by<br><img src="https://icons.wxug.com/logos/PNG/wundergroundLogo_4c_horz.png"/></span></div>';
-
-                    w += '<div class="wstlogo noprint">';
-                    if (link) w += '<a href="' + link + '">';
-                    w += '<span class="notranslate">';
-
-                    var station, station2;
-                    if (data.location &&
-                        data.location.nearby_weather_stations &&
-                        data.location.nearby_weather_stations.pws &&
-                        data.location.nearby_weather_stations.pws.station &&
-                        data.location.nearby_weather_stations.pws.station.length > 0) {
-                        station = data.location.nearby_weather_stations.pws.station[0];
-                        station.name = "((&#9899;)) " + station.id;
-                    }
-                    if (data.location &&
-                        data.location.nearby_weather_stations &&
-                        data.location.nearby_weather_stations.airport &&
-                        data.location.nearby_weather_stations.airport.station &&
-                        data.location.nearby_weather_stations.airport.station.length > 0) {
-                        station2 = data.location.nearby_weather_stations.airport.station[0];
-                        station2.name = "&#9992;" + station2.city;
-                    }
-
-                    //if (station.neighborhood)
-                    //  w += ", "+station.city;
-                    var ll = coords.split(',');
-                    if (ll.length >= 2) {
-                        var distance = 1e15, distance2 = 1e15;
-                        if (station)
-                            distance = distance({ lat: ll[0], lng: ll[1] }, { lat: station.lat, lng: station.lon });
-                        if (station2)
-                            if ((distance2 = distance({ lat: ll[0], lng: ll[1] },
-                                    {
-                                        lat: station2.lat,
-                                        lng: station2.lon
-                                    })) <
-                                distance)
-                                station = station2, distance = distance2;
-                        w += "~" + mi(distance) + " ";
-                        if (map && station) {
-                            var stationinfo = [];
-                            if (station.neighborhood)
-                                stationinfo.push(station.neighborhood);
-                            if (station.city)
-                                stationinfo.push(station.city);
-                            if (station.state)
-                                stationinfo.push(station.state);
-                            else if (station.country)
-                                stationinfo.push(station.country);
-                            var myLatlng = new google.maps.LatLng(station.lat, station.lon);
-                            var infowindow = new google.maps.InfoWindow({
-                                content: '<b>' +
-                                    station.name +
-                                    '</b>' +
-                                    '<div class="textselect">' +
-                                    stationinfo.join(', ') +
-                                    '</div>' +
-                                    '<div class="textselect">' +
-                                    displaylocation(station.lat, station.lon) +
-                                    '<div id="elevation"></div>' +
-                                    '</div>'
-                            });
-                            var marker = new google.maps.Marker({
-                                position: myLatlng,
-                                map: map,
-                                infowindow: infowindow,
-                                optimized: false,
-                                zIndex: 10,
-                                icon: {
-                                    url: "https://icons.wxug.com/logos/PNG/wundergroundLogo_4c.png",
-                                    scaledSize: new google.maps.Size(45, 32)
-                                }
-                            }); //SITE_BASE_URL + "/images/f/f2/Wunderground.png"
-                            google.maps.event.addListener(marker,
-                                'click',
-                                function() {
-                                    this.infowindow.open(map, this);
-                                    getGeoElevation(this.getPosition(), "elevation", "Elevation: ");
-                                });
-                        }
-                    }
-
-                    if (station)
-                        w += ' ' + station.name;
-
-                    var e = periods.length - 1;
-                    w += ': ' +
-                        periods[0].date.day +
-                        ' ' +
-                        periods[0].date.monthname_short +
-                        ' - ' +
-                        periods[e].date.day +
-                        ' ' +
-                        periods[e].date.monthname_short +
-                        ' ';
-
-                    w += '</span>';
-                    w +=
-                        '<div style="position:relative"><img style="position:absolute;left:-75px;width:75px" src="https://icons.wxug.com/logos/PNG/wundergroundLogo_4c.png"/></div>';
-
-                    if (link) w += '</a>';
-                    w += '</div>';
-
-                    w += '<table class="wikitable wst bst notranslate"><tr style="line-height:5px">';
-                    for (var i = 0; i < periods.length; ++i) {
-                        w += '<th>' + periods[i].date.weekday_short + '<br>';
-                        w += '</th>';
-                    }
-                    w += '</tr><tr>';
-                    for (var i = 0; i < periods.length; ++i) {
-                        var h = metric ? periods[i].high.celsius : periods[i].high.fahrenheit;
-                        var l = metric ? periods[i].low.celsius : periods[i].low.fahrenheit;
-                        w += '<td title="' +
-                            periods[i].date.day +
-                            ' ' +
-                            periods[i].date.monthname +
-                            ' : ' +
-                            periods[i].conditions +
-                            ', Max ' +
-                            h +
-                            ' Min ' +
-                            l +
-                            '">';
-                        w += '<div><img class="weatherimg" src="' + periods[i].icon_url + '"/></div>';
-                        w += '<div class="weatherh">' + h + '</div><div class="weatherl">' + l + '</div>';
-                        w += '</td>';
-                    }
-                    w += '</tr>';
-
-                    // alerts
-                    if (data.alerts && data.alerts.length > 0) {
-                        w += '<tr><td colspan="' + periods.length + '" style="padding:0;">';
-                        var list = [];
-                        for (var i = 0; i < data.alerts.length; ++i)
-                            list.push(data.alerts[i].description + '!');
-                        if (link) w += '<a href="' + link + '">';
-                        w += '<div class="weatheralt rwwarningbox">' + list.join('<br>') + '</div>';
-                        if (link) w += '</a>';
-                        w += '</td></tr>';
-                    }
-                    w += '</table>';
-
-                    weatherdiv.innerHTML = '<div>' + w + '</div>';
-                }
-            });
-    }
-
-    var maptype = document.getElementById("kmltype");
-    var waterflowdiv = document.getElementById('waterflowdiv');
     if (coords.length > 0 && waterflowdiv)
-        if (maptype && (isUSAorCanada() || staticdebug)) // USA & Canada
+        if (maptype && (isUSAorCanada())) // USA & Canada
         {
             function extractVal(str, label) {
                 var s = str.indexOf(label);
@@ -646,8 +475,6 @@ function loadUserInterface(document) {
             }
 
             var url = LUCA_BASE_URL + "/rwr?waterflow=winfo=" + coords;
-            if (staticdebug)
-                url = LUCA_BASE_URL + "/rwr?waterflow=winfo=" + "33.7717,-111.1197";
             $.getJSON(geturl(url),
                 function(data) {
                     // forecast.txt_forecast.forecastday.   period, icon_url, title, metric ? fcttext_metric : fcttext  Night
@@ -929,6 +756,117 @@ function loadFormInterface() {
 
     CollapsibleLists.apply();
 }
+
+//inline weather
+function loadInlineWeather() {
+    var coords = "";
+    var kmlmarker = document.getElementById('kmlmarker');
+    if (kmlmarker)
+        coords = kmlmarker.innerHTML.toString().split(',').map(function(item) { return item.trim(); });
+    
+    var weatherdiv = document.getElementById('weatherdiv');
+    if (coords.length >= 2 && weatherdiv && weather) {
+
+        //May2018 WUnderground API was shutdown
+        //Aug2020 DarkSky API was shutdown (purchased by Apple)
+        //so use OpenWeather (limit with free account 60 calls/minute)
+        var openweatherApiKey = "1d5f0c74f9119e20765fed256ecfadc5";
+
+        var url = "http://api.openweathermap.org/data/2.5/onecall?lat=" + coords[0] + "&lon=" + coords[1] + "&exclude=current,minutely,hourly&appid=" + openweatherApiKey;
+
+        $.getJSON(geturl(url),
+            function(data) {
+                // dailyforecast
+                if (data &&
+                    data.daily &&
+                    data.daily.length > 0) {
+                    weatherdiv.classList.add('wst');
+
+                    var link;
+                    var a = weatherdiv.getElementsByTagName('A');
+                    if (a && a.length > 0 && a[0].href)
+                        link = a[0].href;
+
+                    var periods = data.daily;
+                    var w = '<div class="wstlogo noprint">';
+
+                    w += '<span class="notranslate">';
+
+                    var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+                    var e = periods.length - 1;
+                    var startDate = new Date(periods[0].dt * 1000);
+                    var endDate = new Date(periods[e].dt * 1000);
+
+                    w += startDate.getDate() + ' ' + months[startDate.getMonth()] + ' - ' + endDate.getDate() + ' ' + months[endDate.getMonth()];
+
+                    if (link) w += '<a href="' + link + '"> >get detailed<</a>';
+
+                    w += '</span>';
+
+                    w += '<div style="position:relative"><img class="wstlogo" src="http://ropewiki.com/images/f/f2/OpenWeatherLogo.png"/></div>';
+
+                    if (link) w += '</a>';
+
+                    w += '</div>';
+
+                    w += '<table class="wikitable wst bst notranslate"><tr style="line-height:5px">';
+
+                    for (var i = 0; i < periods.length; ++i) {
+                        var date = new Date(periods[i].dt * 1000);
+                        w += '<th>' + days[date.getDay()] + '<br></th>';
+                    }
+
+                    w += '</tr><tr>';
+
+                    for (var i = 0; i < periods.length; ++i) {
+                        var h = metric
+                            ? convertKelvinToCelsius(periods[i].temp.max).toFixed(0)
+                            : convertKelvinToFahrenheit(periods[i].temp.max).toFixed(0);
+
+                        var l = metric
+                            ? convertKelvinToCelsius(periods[i].temp.min).toFixed(0)
+                            : convertKelvinToFahrenheit(periods[i].temp.min).toFixed(0);
+
+                        var date = new Date(periods[i].dt * 1000);
+
+                        w += '<td title="' + date.getDate() + ' ' + months[date.getMonth()] + ' : &quot;' + periods[i].weather[0].description + '&quot; Max ' + h + (metric ? 'C' : 'F') + ' Min ' + l + (metric ? 'C' : 'F') + '">';
+                        w += '<div class="weatherimg" style="background-image: url(&#39;http://openweathermap.org/img/wn/' + periods[i].weather[0].icon + '.png&#39;)"/></div>';
+                        w += '<div class="weatherh">' + h + '</div>';
+                        w += '<div class="weatherl">' + l + '</div>';
+                        w += '</td>';
+                    }
+
+                    w += '</tr>';
+
+                    // alerts
+                    if (data.alerts && data.alerts.length > 0) {
+                        w += '<tr><td colspan="' + periods.length + '" style="padding:0;">';
+                        var list = [];
+                        for (var i = 0; i < data.alerts.length; ++i)
+                            list.push(data.alerts[i].description + '!');
+                        if (link) w += '<a href="' + link + '">';
+                        w += '<div class="weatheralert rwwarningbox">' + list.join('<br>') + '</div>';
+                        if (link) w += '</a>';
+                        w += '</td></tr>';
+                    }
+                    w += '</table>';
+
+                    weatherdiv.innerHTML = '<div>' + w + '</div>';
+                }
+            });
+    }
+}
+
+function convertKelvinToCelsius(kelvin) {
+    return kelvin - 273.15;
+}
+
+function convertKelvinToFahrenheit(kelvin) {
+    return (kelvin - 273.15) * 9/5 + 32;
+}
+
 
 // Pop-out link support
 function addPopOutLinkSupport() {
