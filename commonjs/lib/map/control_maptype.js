@@ -64,18 +64,16 @@ function initMapTypeControl() {
     }
 
     dropDownControl(dropDownOptions);
+
+    setDefaultMapLayer();
 }
 
 function addLayerTerrain(ddEntries) {
     var options = {
         gmap: map,
-        name: 'Terrain',
-        title: "Show street map with terrain",
-        id: "mapSelectTerrain",
-        action: function () {
-            map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-            setMapTypeSelection("mapSelectTerrain");
-        }
+        type: google.maps.MapTypeId.TERRAIN,
+        text: 'Terrain',
+        info: "Show street map with terrain"
     }
     ddEntries.push(new ddItem(options));
 }
@@ -83,41 +81,35 @@ function addLayerTerrain(ddEntries) {
 function addLayerStreetmap(ddEntries) {
     var options = {
         gmap: map,
-        name: 'Streets',
-        title: "Show street map",
-        id: "mapSelectStreets",
-        action: function () {
-            map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-            setMapTypeSelection("mapSelectStreets");
-        }
+        type: google.maps.MapTypeId.ROADMAP,
+        text: 'Streets',
+        info: "Show street map"
     }
     ddEntries.push(new ddItem(options));
+
+    //here is the tile server url for manual streetmap:
+    // return "https://mt.google.com/vt/lyrs=m&hl=en&x=" + slippyClip(p.x, z) + "&y=" + slippyClip(p.y, z) + "&z=" + z;
 }
 
 function addLayerHybrid(ddEntries) {
     var options = {
         gmap: map,
-        name: 'Satellite',
-        title: "Show satellite view",
-        id: "mapSelectHyrid",
-        action: function () {
-            map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-            setMapTypeSelection("mapSelectHyrid");
-        }
+        type: google.maps.MapTypeId.HYBRID,
+        text: 'Satellite',
+        info: "Show satellite view"
     }
     ddEntries.push(new ddItem(options));
+
+    //  here is the tile server url for manual hybrid:
+    // return "https://mt.google.com/vt/lyrs=y&hl=en&x=" + slippyClip(p.x, z) + "&y=" + slippyClip(p.y, z) + "&z=" + z;
 }
 
 function addLayerTopoUsa(ddEntries) {
     var options = {
         gmap: map,
-        name: 'TopoUSA',
-        title: "Show USA specific topo",
-        id: "mapSelectTopoUsa",
-        action: function () {
-            map.setMapTypeId('topousa');
-            setMapTypeSelection("mapSelectTopoUsa");
-        }
+        type: 'topousa',
+        text: 'TopoUSA',
+        info: "Show USA specific topo"
     }
     ddEntries.push(new ddItem(options));
 }
@@ -125,13 +117,9 @@ function addLayerTopoUsa(ddEntries) {
 function addLayerTopoWorld(ddEntries) {
     var options = {
         gmap: map,
-        name: 'TopoWorld',
-        title: "Show Worldwide topo",
-        id: "mapSelectTopoWorld",
-        action: function () {
-            map.setMapTypeId('topoworld');
-            setMapTypeSelection("mapSelectTopoWorld");
-        }
+        type: 'topoworld',
+        text: 'TopoWorld',
+        info: "Show Worldwide topo"
     }
     ddEntries.push(new ddItem(options));
 }
@@ -139,13 +127,9 @@ function addLayerTopoWorld(ddEntries) {
 function addLayerTopoSpain(ddEntries) {
     var options = {
         gmap: map,
-        name: 'TopoSpain',
-        title: "Mostrar mapa específico de España",
-        id: "mapSelectTopoUsa",
-        action: function () {
-            map.setMapTypeId('estopo');
-            setMapTypeSelection("mapSelectTopoSpain");
-        }
+        type: 'estopo',
+        text: 'TopoSpain',
+        info: "Mostrar mapa específico de España"
     }
     ddEntries.push(new ddItem(options));
 }
@@ -158,15 +142,21 @@ function addLayerTopoSpain(ddEntries) {
 function ddItem(options) {
     var control = document.createElement('DIV');
     control.className = "map-type-control item";
-    control.title = options.title;
-    control.id = options.id;
+    control.title = options.info;
+    control.id = "mapSelect" + options.type;
 
     // Set CSS for the control interior.
     var controlText = document.createElement("DIV");
-    controlText.innerHTML = options.name;
+    controlText.innerHTML = options.text;
     control.appendChild(controlText);
 
-    google.maps.event.addDomListener(control, 'click', options.action);
+    google.maps.event.addDomListener(control,
+        'click',
+        function() {
+            map.setMapTypeId(options.type);
+            setMapTypeSelection(options.type);
+            setCookie(DEFAULT_MAP_LAYER_COOKIE, options.type);
+        });
     return control;
 }
 
@@ -220,6 +210,7 @@ var ddTimeoutHide;
 
 function dropDownControl(options) {
     var container = document.createElement('DIV');
+    container.id = 'map-type-control-custom';
     container.className = 'map-type-control';
     container.style.cssText = "z-index:1000;"; //we want this to overlay the 'legend' if it present
 
@@ -248,8 +239,9 @@ function dropDownControl(options) {
         'click',
         function() {
             if (document.getElementById(options.dropDown.id).style.display === "" ||
-                document.getElementById(options.dropDown.id).style.display === "none")
+                document.getElementById(options.dropDown.id).style.display === "none") {
                 document.getElementById(options.dropDown.id).style.display = "block";
+            }
             else
                 hideMapTypeOptions(options);
         });
@@ -283,11 +275,25 @@ function dropDownControl(options) {
 }
 
 function setMapTypeSelection(selected) {
-    var element = document.getElementById(selected);
-    document.getElementById("currentMapType").innerHTML = element.firstChild.innerHTML;
+    var item, i;
+
     var fullList = document.getElementById("mapCustomTypeControl").childNodes;
-    for (var i = 0; i < fullList.length; i++) {
-        var item = fullList[i];
+
+    if (!selected) {
+        var label = document.getElementsByClassName("map-type-control selection-text")[0].innerHTML;
+        for (i = 0; i < fullList.length; i++) {
+            item = fullList[i];
+            if (item.firstChild && item.firstChild.innerHTML === label) {
+                selected = item.id;
+                break;
+            }
+        }
+    }
+
+    var element = document.getElementById("mapSelect" + selected);
+    document.getElementById("currentMapType").innerHTML = element.firstChild.innerHTML;
+    for (i = 0; i < fullList.length; i++) {
+        item = fullList[i];
         if (item.className === "map-type-control item selected") {
             item.classList.remove("selected");
         }
@@ -299,3 +305,38 @@ function setMapTypeSelection(selected) {
 function hideMapTypeOptions(options) {
     document.getElementById(options.dropDown.id).style.display = 'none';
 }
+
+var DEFAULT_MAP_LAYER_COOKIE = 'defaultMapType';
+
+function setDefaultMapLayer() {
+    var defaultLayer = getCookie(DEFAULT_MAP_LAYER_COOKIE);
+
+    if (map.mapTypes.get(defaultLayer) != null ||
+        defaultLayer === google.maps.MapTypeId.TERRAIN ||
+        defaultLayer === google.maps.MapTypeId.ROADMAP ||
+        defaultLayer === google.maps.MapTypeId.HYBRID ||
+        defaultLayer === google.maps.MapTypeId.SATELLITE) {
+        map.setMapTypeId(defaultLayer);
+    }
+
+    observer.observe(document.getElementById('mapbox'), { attributes: true, childList: true, subtree: true });
+}
+
+
+var callback = function (mutationsList, observer) {
+    for (var i = 0; i < mutationsList.length; i++) {
+        var mutation = mutationsList[i];
+
+        if (mutation.type === 'childList') {
+            for (var j = 0; j < mutation.addedNodes.length; j++) {
+                var item = mutation.addedNodes[j];
+                if (item.id === "map-type-control-custom") {
+                    observer.disconnect();
+                    setMapTypeSelection(map.getMapTypeId());
+                }
+            }
+        }
+    }
+};
+
+var observer = new MutationObserver(callback);
