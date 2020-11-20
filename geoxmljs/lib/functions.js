@@ -135,7 +135,7 @@ function ft(value) {
 }
 
 function mi(value) {
-    return Math.round(value * 10) / 10 + "mi";
+    return value.toFixed(1) + "mi";
 }
 
 function getTolerance(map) {

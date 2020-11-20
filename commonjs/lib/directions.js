@@ -18,7 +18,6 @@ function displaycoordenates(loc) {
 
 function displaydirections(lat, lng, extra) {
     var ret = '<div><i>';
-    //ret += '<a href="javascript:displaycoordenates(['+lat+','+lng+']);">Coords</a> - '
     ret += '<a href="javascript:displaydirectionsto([' + lat + ',' + lng + ']);">Directions To</a>';
     if (!!extra) ret += extra;
     ret += '</i></div>';
@@ -29,7 +28,7 @@ function displaylocation(lat, lng, extra) {
     var ret = '<div class="textselect">';
     var lat = parseFloat(lat);
     var lng = parseFloat(lng);
-    var coordtxt = (Math.round(lat * 1e5) / 1e5) + "," + (Math.round(lng * 1e5) / 1e5);
+    var coordtxt = lat.toFixed(4) + "," + lng.toFixed(4);
     ret += 'Coords: <a href="https://map.google.com/map?q=loc:' + coordtxt + '" target="_blank">' + coordtxt + '</a>';
     if (!!extra) ret += extra;
     ret += '</div>';

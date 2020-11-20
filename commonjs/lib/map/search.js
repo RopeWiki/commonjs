@@ -20,7 +20,7 @@ function mapsearchbounds(bounds, zoom) {
         var sw = bounds.getSouthWest();
         var ne = bounds.getNorthEast();
         locsearchchk.checked = true;
-        var v = "Coord:" + Math.round(sw.lat() * 1e3) / 1e3 + "," + Math.round(sw.lng() * 1e3) / 1e3 + "," + Math.round(ne.lat() * 1e3) / 1e3 + "," + Math.round(ne.lng() * 1e3) / 1e3;
+        var v = "Coord:" + sw.lat().toFixed(3) + "," + sw.lng().toFixed(3) + "," + ne.lat().toFixed(3) + "," + ne.lng().toFixed(3);
         if (zoom >= 0) v += ',' + zoom;
         document.getElementById('locnameval').value = v;
     }

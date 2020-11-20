@@ -33,9 +33,9 @@ function mi(miles, space) {
     if (isNaN(miles))
         return "";
     if (metric)
-        return (Math.round(miles / km2mi * 10) / 10).toLocaleString() + (space ? "&nbsp;" : "") + "km";
+        return (miles / km2mi).toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + "km";
     else
-        return (Math.round(miles * 10) / 10).toLocaleString() + (space ? "&nbsp;" : "") + "mi";
+        return miles.toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + "mi";
 }
 
 /**

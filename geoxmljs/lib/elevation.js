@@ -86,7 +86,7 @@ function plotelevation(results, ticks, conv) {
             });
         }
         mousemarker.setPosition(results[e.row].location);
-        mousemarker.infowindow.setContent(Math.round(results[e.row].location.lat() * 1e5) / 1e5 + "," + Math.round(results[e.row].location.lng() * 1e5) / 1e5);
+        mousemarker.infowindow.setContent(results[e.row].location.lat().toFixed(4) + "," + results[e.row].location.lng().toFixed(4));
     });
 }
 
@@ -195,8 +195,7 @@ function elevationinfowindowp(pl, computeonly) {
             var str = div.innerHTML;
             str = str.replace("####Computing1####", ft(minelev) + " - " + ft(maxelev));
             //str = str.replace("#GL#", abselev>0 ? "Gain" : "Loss");
-            var absdistr = Math.round(absdist * 10) / 10;
-            str = str.replace("####Computing2####", ft(abselev) + " / " + mi(absdistr) + " = " + ftxmi(abselev / absdistr) + "ft/mi");
+            str = str.replace("####Computing2####", ft(abselev) + " / " + mi(absdist) + " = " + ftxmi(abselev / absdist) + "ft/mi");
             str = str.replace("####Computing3####", ft(gainelev) + " / " + ft(losselev));
             str = str.replace("####Computing4####", xdeg(gup) + "º / " + xdeg(gdn) + "º (Max " + xdeg(gmax) + "º / " + xdeg(gmin) + "º)");
             str = str.replace("####Computing5####", gup + "% / " + gdn + "% (Max " + gmax + "% / " + gmin + "%)");

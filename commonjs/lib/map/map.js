@@ -11,14 +11,13 @@ function displayinfowindow(marker) {
 }
 
 function pinicon(id, icon) {
-    if (!icon || typeof icon == "undefined")
+    if (!icon)
         icon = SITE_BASE_URL + "/images/8/86/PinMap.png";
 
     return '<img src="' + icon + '" id="' + id + '" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick=\'pinmap(this.id)\'/>';
 }
 
 function pinmap(id) {
-    //alert(id);
     for (var i = 0; i < markers.length; ++i)
         if (markers[i].name == id) {
             var mapboxoffset = $("#mapbox").offset().top;
@@ -38,16 +37,7 @@ function loadlist(list, fitbounds) {
     if (qmaps.length == 0)
         for (var i = 0; i < 6; ++i)
             qmaps.push(map);
-
-    // load custom icon list, if any
-    var kmlstarlist;
-    var kmlstars = document.getElementById("kmlstars");
-    if (kmlstars != null)
-        kmlstarlist = kmlstars.innerHTML.split(',');
-
-    // load addbutton
-    var kmladdbutton = document.getElementById("kmladdbutton");
-
+    
     // calc nearby (only 1 shot of 100 or less)
     var calcnearby = document.getElementById('kmlnearby');
     if (calcnearby) {
@@ -125,13 +115,6 @@ function loadlist(list, fitbounds) {
         }
 
         // set up stars
-        //sdescm = sdescm.replace('*','<img height="12px" align="middle" src="'+kmlstarlist[4]+'"/>');
-        //var stars = sdescm.split('*');
-        //if (stars.length>1 && kmlstarlist.length>4)
-        //  sdescm = GetStars(Number(stars[0]), 0, kmlstarlist, 10)+" "+stars[1];
-        //var stars = descm.split('*');
-        //if (stars.length>1 && kmlstarlist.length>4)
-        // descm = stars[0]+'<img width="10px" height="10px" src="'+kmlstarlist[4]+'"/>'+' '+stars[1];
         sdescm = '<div class="notranslate">' + sdescm.split('*').join('&#9733;') + '</div>';
 
         // set up thumbnail
@@ -148,7 +131,7 @@ function loadlist(list, fitbounds) {
                 sdescm += '<a href="javascript:toggleRoutes(\'' + urlencode(item.kmlfile) + '\',\'' + urlencode(item.id) + '\');">Show track data on map</a>';
                 sdescm += '</i></div>';
             }
-            var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=Coord:' + item.location.lat + ',' + item.location.lng + '">Search nearby</a><p>';
+            var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=Coord:' + item.location.lat.toFixed(4) + ',' + item.location.lng.toFixed(4) + '">Search nearby</a><p>';
             sdescm += displaydirections(item.location.lat, item.location.lng, extra);
         }
 
@@ -158,6 +141,8 @@ function loadlist(list, fitbounds) {
         // add title
         contentString += '<b class="notranslate">' + sitelink(item.id, nonamespace(item.id)) + '</b>';
 
+        // load addbutton
+        //var kmladdbutton = document.getElementById("kmladdbutton");
         //if (kmladdbutton) <-this is the 'add to user's list' button. Placement needs fixing
         //    contentString += '<input class="submitoff addbutton" type="submit" onclick="addbutton(\'' + item.id.split("'").join("%27") + '\')" value="+">';
 
@@ -262,7 +247,6 @@ function getrwlist(data) {
     var list = [];
     $.each(data.query.results,
         function(i, item) {
-            //alert(item.printouts);
             var v;
             ++kmllistn;
             var obj = { id: item.fulltext };
@@ -281,7 +265,6 @@ function getrwlist(data) {
                 // numeric icons
                 if (kmlsummary)
                     if (obj.id[0] == '#') {
-                        //var colors = [ "666666", "7b6434", "b2882c", "f6b114", "f78931", "f74c24" ];
                         var num = obj.id.slice(1).split(' ')[0];
                         obj.icon = 'https://sites.google.com/site/rwicons/bg' + obj.q + '_' + num + '.png';
                     }
