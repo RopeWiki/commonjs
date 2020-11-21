@@ -276,7 +276,7 @@ function loadUserInterface(document) {
     for (var i = 0; i < elem.length; i++) {
         var id = elem[i].id;
         var label = elem[i].innerHTML;
-        elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="togglewchk(\'' + id + '\')" ' + (eval(id) ? 'checked' : '') + '>' + label + '</label>';
+        elem[i].innerHTML = '<label><input class="wchk__chk gmnoprint" type="checkbox" onclick="togglewchk(\'' + id + '\')" ' + (eval(id) ? 'checked' : '') + '>' + label + '</label>';
     }
 
     elem = document.getElementsByClassName('schk');
@@ -788,7 +788,7 @@ function loadInlineWeather() {
                         link = a[0].href;
 
                     var periods = data.daily;
-                    var w = '<div class="wstlogo noprint">';
+                    var w = '<div class="wstheader noprint">';
 
                     w += '<span class="notranslate">';
 
@@ -799,19 +799,21 @@ function loadInlineWeather() {
                     var startDate = new Date(periods[0].dt * 1000);
                     var endDate = new Date(periods[e].dt * 1000);
 
-                    w += startDate.getDate() + ' ' + months[startDate.getMonth()] + ' - ' + endDate.getDate() + ' ' + months[endDate.getMonth()];
+                    w += startDate.getDate() + '-' + endDate.getDate() + ' ' + months[endDate.getMonth()];
 
-                    if (link) w += '<a href="' + link + '"> >get detailed<</a>';
+                    if (link) w += '&nbsp;&nbsp;<a rel="nofollow" class="external text" href="' + link + '"><img alt="Wforecast.png" src="/images/d/d5/Wforecast.png" width="13" height="22"> Weather forecast</a>';
 
+                    w += '<span class="wstheader units" style="float:right;">' + (metric ? "&#176;C" : "&#7506;F") + '</span>';
+
+                    //w += '<img class="wstlogo" />';
+                    
                     w += '</span>';
-
-                    w += '<div style="position:relative"><img class="wstlogo" src="http://ropewiki.com/images/f/f2/OpenWeatherLogo.png"/></div>';
-
-                    if (link) w += '</a>';
 
                     w += '</div>';
 
                     w += '<table class="wikitable wst bst notranslate"><tr style="line-height:5px">';
+
+                    w += '<img class="wstlogo" src="http://ropewiki.com/images/f/f2/OpenWeatherLogo.png"/>';
 
                     for (var i = 0; i < periods.length; ++i) {
                         var date = new Date(periods[i].dt * 1000);
@@ -852,8 +854,8 @@ function loadInlineWeather() {
                         w += '</td></tr>';
                     }
                     w += '</table>';
-
-                    weatherdiv.innerHTML = '<div>' + w + '</div>';
+                    
+                    weatherdiv.innerHTML = w;
                 }
             });
     }
