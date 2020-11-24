@@ -32,7 +32,7 @@ function SetupMapLayers() {
                         return "http://s3-us-west-1.amazonaws.com/caltopo/topo/" +
                             z + "/" + slippyClip(p.x, z) + "/" + slippyClip(p.y, z) + ".png";
                     },
-                    maxZoom: 16,
+                    maxZoom: 18,
                     minZoom: 5,
                     name: "TopoUSA",
                     opacity: 1,
@@ -64,7 +64,7 @@ function SetupMapLayers() {
                         return "http://www.ign.es/wmts/mapa-raster?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX=" +
                             z + "&TILEROW=" + slippyClip(p.y, z) + "&TILECOL=" + slippyClip(p.x, z) + "&FORMAT=image%2Fjpeg";
                     },
-                    maxZoom: 17,
+                    maxZoom: 18,
                     minZoom: 6,
                     name: "TopoSpain",
                     opacity: 1,
@@ -86,7 +86,6 @@ function SetupMapLayers() {
                 slippyClip(p.y, z) +
                 ".png";
         },
-        maxZoom: 16,
         name: "relief",
         opacity: 0.25,
         tileSize: new google.maps.Size(256, 256)

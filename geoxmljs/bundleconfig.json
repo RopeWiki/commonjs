@@ -1,6 +1,6 @@
 [
   {
-    "outputFileName": "out/geoxml.min.js",
+    "outputFileName": "out/Geoxml.min.js",
     "inputFiles": [
       "lib/geoxml.js",
       "lib/elevation.js",

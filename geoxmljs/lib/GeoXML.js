@@ -616,7 +616,9 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
     m.id = kml_id;
     m.urlLink = urlLink;
     m.geoxml = this;
-    //var obj = { "type": "point", "title2": title2, "description": escape(desc), "href": href, "shadow": shadow, "visibility": visible, "x": point.x, "y": point.y, "id": m.id };
+
+    desc = removeRedundantInfo(desc);
+
     var obj = { type: "point", /* title: markeroptions.title2, */ description: escape(desc), href: href, shadow: shadow, visibility: visible, x: point.x, y: point.y, id: m.id };
     this.kml[idx].marks.push(obj);
 
@@ -625,24 +627,13 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
         m.label = l;
         l.setMap(this.map);
     }
-    var html, html1, html2, html3, html4;
-    //      var awidth = this.iwwidth;
-    //      if (desc.length * 8 < awidth) {
-    //          awidth = desc.length * 8;
-    //      }
-    //      if (awidth < name.length * 10) {
-    //          awidth = name.length * 10;
-    //      }
-    //      if(this.maxiwwidth && awidth > this.maxiwwidth ){
-    //      awidth = this.maxiwwidth;
-    //        }
+    var html, html1;
+    
     html = "<div " + this.titlestyle + ">" + name + "</div>";
     if (name != desc) {
         html += "<div " + this.descstyle + ">" + desc + "</div>";
     }
     html += '<div id="elevation" style="font-size: small;">' + displaylocation(point.lat(), point.lng(), '<br>Elevation: #Computing#') + '</div>';
-    if (this.opts.directions)
-        html += displaydirections(point.lat(), point.lng());
     html1 = html;
     if (this.opts.markerfollowlinks) {
         if (markerurl && typeof markerurl == "string") {
@@ -673,7 +664,6 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
                 infoWindowOptions.maxWidth = m.geoxml.maxiwwidth;
             }
             m.infoWindow = new google.maps.InfoWindow(infoWindowOptions);
-            var parserOptions = this.opts;
 
             // Infowindow-opening event handler
             m.onClick = function () {
@@ -713,7 +703,6 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
             infoWindowOptions.maxWidth = m.geoxml.maxiwwidth;
         }
         m.infoWindow = new google.maps.InfoWindow(infoWindowOptions);
-        var parserOptions = this.opts;
         m.contentUrl = contentUrl;
 
         m.onClick = function () {
@@ -766,10 +755,8 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
         m.geoxml = this;
         google.maps.event.addListener(m, "mouseover", function (point) { if (!point) { point = m.getPosition(); } m.geoxml.mb.showMess(m.mess, 5000); });
     }
-    var nhtml = "";
     var parm;
     if (this.opts.sidebarid) {
-        var folderid = this.myvar + "_folder" + idx;
         var n = this.overlayman.markers.length;
         var blob = "&nbsp;<img style=\"vertical-align:text-top;padding:0;margin:0;height:" + this.sidebariconheight + "px;\"  border=\"0\" src=\"" + href + "\">&nbsp;";
         if (this.sidebarsnippet) {
@@ -819,7 +806,6 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
                     optimized: false,
                     zIndex: this.zIndex - 1
                 });
-                //alert(m.zIndex);
 
                 this.highlight.setMap(this.map);
             }

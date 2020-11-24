@@ -29,7 +29,9 @@ function displaylocation(lat, lng, extra) {
     var lat = parseFloat(lat);
     var lng = parseFloat(lng);
     var coordtxt = lat.toFixed(4) + "," + lng.toFixed(4);
-    ret += 'Coords: <a href="https://map.google.com/map?q=loc:' + coordtxt + '" target="_blank">' + coordtxt + '</a>';
+
+    ret += 'Coords: <a href="https://www.google.com/maps/place/' + coordtxt + '/@' + coordtxt + ',15z/data=!4m5!3m4!1s0x0:0x0!8m2!3d' + lat.toFixed(4) + '!4d' + lng.toFixed(4) + '!5m1!1e4" target="_blank">' + coordtxt + '</a>';
+
     if (!!extra) ret += extra;
     ret += '</div>';
     return ret;

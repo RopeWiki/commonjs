@@ -210,3 +210,12 @@ function getTolerance(map) {
     //console.log("tol="+map.tolerance);
 };
 
+//sometimes the waypoint descriptions have info that we already include, such as coords & elevation
+function removeRedundantInfo(text) {
+    text = text.replace(/(?:location)(?:.*)(?:<br>)/i, "");
+    text = text.replace(/(?:elevation)(?:.*)(?:<br>)/i, "");
+    text = text.replace(/(?:time created)(?:.*)(?:<br>)/i, ""); //we don't care about showing time created
+
+    return text;
+}
+
