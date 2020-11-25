@@ -197,7 +197,7 @@ var CollapsibleLists =
                     // on-demand region count
                     if (open) {
                         var regionlist = [];
-                        regioncountlist(uls[index], regionlist); //$(uls[index]).find(".regioncount:visible"); //uls[index].childNodes;
+                        regioncountlist(uls[index], regionlist);
                         regioncount(regionlist);
                     }
                 }
@@ -240,7 +240,6 @@ var CollapsibleLists =
                 if (open)
                     str += href;
                 setCookie(clistcookie, str);
-                //console.log(href+" "+open+" "+str);
             }
             return open;
         }
@@ -268,11 +267,8 @@ var CollapsibleLists =
                 titles.push(title);
             }
 
-            //var url = SITE_BASE_URL + /index.php?title=Template:RegionCount&action=raw&templates=expand&region=San%20Diego;
             var url = SITE_BASE_URL + '/index.php?title=Template:RegionCount&action=raw&templates=expand&ctype=text/x-wiki&region=' + urlencode(titles.join(';'));
             $.get(geturl(url), function (data) {
-                //alert( "Load was performed." );
-                //console.log("load performed");
                 var rdata = data.split(';');
                 for (var r = 0; r < rlist.length; ++r)
                     rlist[r].innerHTML = rlist[r].innerHTML + ' ' + rdata[r];

@@ -67,11 +67,9 @@ function uconv(str, cnv) {
 }
 
 function getGeoCode(lat, lng, element) {
-    var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat.toString().trim() + "," + lng.toString().trim();
+    var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat.toString().trim() + "," + lng.toString().trim() + "&key=" + GOOGLE_MAPS_APIKEY;
     $.getJSON(geturl(url), function (data) {
-        //alert( "Load was performed." );
-        //console.log("load performed");
-        if (data && data.results) {
+        if (data && data.results && data.status === "OK") {
             var list = [];
             for (var r = 0; r < data.results.length; ++r)
                 for (var c = 0; c < data.results[r].address_components.length; ++c) {
@@ -81,26 +79,29 @@ function getGeoCode(lat, lng, element) {
                             list.push(comp.long_name);
                 }
 
-            var res = document.getElementById(element);
-            if (res) res.innerHTML = 'Geocode:' + list.join(', ');
+            if (list.length > 0) {
+                var res = document.getElementById(element);
+                if (res) res.innerHTML = 'Geocode: ' + list.join(', ');
+            }
         }
     });
 }
 
-function getGeoElevation(LatLng, element, label, endlabel) {
+function getGeoElevation(latLng, element, holdingText) {
     if (!geoElevationService)
         geoElevationService = new google.maps.ElevationService();
-    if (geoElevationService && LatLng) {
-        var latlngs = [];
-        latlngs.push(LatLng);
-        geoElevationService.getElevationForLocations({'locations': latlngs}, function (results) {
-            if (results[0]) {
-                if (!label) label = "";
-                if (!endlabel) endlabel = "";
-                var elev = results[0].elevation * m2ft;
-                var res = document.getElementById(element);
-                if (res) res.innerHTML = label + '<span class="notranslate">' + ft(elev) + '</span>' + endlabel;
-            }
-        });
+
+    if (geoElevationService && latLng) {
+        geoElevationService.getElevationForLocations(
+            {
+                'locations': [latLng]
+            },
+            function(results) {
+                if (results[0]) {
+                    var elev = results[0].elevation * m2ft;
+                    var res = document.getElementById(element);
+                    if (res) res.innerHTML = res.innerHTML.replace(holdingText, ft(elev));
+                }
+            });
     }
 }

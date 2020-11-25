@@ -801,7 +801,7 @@ function loadInlineWeather() {
 
                     w += startDate.getDate() + '-' + endDate.getDate() + ' ' + months[endDate.getMonth()];
 
-                    if (link) w += '&nbsp;&nbsp;<a rel="nofollow" class="external text" href="' + link + '"><img alt="Wforecast.png" src="/images/d/d5/Wforecast.png" width="13" height="22"> Weather forecast</a>';
+                    if (link) w += '&nbsp;&nbsp;<a rel="nofollow" class="external text" href="' + link + '"><img alt="Wforecast.png" src="/images/d/d5/Wforecast.png" width="13" height="22"> Extended forecast</a>';
 
                     w += '<span class="wstheader units" style="float:right;">' + (metric ? "&#176;C" : "&#7506;F") + '</span>';
 
@@ -834,7 +834,8 @@ function loadInlineWeather() {
                         var date = new Date(periods[i].dt * 1000);
 
                         w += '<td title="' + date.getDate() + ' ' + months[date.getMonth()] + ' : &quot;' + periods[i].weather[0].description + '&quot; Max ' + h + (metric ? 'C' : 'F') + ' Min ' + l + (metric ? 'C' : 'F') + '">';
-                        w += '<div class="weatherimg" style="background-image: url(&#39;http://openweathermap.org/img/wn/' + periods[i].weather[0].icon + '.png&#39;)"/></div>';
+                        var weatherIconSize = periods[i].weather[0].icon === "01d" ? "30" : "40" ; //if it's the sun, shrink the size down a little more 
+                        w += '<div class="weatherimg" style="background-image: url(&#39;http://openweathermap.org/img/wn/' + periods[i].weather[0].icon + '.png&#39;);  background-size: ' + weatherIconSize + 'px ' + weatherIconSize + 'px;"/></div>';
                         w += '<div class="weatherh">' + h + '</div>';
                         w += '<div class="weatherl">' + l + '</div>';
                         w += '</td>';

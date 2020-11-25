@@ -57,27 +57,30 @@ function addbutton(id) {
     }
 }
 
-function setmarker(lat, lng, z) {
-    var myLatlng = new google.maps.LatLng(lat, lng);
-    var infowindowm = new google.maps.InfoWindow({
-        content: '<div class="textselect">' + displaylocation(lat, lng) + '<div id="elevation"></div>' + '<div id="geocode" style="max-width:200px"></div>' + displaydirections(lat, lng) + '</div>'
-    });
+function setmarker(name, lat, lng, zIndex) {
+    var titleStyle = 'style = "font-family: arial, sans-serif;font-size: medium;font-weight:bold;"';
+    var html = "<div " + titleStyle + ">" + name.replaceAll("_", " ") + "</div>";
+    html += "<br/>";
+    html += '<div id="elevation" style="font-size: small;">' + displaylocation(lat, lng, '<br>Elevation: ~') + '</div>';
+
+    var latLng = new google.maps.LatLng(lat, lng);
+
     var marker = new google.maps.Marker({
-        position: myLatlng,
+        position: latLng,
         map: map,
-        infowindow: infowindowm,
+        infowindow: new google.maps.InfoWindow({ content: html }),
         optimized: false,
-        zIndex: z
+        zIndex: zIndex
     });
 
     google.maps.event.addListener(marker,
         'click',
         function() {
             this.infowindow.open(map, this);
-            getGeoElevation(this.getPosition(), "elevation", "Elevation: ");
-            getGeoCode(lat, lng, "geocode");
+            getGeoElevation(this.getPosition(), "elevation", "~");
         });
-    boundslist.extend(myLatlng);
+
+    boundslist.extend(latLng);
 }
 
 function centermap() {

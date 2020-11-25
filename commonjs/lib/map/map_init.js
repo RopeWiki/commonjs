@@ -277,7 +277,8 @@ function loadInteractiveMap() {
         var coords = kmlmarker.innerHTML.split(",");
         if (coords != null && coords.length > 1) {
             kmlmap = "kmlmarker";
-            setmarker(coords[0], coords[1], 0);
+            var pageName = mw.config.get("wgPageName");
+            setmarker(pageName, coords[0], coords[1], 0);
             map.setZoom(13);
             var latlng = new google.maps.LatLng(coords[0], coords[1]);
             map.panTo(latlng);
@@ -405,7 +406,6 @@ function loadInteractiveMap() {
             '|%3FHas_coordinates|%3FHas_star_rating|%3FHas_summary|%3FHas_banner_image_file|%3FHas_location_class|%3FHas_KML_file|limit=100';
         tablelisturl = window.location.href.toString();
         tablelisturl = tablelisturl.split('#')[0];
-        //tablelisturl = SITE_BASE_URL + '/California';
         tablelisturl += (tablelisturl.indexOf('?') < 0 ? '?' : '&') + 'nomapchk=on';
 
         // load dynamic query

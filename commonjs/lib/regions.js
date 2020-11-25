@@ -9,11 +9,11 @@ function suggestregion() {
 }
 
 function suggestregiongeocode(geocode) {
-    var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + geocode;
+    var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + geocode + "&key=" + GOOGLE_MAPS_APIKEY;
     $.getJSON(geturl(url), function (data) {
         //alert( "Load was performed." );
         //console.log("load performed");
-        if (data && data.results) {
+        if (data && data.results && data.status === "OK") {
             for (var i = 0; i < data.results.length; ++i)
                 if (data.results[i].geometry && data.results[i].geometry.location && data.results[i].geometry.location.lat && data.results[i].geometry.location.lng) {
                     suggestregioncoords(data.results[i].geometry.location.lat + "," + data.results[i].geometry.location.lng);

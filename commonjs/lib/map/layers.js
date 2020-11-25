@@ -32,7 +32,7 @@ function SetupMapLayers() {
                         return "http://s3-us-west-1.amazonaws.com/caltopo/topo/" +
                             z + "/" + slippyClip(p.x, z) + "/" + slippyClip(p.y, z) + ".png";
                     },
-                    maxZoom: 18,
+                    maxZoom: 16,
                     minZoom: 5,
                     name: "TopoUSA",
                     opacity: 1,

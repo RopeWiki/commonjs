@@ -6,7 +6,6 @@ function displayinfowindow(marker) {
 
     marker.infowindow.setZIndex(++zindex);
     marker.infowindow.open(map, marker);
-    //getGeoElevation(marker.getPosition(), "infoelevation", "~")
     lastinfowindow = marker.infowindow;
 }
 
