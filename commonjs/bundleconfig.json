@@ -13,7 +13,7 @@
       "lib/geo.js",
       "lib/global_variables.js",
       "lib/localization.js",
-      "lib/map/constants.js",
+      "lib/map/icon_urls.js",
       "lib/map/layers.js",
       "lib/map/layers_weather.js",
       "lib/map/map.js",
