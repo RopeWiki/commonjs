@@ -21,23 +21,19 @@ function initializemap() {
                     if (highlight.highlight && lasthighlight.highlight)
                         if (highlight.priority > lasthighlight.priority) {
                             // do not override if less priority
-                            //console.log("show hide cur "+highlight.title2+highlight.description);
                             highlight.highlight.setMap(null);
                             highlight.highlight = null;
                             return;
                         }
 
                 if (lasthighlight && highlight != lasthighlight && lasthighlight.highlight) {
-                    //console.log("hide last "+lasthighlight.title2+lasthighlight.description);
                     lasthighlight.highlight.setMap(null);
                     lasthighlight.highlight = null;
                 }
 
-                //console.log("show cur "+highlight.title2+highlight.description);
                 lasthighlight = highlight;
 
                 if (tt == null) {
-                    //alert("tnull");
                     tt = document.createElement('div');
                     tt.style.backgroundColor = "white";
                     tt.style.padding = "3px";
@@ -115,16 +111,14 @@ function initializemap() {
                         tt.style.display = 'none';
                     }
                 }
-                //console.log(tt.style.opacity);
             },
 
             hide: function(highlight) {
                 if (highlight)
                     if (highlight != lasthighlight) {
-                        //console.log("hide not cur "+highlight.title2+highlight.description);
                         return;
                     }
-                //console.log("hide cur "+(highlight ? (highlight.title2+highlight.description) : "NULL"));
+
                 if (typeof tt != "undefined") {
                     if (tt.timer) {
                         clearInterval(tt.timer);
@@ -447,13 +441,11 @@ function loadInteractiveMap() {
                 console.log("null proj");
                 return;
             }
-            //console.log("bounds NE "+bounds.getNorthEast()+" SW "+bounds.getSouthWest());
-            //console.log("bounds NE.lat "+bounds.getNorthEast().lat()+" SW,lng "+bounds.getSouthWest().lng());
-            var nwll = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng());
-            //console.log("nwll "+nwll);
-            var nw = proj.fromLatLngToPoint(nwll);
-            //console.log("nw "+nw);
 
+            var nwll = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng());
+
+            var nw = proj.fromLatLngToPoint(nwll);
+            
             function fromLatLngToPixel(position) {
                 var point = proj.fromLatLngToPoint(position);
                 return new google.maps.Point(
@@ -473,7 +465,6 @@ function loadInteractiveMap() {
                 var m = markers[i];
                 m.p = fromLatLngToPixel(m.oposition);
                 m.p.y += isize2; // move center
-                //console.log(m.name+":"+m.p+" <- "+m.oposition);
             }
 
             // reposition icons to avoid overlap
@@ -490,8 +481,6 @@ function loadInteractiveMap() {
                             var adx = (dx < 0 ? -dx : dx);
                             var ady = (dy < 0 ? -dy : dy);
                             if (adx < osize && ady < osize) {
-                                //if (markers[i].name.substr(0,3)=='#08' || markers[j].name.substr(0,3)=='#08') //debug
-                                //    console.log("["+i+"] "+markers[i].name+" x ["+j+"] "+markers[j].name+" dx:"+dx+" dy:"+dy);
                                 if (adx < osize)
                                     if (dx > 0) {
                                         markers[i].p.x += step;
@@ -522,7 +511,7 @@ function loadInteractiveMap() {
                 var m = markers[i];
                 m.p.y -= isize2; // move center
                 var pos = fromPixelToLatLng(m.p);
-                //console.log(""+m.name+":"+m.p+" -> "+pos.lat()+","+pos.lng());
+
                 var ll = { lat: parseFloat(pos.lat()), lng: parseFloat(pos.lng()) };
                 if (!isNaN(ll.lat) && !isNaN(ll.lng)) // error checking
                     m.setPosition(ll);
@@ -558,7 +547,7 @@ function loadInteractiveMap() {
     }
 
     // set title (if any) from "kmltitle"
-    // note: I believe kmltitle is set by the {{{title}}} parameter, and refers to [[Category:Books]]. I don't see how the code is used however.
+    // note: I (Michelle) believe kmltitle is set by the {{{title}}} parameter, and refers to [[Category:Books]]. I don't see how the code is used however.
     // ropewiki.com/Category:Books
     var kmltitle = document.getElementById("kmltitle");
     if (kmltitle != null) {
@@ -732,7 +721,6 @@ function loadInteractiveMap() {
             
             function geoxmlinitp() {
                 // Here you can use anything you defined in the loaded script
-                //alert("script loaded");
                 //map.panTo(new google.map.LatLng(0, 0));
                 gxml = new GeoXml("gxml",
                     map,
@@ -810,7 +798,6 @@ function loadInteractiveMap() {
 
             function geoxmlinitw() {
                 // Here you can use anything you defined in the loaded script
-                //alert("script loaded");
                 //map.panTo(new google.map.LatLng(0, 0));
                 gxml = new GeoXml("gxml",
                     map,
@@ -964,23 +951,22 @@ function loadMapInterface() {
 }
 
 function loadmapScript() {
-    //console.log("0");
+
     smallstyle();
-    //console.log("1");
+
     loadSkin();
-    //console.log("2");
+
     loadEditor();
-    //console.log("3");
+
     loadFacebook();
-    //console.log("4");
+
     loadMapInterface();
-    //console.log("5");
+
     loadUserInterface(document);
     loadFormInterface();
     loadTranslation();
     var transtimer = setInterval(function () { loadTranslation(); }, 2000);
-    // tranlsate script
-    //$.getScript("//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit");
+    // translate script
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";

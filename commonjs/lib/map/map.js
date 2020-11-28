@@ -134,6 +134,11 @@ function loadlist(list, fitbounds) {
             sdescm += displaydirections(item.location.lat, item.location.lng, extra);
         }
 
+        var permitStatus = "No";
+        if (item.permits && item.permits !== 'No') {
+            permitStatus = item.permits;
+        }
+
         // set up infowindow
         var contentString = '<div style="width:auto;height:auto;overflow:hidden;">';
 
@@ -152,12 +157,24 @@ function loadlist(list, fitbounds) {
         if (item.infocontent) contentString = item.infocontent;
         var infowindowm = new google.maps.InfoWindow({ content: contentString });
 
-        var descriptionString = '<b class="nostranslate">' +
-            nonamespace(item.id) +
-            '</b><br>' +
-            descm.split('*').join('&#9733;');
-        if (item.infodescription) descriptionString = item.infodescription;
-        
+        var descriptionString = item.infodescription
+            ? item.infodescription
+            : '<b class="nostranslate">' + nonamespace(item.id) + '</b><br>' + descm.split('*').join('&#9733;');
+
+        if (permitStatus !== 'No') {
+            switch (permitStatus) {
+            case "Yes":
+                descriptionString += "<br>*permit required*";
+                break;
+            case "Restricted":
+                descriptionString += "<br>*access restricted*";
+                break;
+            case "Closed":
+                descriptionString += "<br>*closed to access*";
+                break;
+            }
+        }
+
         // build and add marker with infowindow callback
         var q = -1, qmap = map;
         if (item.q != null)
@@ -181,10 +198,10 @@ function loadlist(list, fitbounds) {
         //var tooltip = tooltip({ marker: marker, content: "<b>"+nonamespace(item.id)+"</b><br>"+descm, cssClass: 'tooltip' });
 
         // add permit status by overlaying the 'closed' image on the marker
-        if (item.permits && item.permits !== 'No') {
+        if (permitStatus !== 'No') {
             var iconUrl = "";
 
-            switch (item.permits) {
+            switch (permitStatus) {
             case "Yes":
                 iconUrl = ICON_PERMIT_YES;
                 break;
