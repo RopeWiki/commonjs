@@ -48,7 +48,7 @@ function loadlist(list, fitbounds) {
             for (ic = 0; ic < list.length; ++ic)
                 sortlist.push({ id: list[ic].id.split(" ")[0], distance: distance(o.location, list[ic].location) });
             sortlist.sort(function(a, b) {
-                return a.distance - b.distance
+                return a.distance - b.distance;
             });
 
             var distlist = [];
@@ -141,9 +141,9 @@ function loadlist(list, fitbounds) {
         contentString += '<b class="notranslate">' + sitelink(item.id, nonamespace(item.id)) + '</b>';
 
         // load addbutton
-        //var kmladdbutton = document.getElementById("kmladdbutton");
-        //if (kmladdbutton) <-this is the 'add to user's list' button. Placement needs fixing
-        //    contentString += '<input class="submitoff addbutton" type="submit" onclick="addbutton(\'' + item.id.split("'").join("%27") + '\')" value="+">';
+        var kmladdbutton = document.getElementById("kmladdbutton");
+        if (kmladdbutton)
+            contentString += '<input class="submitoff addbutton" type="submit" onclick="addbutton(\'' + item.id.split("'").join("%27") + '\')" value="+">';
 
         // add elevation
         //contentString += '<br><span id="infoelevation"></span>';
@@ -162,7 +162,9 @@ function loadlist(list, fitbounds) {
         var q = -1, qmap = map;
         if (item.q != null)
             qmap = qmaps[q = item.q];
+
         var positionm = new google.maps.LatLng(item.location.lat, item.location.lng);
+
         var marker = new google.maps.Marker({
             position: positionm,
             map: qmap,
@@ -177,6 +179,38 @@ function loadlist(list, fitbounds) {
         marker.q = q;
         marker.oposition = positionm;
         //var tooltip = tooltip({ marker: marker, content: "<b>"+nonamespace(item.id)+"</b><br>"+descm, cssClass: 'tooltip' });
+
+        // add permit status by overlaying the 'closed' image on the marker
+        if (item.permits && item.permits !== 'No') {
+            var iconUrl = "";
+
+            switch (item.permits) {
+            case "Yes":
+                iconUrl = ICON_PERMIT_YES;
+                break;
+            case "Restricted":
+                iconUrl = ICON_RESTRICTED;
+                break;
+            case "Closed":
+                iconUrl = ICON_CLOSED;
+                break;
+            }
+
+            var closedImage = {
+                url: iconUrl,
+                scaledSize: new google.maps.Size(25, 25),
+                anchor: new google.maps.Point(12, 26)
+            };
+
+            var closedMarker = new google.maps.Marker({
+                position: positionm,
+                map: qmap,
+                icon: closedImage,
+                clickable: false,
+                zIndex: zindexm + 1,
+                optimized: false
+            });
+        }
 
         google.maps.event.addListener(marker,
             "mouseover",
@@ -280,6 +314,9 @@ function getrwlist(data) {
                 v = item.printouts["Located in region"];
                 if (v && v.length > 0)
                     obj.region = v[0].fulltext;
+                v = item.printouts["Requires permits"];
+                if (v && v.length > 0)
+                    obj.permits = v[0];
                 list.push(obj);
             }
         });

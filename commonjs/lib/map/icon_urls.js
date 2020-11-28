@@ -39,3 +39,7 @@ var KML_ICON_LIST = [
     SITE_BASE_URL + "/images/8/81/Starn45.png",
     SITE_BASE_URL + "/images/3/37/Starn55.png"
 ];
+
+var ICON_CLOSED = SITE_BASE_URL + "/images/f/f8/Permit-closed.png";
+var ICON_RESTRICTED = SITE_BASE_URL + "/images/1/11/Permit-restricted.png";
+var ICON_PERMIT_YES = SITE_BASE_URL + "/images/2/29/Permit-yes.png";
