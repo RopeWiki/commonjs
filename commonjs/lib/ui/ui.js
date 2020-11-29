@@ -811,16 +811,16 @@ function loadInlineWeather() {
 
                     w += '</div>';
 
-                    w += '<table class="wikitable wst bst notranslate"><tr style="line-height:5px">';
+                    w += '<table class="wikitable wst bst notranslate">';
 
                     w += '<img class="wstlogo" src="http://ropewiki.com/images/f/f2/OpenWeatherLogo.png"/>';
 
                     for (var i = 0; i < periods.length; ++i) {
                         var date = new Date(periods[i].dt * 1000);
-                        w += '<th>' + days[date.getDay()] + '<br></th>';
+                        w += '<th class="' + isWeekend(date.getDay()) + '">' + days[date.getDay()] + '<br></th>';
                     }
 
-                    w += '</tr><tr>';
+                    w += '<tr>';
 
                     for (var i = 0; i < periods.length; ++i) {
                         var h = metric
@@ -868,6 +868,12 @@ function convertKelvinToCelsius(kelvin) {
 
 function convertKelvinToFahrenheit(kelvin) {
     return (kelvin - 273.15) * 9/5 + 32;
+}
+
+function isWeekend(dayOfWeek) {
+    return (dayOfWeek === 0 || dayOfWeek === 6)
+        ? "weekend"
+        : "";
 }
 
 
