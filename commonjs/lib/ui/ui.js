@@ -817,7 +817,7 @@ function loadInlineWeather() {
 
                     for (var i = 0; i < periods.length; ++i) {
                         var date = new Date(periods[i].dt * 1000);
-                        w += '<th class="' + isWeekend(date.getDay()) + '">' + days[date.getDay()] + '<br></th>';
+                        w += '<th class="wstheader ' + isWeekend(date.getDay()) + '">' + days[date.getDay()] + '<br></th>';
                     }
 
                     w += '<tr>';
