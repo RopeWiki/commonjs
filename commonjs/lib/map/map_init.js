@@ -4,7 +4,7 @@ function initializemap() {
     tooltip = function() {
         var id = 'tooltip';
         var top = 3;
-        var left = 3;
+        var left = 6;
         var maxw = 300;
         var speed = 10;
         var timer = 20;
@@ -56,6 +56,10 @@ function initializemap() {
                     tt.style.opacity = 0;
                     tt.style.filter = 'alpha(opacity=0)';
                     document.onmousemove = this.pos;
+
+                    //need to move the tooltip into the map div so they display when the map is in fullscreen mode -- stackoverflow.com/questions/39644061/
+                    var mapDiv = document.getElementById('mapbox').getElementsByTagName('div')[0];
+                    mapDiv.appendChild(tt);
                 }
 
                 tt.style.display = 'block';
@@ -89,6 +93,13 @@ function initializemap() {
             pos: function(e) {
                 var u = ie ? event.clientY + document.documentElement.scrollTop : e.pageY;
                 var l = ie ? event.clientX + document.documentElement.scrollLeft : e.pageX;
+
+                if (!isFullscreen(map.getDiv().firstChild)) {
+                    var mapDiv = document.getElementById('mapbox').getBoundingClientRect();
+                    u -= mapDiv.top;
+                    l -= mapDiv.left;
+                }
+
                 tt.style.top = (u - h) + 'px';
                 tt.style.left = (l + left) + 'px';
             },
