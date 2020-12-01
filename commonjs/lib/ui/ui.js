@@ -805,8 +805,6 @@ function loadInlineWeather() {
 
                     w += '<span class="wstheader units" style="float:right;">' + (metric ? "&#176;C" : "&#7506;F") + '</span>';
 
-                    //w += '<img class="wstlogo" />';
-
                     w += '</span>';
 
                     w += '</div>';
@@ -860,10 +858,10 @@ function loadInlineWeather() {
                 }
             });
     } else {
-        if (weatherdiv)
-        //weatherdiv.style.display = "none";
+        if (weatherdiv) {
             weatherdiv.innerHTML =
                 '<a rel="nofollow" class="external text" href="http://ropewiki.com/Weather?location=Lomatium+%26+Krill+Loop"><img alt="Wforecast.png" src="/images/d/d5/Wforecast.png" width="13" height="22"> Weather forecast</a>';
+        }
     }
 }
 
