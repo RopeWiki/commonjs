@@ -4,6 +4,11 @@ function displayinfowindow(marker) {
     if (lastinfowindow)
         lastinfowindow.close();
 
+    if (lastinfowindow === marker.infowindow) {
+        lastinfowindow = null;
+        return;
+    }
+
     marker.infowindow.setZIndex(++zindex);
     marker.infowindow.open(map, marker);
     lastinfowindow = marker.infowindow;
