@@ -1,12 +1,13 @@
 function displayinfowindow(marker) {
     tooltip.hide();
 
-    if (lastinfowindow)
-        lastinfowindow.close();
+    if (lastinfowindow) {
+        if (lastinfowindow.map) {
+            lastinfowindow.close();
 
-    if (lastinfowindow === marker.infowindow) {
-        lastinfowindow = null;
-        return;
+            if (lastinfowindow === marker.infowindow)
+                return;
+        }
     }
 
     marker.infowindow.setZIndex(++zindex);
