@@ -77,7 +77,13 @@ function validateIconUrl(href) {
 
     if (href == "http://caltopo.com/static/images/icons/camera.png")
         href = 'http://maps.google.com/mapfiles/kml/pal4/icon46.png';
-    
+
+    if (href == "http://caltopo.com/static/images/icons/tent.png")
+        href = 'http://maps.google.com/mapfiles/kml/shapes/campground.png';
+
+    if (href == "http://caltopo.com/static/images/icons/crossbones.png")
+        href = 'http://maps.google.com/mapfiles/kml/shapes/caution.png';
+
     // add others as needed
 
     return href;
