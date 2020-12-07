@@ -356,6 +356,8 @@ OverlayManager.prototype.SetMaxLinesPerInfoBox = function (n) {
 
 OverlayManager.prototype.addMarker = function (marker, title2, idx, sidebar, visible, forcevisible) {
 
+    if (isNaN(marker.getPosition().lat()) || isNaN(marker.getPosition().lng())) return; //invalid coordinates
+
     if (marker.setMap != null) {
         marker.onMap = true;
         marker.setMap(this.map);
