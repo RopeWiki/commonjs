@@ -2896,7 +2896,7 @@ GeoXml.prototype.handlePlacemarkGeometry = function (mark, geom, idx, depth, ful
             var path = coords.split(" ");
             // Is this a polyline/polygon?
 
-            if (path.length == 1 || path[1] == "") {
+            if ((path.length === 1 || path[1] === "") && !path[0].startsWith("geom:")) {
                 bits = path[0].split(",");
                 point = new google.maps.LatLng(parseFloat(bits[1]), parseFloat(bits[0]));
                 this.overlayman.folderBounds[idx].extend(point);
@@ -2913,6 +2913,9 @@ GeoXml.prototype.handlePlacemarkGeometry = function (mark, geom, idx, depth, ful
                 }
             }
             else {
+                if (path[0].startsWith("geom:")) { //wikiloc encoded string
+                    path = decodeWikilocEncodedPath(path[0]);
+                }
                 // Build the list of points
                 points = [];
                 pbounds = new google.maps.LatLngBounds();

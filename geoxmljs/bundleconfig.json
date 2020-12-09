@@ -8,7 +8,8 @@
       "lib/label.js",
       "lib/messagebox.js",
       "lib/gmapsextensions.js",
-      "lib/overlaymanager.js"
+      "lib/overlaymanager.js",
+      "lib/wikiloc.js"
     ],
     "minify": {
       "enabled": true,
