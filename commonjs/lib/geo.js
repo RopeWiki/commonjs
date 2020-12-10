@@ -20,22 +20,51 @@ function distance(p1, p2) {
 
 // See uconv below.
 function ft(feet, space) {
-    if (isNaN(feet))
-        return "";
-    if (metric)
-        return Math.round(feet / m2ft).toLocaleString() + (space ? "&nbsp;" : "") + "m";
-    else
-        return Math.round(feet).toLocaleString() + (space ? "&nbsp;" : "") + "ft";
+    var wasMetric = feet.includes("m");
+
+    feet = parseFloat(feet);
+
+    if (isNaN(feet)) return "";
+
+    if (metric && !wasMetric) //convert to metric
+        feet /= m2ft;
+
+    if (!metric && wasMetric) //convert to feet
+        feet *= m2ft;
+
+    if (!metric) //round to nearest 5 feet
+        feet = Math.round(feet / 5) * 5;
+
+    return metric
+        ? Math.round(feet).toLocaleString() + (space ? "&nbsp;" : "") + "m"
+        : Math.round(feet).toLocaleString() + (space ? "&nbsp;" : "") + "ft";
 }
 
 // See uconv below.
 function mi(miles, space) {
-    if (isNaN(miles))
+    var wasMetric = miles.includes("km");
+
+    miles = parseFloat(miles);
+
+    if (isNaN(miles)) return "";
+
+    if (metric && !wasMetric) //convert to metric
+        miles /= km2mi;
+
+    if (!metric && wasMetric) //convert to miles
+        miles *= km2mi;
+
+    return metric
+        ? miles.toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + "km"
+        : miles.toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + "mi";
+}
+
+// called by uconv below.
+function rap(raps, space) {
+    if (isNaN(raps))
         return "";
-    if (metric)
-        return (miles / km2mi).toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + "km";
-    else
-        return miles.toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + "mi";
+
+    return raps + (space ? "&nbsp;" : "") + "r";
 }
 
 /**
@@ -59,10 +88,12 @@ function uconv(str, cnv) {
 
     var sep = "\u2195";
     var vstr = str.split(sep);
-    if (vstr.length > 0) // TODO: This if statement should always be true; remove.
-        vstr[0] = cnv(parseFloat(vstr[0]), str.indexOf('&nbsp;') > 0);
+
+    vstr[0] = cnv(vstr[0], str.indexOf('&nbsp;') > 0);
+
     if (vstr.length > 1)
-        vstr[1] = ft(parseFloat(vstr[1]), str.indexOf('&nbsp;') > 0);
+        vstr[1] = ft(vstr[1], str.indexOf('&nbsp;') > 0);
+
     return vstr.join(" " + sep);
 }
 

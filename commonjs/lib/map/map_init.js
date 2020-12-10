@@ -431,7 +431,7 @@ function loadInteractiveMap() {
         map.controls[google.maps.ControlPosition.TOP_CENTER].push(controlsDiv);
     }
 
-    // add additional controls (i.e. fullscreen, Show track data, Search Map, TrkLabels (for Books), Metric)
+    // add additional controls (i.e. fullscreen, Show track data, Search Map, TrkLabels (for Books) )
     {
         var spstart = '<div class="gmnoprint maptopcontrols">', spend = '</div>';
         //var controls = '<div style="position:absolute;left:0;right:0;width:99%;height:99%;border-color:red;border-width:50px;border-style: solid;background-color:transparent"></div>';
@@ -496,8 +496,6 @@ function loadInteractiveMap() {
             if (kmltitle)
                 controls += spstart + '<label><input class="gmnoprint" id="labelschk" type="checkbox" onclick="toggleLabels()" ' + (labels ? 'checked' : '') + '>TrkLabels&nbsp;</label>' + spend;
         }
-
-        //controls += spstart+'<label><input class="gmnoprint" id="metricchk" type="checkbox" onclick="toggleMetric()" '+(metric ? 'checked' : '')+'>Metric&nbsp;</label>'+spend;
 
         var controlsDiv = document.createElement('DIV');
         controlsDiv.style.cssText = "z-index:9999;";

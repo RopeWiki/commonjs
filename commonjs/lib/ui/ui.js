@@ -229,17 +229,7 @@ function loadUserInterface(document) {
     }
 
     // load metric system
-    if (metric) {
-        var texts = document.getElementsByClassName('uft');
-        for (var i = 0; i < texts.length; i++)
-            texts[i].innerHTML = uconv(texts[i].innerHTML, ft);
-        texts = document.getElementsByClassName('umi');
-        for (var i = 0; i < texts.length; i++)
-            texts[i].innerHTML = uconv(texts[i].innerHTML, mi);
-        texts = document.getElementsByClassName('urap');
-        for (var i = 0; i < texts.length; i++)
-            texts[i].innerHTML = uconv(texts[i].innerHTML, rap);
-    }
+    setMetricFields();
 
     //if (french)
     {
@@ -478,8 +468,6 @@ function loadUserInterface(document) {
             var url = LUCA_BASE_URL + "/rwr?waterflow=winfo=" + coords;
             $.getJSON(geturl(url),
                 function(data) {
-                    // forecast.txt_forecast.forecastday.   period, icon_url, title, metric ? fcttext_metric : fcttext  Night
-                    // simpleforecast
 
                     var w = "";
                     if (data && data.list && data.list.length > 0) {
@@ -878,7 +866,6 @@ function isWeekend(dayOfWeek) {
         ? "weekend"
         : "";
 }
-
 
 // Pop-out link support
 function addPopOutLinkSupport() {

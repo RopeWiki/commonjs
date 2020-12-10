@@ -33,14 +33,6 @@ function smallstyle() {
     */
 }
 
-// TODO: This function appears to be unused; remove.
-function rap(raps, space) {
-    if (isNaN(raps))
-        return "";
-
-    return raps + (space ? "&nbsp;" : "") + "r";
-}
-
 function acaconv(str, more) {
     var end = str.indexOf(')');
     if (end < 0)

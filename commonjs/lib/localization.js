@@ -1,17 +1,29 @@
-function toggleMetric(force) {
+function toggleMetric() {
     metric = !metric;
     setCookie("metric", metric ? "on" : "", 360*10); // 10 years
-    document.body.style.cursor = 'wait';
-    window.location.reload();
-    //google.map.event.trigger(map,'resize');
+
+    setMetricFields();
+
+    loadInlineWeather();
 }
 
-function toggleFrench(force) {
+function setMetricFields() {
+    var texts = document.getElementsByClassName('uft');
+    for (var i = 0; i < texts.length; i++)
+        texts[i].innerHTML = uconv(texts[i].innerHTML, ft);
+    texts = document.getElementsByClassName('umi');
+    for (var i = 0; i < texts.length; i++)
+        texts[i].innerHTML = uconv(texts[i].innerHTML, mi);
+    texts = document.getElementsByClassName('urap');
+    for (var i = 0; i < texts.length; i++)
+        texts[i].innerHTML = uconv(texts[i].innerHTML, rap);
+}
+
+function toggleFrench() {
     french = !french;
     setCookie("french", french ? "on" : "", 360*10); // 10 years
     document.body.style.cursor = 'wait';
     window.location.reload();
-    //google.map.event.trigger(map,'resize');
 }
 
 function getLinkLang(node) {
