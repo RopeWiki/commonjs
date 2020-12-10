@@ -10,10 +10,10 @@ function toggleMetric() {
 function setMetricFields() {
     var texts = document.getElementsByClassName('uft');
     for (var i = 0; i < texts.length; i++)
-        texts[i].innerHTML = uconv(texts[i].innerHTML, ft);
+        texts[i].innerHTML = uconv(texts[i].innerHTML, ftStr);
     texts = document.getElementsByClassName('umi');
     for (var i = 0; i < texts.length; i++)
-        texts[i].innerHTML = uconv(texts[i].innerHTML, mi);
+        texts[i].innerHTML = uconv(texts[i].innerHTML, miStr);
     texts = document.getElementsByClassName('urap');
     for (var i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, rap);

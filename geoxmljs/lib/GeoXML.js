@@ -3013,10 +3013,6 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
             thtwoy = img.height;
         }
         if (thtwox <= 0 || thtwoy <= 0) {
-            //// if size not avail, assume fractions
-            //xu = yu = "fraction";
-            //x = "0.5";
-            //y = "0";
             thtwox = thtwoy = iconsize;
         }
         if (xu == "fraction") {
@@ -3029,7 +3025,7 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
             anchorscale.y = 1 - parseFloat(y);
         }
         else {
-            anchorscale.y = 1 - parseFloat(y) / thtwoy;
+            anchorscale.y = 1 - parseFloat(y) / thtwoy; //the y axis starts from the bottom at 0, so this should probably not be '1 minus'
         }
     }
 

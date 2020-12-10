@@ -19,7 +19,9 @@ function distance(p1, p2) {
 }
 
 // See uconv below.
-function ft(feet, space) {
+function ftStr(feet, space) {
+    feet = feet.replace(",", "");
+
     var wasMetric = feet.includes("m");
 
     feet = parseFloat(feet);
@@ -39,7 +41,9 @@ function ft(feet, space) {
 }
 
 // See uconv below.
-function mi(miles, space) {
+function miStr(miles, space) {
+    miles = miles.replace(",", "");
+
     var wasMetric = miles.includes("km");
 
     miles = parseFloat(miles);
@@ -87,7 +91,7 @@ function uconv(str, cnv) {
     vstr[0] = cnv(vstr[0], str.indexOf('&nbsp;') > 0);
 
     if (vstr.length > 1)
-        vstr[1] = ft(vstr[1], str.indexOf('&nbsp;') > 0);
+        vstr[1] = ftStr(vstr[1], str.indexOf('&nbsp;') > 0);
 
     return vstr.join(" " + sep);
 }
@@ -126,7 +130,7 @@ function getGeoElevation(latLng, element, holdingText) {
                 if (results[0]) {
                     var elev = results[0].elevation * m2ft;
                     var res = document.getElementById(element);
-                    if (res) res.innerHTML = res.innerHTML.replace(holdingText, ft(elev));
+                    if (res) res.innerHTML = res.innerHTML.replace(holdingText, ftStr(elev));
                 }
             });
     }

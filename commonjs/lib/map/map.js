@@ -107,9 +107,9 @@ function loadlist(list, fitbounds) {
                     if (ps[0] >= '0' && ps[0] <= '9') {
                         var unit = ps.slice(-2);
                         if (unit == 'mi')
-                            pk[p] = pre + uconv(ps, mi);
+                            pk[p] = pre + uconv(ps, miStr);
                         else if (unit == 'ft')
-                            pk[p] = pre + uconv(ps, ft);
+                            pk[p] = pre + uconv(ps, ftStr);
                     }
                 }
                 str = pk.join(' ');

@@ -1,8 +1,7 @@
 
 var mapid = '#mapbox';
 var iconsize = 16;
-//scale global override to make waypoint markers a bit bigger
-var globalIconScaleFactor = 1.5;
+var globalIconScaleFactor = 1.5; //global override to make waypoint icons a bit bigger
 var checkbox = false;
 var zI = 0;
 var coordst = "<" + "coordinates" + ">";
@@ -33,8 +32,6 @@ function ILabel(pos, txt, map, scale, color) {
     var fs = Math.round(10 * scale);
     if (fs < 7) fs = 7;
     if (fs > 12) fs = 12;
-    //alert("pre");
-    //alert(icon);
     var image = {};
 
     var z = zI;
@@ -52,11 +49,6 @@ function ILabel(pos, txt, map, scale, color) {
 
     var m = new google.maps.Marker({ title2: "", map: map, position: pos, clickable: false, icon: image, zIndex: z, optimized: false });
 
-    /*
-    var m0 = new GeoXml.Label(point,name,""this.map,scale,-1, "white");
-    var m1 = new GeoXml.Label(point,name,"",this.map,scale,1, "white");
-    var m2 = new GeoXml.Label(point,name,"",this.map,scale,0, "black");
-    */
     return m;
 }
 
@@ -155,7 +147,6 @@ function getTolerance(map) {
     var proj = map.getProjection();
     var bounds = map.getBounds();
     if (!proj || !bounds) {
-        //console.log("null proj");
         return 1e-5;
     }
     var nwll = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getSouthWest().lng());
@@ -175,49 +166,13 @@ function getTolerance(map) {
         return proj.fromPointToLatLng(point);
     }
 
-
     // compute pixel locations
     var center = new google.maps.LatLng((bounds.getNorthEast().lat() + bounds.getSouthWest().lat()) / 2, (bounds.getNorthEast().lng() + bounds.getSouthWest().lng()) / 2);
     var c = fromLatLngToPixel(center);
     var p = { x: c.x + psize, y: c.y + psize };
     var pos = fromPixelToLatLng(p);
-    /*    
-    new google.maps.Marker({
-    	      map:map,
-            position: center,
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 16,
-                color: "#aaffaa",
-            strokeColor:"#aaffff",
-            strokeOpacity:0.5,
-            strokeWeight:8
-            },
-            draggable: false,
-            clickable: false,
-            optimized: false,
-            zIndex: 100
-            });
 
-    new google.maps.Marker({
-    	      map:map,
-            position: pos,
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 16,
-                color: "#aaffaa",
-            strokeColor:"#aaffaa",
-            strokeOpacity:0.5,
-            strokeWeight:8
-            },
-            draggable: false,
-            clickable: false,
-            optimized: false,
-            zIndex: 100
-            });
-    */
     map.tolerance = Math.min(Math.abs(pos.lat() - center.lat()), Math.abs(pos.lng() - center.lng()));
-    //console.log("tol="+map.tolerance);
 };
 
 //sometimes the waypoint descriptions have info that we already include, such as coords & elevation
