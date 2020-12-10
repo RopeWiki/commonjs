@@ -154,7 +154,7 @@ function loadlist(list, fitbounds) {
         // load addbutton
         var kmladdbutton = document.getElementById("kmladdbutton");
         if (kmladdbutton)
-            contentString += '<input class="submitoff addbutton" type="submit" onclick="addbutton(\'' + item.id.split("'").join("%27") + '\')" value="+">';
+            contentString += '<input class="submitoff addbutton" title="Add to List" type="submit" onclick="addbutton(\'' + item.id.split("'").join("%27") + '\')" value="+">';
 
         // add elevation
         //contentString += '<br><span id="infoelevation"></span>';
@@ -199,30 +199,36 @@ function loadlist(list, fitbounds) {
             optimized: false
         });
 
-        marker.q = q;
+        marker.q = q; //quality (star) rating
         marker.oposition = positionm;
-        //var tooltip = tooltip({ marker: marker, content: "<b>"+nonamespace(item.id)+"</b><br>"+descm, cssClass: 'tooltip' });
 
         // add permit status by overlaying the 'closed' image on the marker
         if (permitStatus !== 'No') {
             var iconUrl = "";
+            var iconSize, iconAnchor;
 
             switch (permitStatus) {
             case "Yes":
                 iconUrl = ICON_PERMIT_YES;
+                iconSize = new google.maps.Size(25, 25);
+                iconAnchor = new google.maps.Point(12, 26);
                 break;
             case "Restricted":
                 iconUrl = ICON_RESTRICTED;
+                iconSize = new google.maps.Size(20, 20);
+                iconAnchor = new google.maps.Point(9.5, 24);
                 break;
             case "Closed":
                 iconUrl = ICON_CLOSED;
+                iconSize = new google.maps.Size(25, 25);
+                iconAnchor = new google.maps.Point(12, 26);
                 break;
             }
 
             var closedImage = {
                 url: iconUrl,
-                scaledSize: new google.maps.Size(25, 25),
-                anchor: new google.maps.Point(12, 26)
+                scaledSize: iconSize,
+                anchor: iconAnchor
             };
 
             var closedMarker = new google.maps.Marker({
@@ -233,6 +239,9 @@ function loadlist(list, fitbounds) {
                 zIndex: zindexm + 1,
                 optimized: false
             });
+
+            closedMarker.q = q; //quality (star) rating
+            markers.push(closedMarker);
         }
 
         google.maps.event.addListener(marker,

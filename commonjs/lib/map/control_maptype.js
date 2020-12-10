@@ -1,6 +1,5 @@
 ﻿//gdropdown
 
-
 function initMapTypeControl() {
 
     var mapTypeIds = GetMapTypeIds();
@@ -199,7 +198,7 @@ function dropDownItemsList(options) {
     container.className = "map-type-control items-list";
     container.id = options.id;
 
-    for (i = 0; i < options.items.length; i++) {
+    for (var i = 0; i < options.items.length; i++) {
         container.appendChild(options.items[i]);
     }
 
@@ -319,11 +318,10 @@ function setDefaultMapLayer() {
         map.setMapTypeId(defaultLayer);
     }
 
-    observer.observe(document.getElementById('mapbox'), { attributes: true, childList: true, subtree: true });
+    mapTypeObserver.observe(document.getElementById('mapbox'), { attributes: true, childList: true, subtree: true });
 }
 
-
-var callback = function (mutationsList, observer) {
+var mapTypeChangeCallback = function (mutationsList, observer) {
     for (var i = 0; i < mutationsList.length; i++) {
         var mutation = mutationsList[i];
 
@@ -339,4 +337,5 @@ var callback = function (mutationsList, observer) {
     }
 };
 
-var observer = new MutationObserver(callback);
+//waits to set the default map type until after the map element is initialized on the page
+var mapTypeObserver = new MutationObserver(mapTypeChangeCallback);
