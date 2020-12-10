@@ -1,6 +1,8 @@
 
 var mapid = '#mapbox';
 var iconsize = 16;
+//scale global override to make waypoint markers a bit bigger
+var globalIconScaleFactor = 1.5;
 var checkbox = false;
 var zI = 0;
 var coordst = "<" + "coordinates" + ">";
@@ -61,28 +63,30 @@ function ILabel(pos, txt, map, scale, color) {
 function validateIconUrl(href) {
 
     // patch default marker icons for CalTopo
-    if (
-        href == "http://caltopo.com/resource/imagery/icons/circle/FF0000.png" ||
-        href == "http://caltopo.com/resource/imagery/icons/circle/000000.png" ||
-        href == "http://caltopo.com/static/images/icons/c:ring,FF0000.png" ||
-        href == "http://caltopo.com/static/images/icons/c:ring,000000.png"
-    )
-        href = 'http://maps.google.com/mapfiles/kml/shapes/open-diamond.png';
+    if (href.includes("caltopo.com")) {
 
-    // replace known bad icon urls:
-    if (href == "http://caltopo.com/resource/imagery/icon.png?cfg=nps-parking" ||
-        href == "http://caltopo.com/static/images/icons/nps-parking.png"
-    )
-        href = 'http://maps.google.com/mapfiles/kml/shapes/parking_lot.png';
+        if (href.includes("circle/FF0000.png") ||
+            href.includes("circle/000000.png") ||
+            href.includes("c:ring,FF0000.png") ||
+            href.includes("c:ring,000000.png") ||
+            href.includes("cfg=point")
+        )
+            href = 'http://maps.google.com/mapfiles/kml/shapes/open-diamond.png';
 
-    if (href == "http://caltopo.com/static/images/icons/camera.png")
-        href = 'http://maps.google.com/mapfiles/kml/pal4/icon46.png';
+        // replace known bad icon urls:
+        if (href.includes("nps-parking"))
+            href = 'http://maps.google.com/mapfiles/kml/shapes/parking_lot.png';
 
-    if (href == "http://caltopo.com/static/images/icons/tent.png")
-        href = 'http://maps.google.com/mapfiles/kml/shapes/campground.png';
+        if (href.includes("camera.png") ||
+            href.includes("nps-camera"))
+            href = 'http://maps.google.com/mapfiles/kml/pal4/icon46.png';
 
-    if (href == "http://caltopo.com/static/images/icons/crossbones.png")
-        href = 'http://maps.google.com/mapfiles/kml/shapes/caution.png';
+        if (href.includes("tent.png"))
+            href = 'http://maps.google.com/mapfiles/kml/shapes/campground.png';
+
+        if (href.includes("crossbones.png"))
+            href = 'http://maps.google.com/mapfiles/kml/shapes/caution.png';
+    }
 
     // add others as needed
 

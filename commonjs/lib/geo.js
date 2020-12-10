@@ -29,15 +29,13 @@ function ft(feet, space) {
     if (metric && !wasMetric) //convert to metric
         feet /= m2ft;
 
-    if (!metric && wasMetric) //convert to feet
+    if (!metric && wasMetric) //convert to imperial
         feet *= m2ft;
 
     if (!metric) //round to nearest 5 feet
         feet = Math.round(feet / 5) * 5;
-
-    return metric
-        ? Math.round(feet).toLocaleString() + (space ? "&nbsp;" : "") + "m"
-        : Math.round(feet).toLocaleString() + (space ? "&nbsp;" : "") + "ft";
+    
+    return Math.round(feet).toLocaleString() + (space ? "&nbsp;" : "") + (metric ? "m" : "ft");
 }
 
 // See uconv below.
@@ -51,18 +49,15 @@ function mi(miles, space) {
     if (metric && !wasMetric) //convert to metric
         miles /= km2mi;
 
-    if (!metric && wasMetric) //convert to miles
+    if (!metric && wasMetric) //convert to imperial
         miles *= km2mi;
 
-    return metric
-        ? miles.toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + "km"
-        : miles.toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + "mi";
+    return miles.toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + (metric ? "km" : "mi");
 }
 
 // called by uconv below.
 function rap(raps, space) {
-    if (isNaN(raps))
-        return "";
+    if (isNaN(raps)) return "";
 
     return raps + (space ? "&nbsp;" : "") + "r";
 }

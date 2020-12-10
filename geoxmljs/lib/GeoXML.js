@@ -424,23 +424,24 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
     var shadow;
     var href;
     var scale = 1;
-    if (instyle && instyle.scale) {
-        scale = instyle.scale;
-    }
 
-
+    scale *= globalIconScaleFactor;
+    
     var bicon;
 
     if (instyle) {
         bicon = instyle;
+
+        if (instyle.scale)
+            scale = instyle.scale;
     }
     else {
-        var bicon = new google.maps.MarkerImage("http://maps.google.com/mapfiles/kml/pal3/icon40.png",
-            new google.maps.Size(iconsize * scale, iconsize * scale), //size
-            new google.maps.Point(0, 0), //origin
-            new google.maps.Point(iconsize / 2 * scale, iconsize / 2 * scale), //anchor
-            new google.maps.Size(iconsize * scale, iconsize * scale) //scaledSize 
-        );
+        bicon = {
+            url: "http://maps.google.com/mapfiles/kml/pal3/icon40.png",
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(iconsize / 2 * scale, iconsize / 2 * scale),
+            scaledSize: new google.maps.Size(iconsize * scale, iconsize * scale)
+        };
     }
 
     if (this.opts.baseicon) {
@@ -562,20 +563,15 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
         }
         desc = text;
     }
-    //markeroptions.image = icon.image;
-    //markeroptions.image = icon.image;
+
     var start = icon.url.substring(0, 4); //handle relative urls
-    if (start.match(/^http/i) || start.substr(0, 1) == '/') {
-    }
-    else {
+    if (!start.match(/^http/i) && start.substr(0, 1) != '/') {
+
         if (typeof this.url == "string") {
             var slash = this.url.lastIndexOf("/");
-            var changed = false;
-            var subchanged = false;
             var newurl;
             if (slash != -1) {
                 newurl = this.url.substring(0, slash);
-                changed = true;
                 slash = 0;
             }
 
@@ -585,7 +581,6 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
                 if (slash != -1) {
                     newurl = newurl.substring(0, slash);
                 }
-                changed = true;
             }
 
             if (newurl != "" && icon.url.match(/^..\//)) {
@@ -1991,8 +1986,6 @@ GeoXml.prototype.contentToggle = function (i, show) {
             }
         }
     }
-    //google.events.trigger(this,"changed");
-    //console.log("changed "+f);
 };
 
 GeoXml.prototype.showHide = function (a, show, p) { // if a is not defined then p will be.
@@ -3015,15 +3008,15 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
         }
         else {
             var img = new Image();
-            img.src = href;
+            img.src = href; //probably not ever going to work, because it loads async
             thtwox = img.width;
             thtwoy = img.height;
         }
         if (thtwox <= 0 || thtwoy <= 0) {
-            // if size not avail, assume fractions
-            xu = yu = "fraction";
-            x = "0.5";
-            y = "0";
+            //// if size not avail, assume fractions
+            //xu = yu = "fraction";
+            //x = "0.5";
+            //y = "0";
             thtwox = thtwoy = iconsize;
         }
         if (xu == "fraction") {
@@ -3043,6 +3036,9 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
     if (typeof myscale == "number") {
         scale = myscale;
     }
+
+    scale *= globalIconScaleFactor;
+
     if (!!href) { }
     else {
         if (!!currstyle) {
@@ -3053,9 +3049,12 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
         }
         else {
             href = "http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png";
-            tempstyle = new google.maps.MarkerImage(href, new google.maps.Size(iconsize / 2 * scale, iconsize / 2 * scale));
-            tempstyle.origin = new google.maps.Point(0 * scale, 0 * scale);
-            tempstyle.anchor = new google.maps.Point(iconsize / 2 * scale * anchorscale.x, iconsize / 2 * scale * anchorscale.y);
+            tempstyle = {
+                url: href,
+                size: new google.maps.Size(iconsize / 2 * scale, iconsize / 2 * scale),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(iconsize / 2 * scale * anchorscale.x, iconsize / 2 * scale * anchorscale.y)
+            };
         }
     }
     if (!!href) {
@@ -3074,7 +3073,19 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
             }
             tempstyle.url = href;
         } else {
-            tempstyle = new google.maps.MarkerImage(href, new google.maps.Size(iconsize, iconsize), new google.maps.Point(0, 0), new google.maps.Point(iconsize * scale * anchorscale.x, iconsize * scale * anchorscale.y), new google.maps.Size(iconsize * scale, iconsize * scale));
+            var anchorx = iconsize * scale * anchorscale.x;
+            var anchory = iconsize * scale * anchorscale.y;
+            var anchor = new google.maps.Point(anchorx, anchory);
+
+            if (href.includes("paddle")) //the default anchor is the middle of the bottom of the image, so clear this if the icon is a paddle
+                anchor = null;
+
+            tempstyle = {
+                url: href,
+                origin: new google.maps.Point(0, 0),
+                anchor: anchor,
+                scaledSize: new google.maps.Size(iconsize * scale, iconsize * scale)
+            };
             if (this.opts.printgif) {
                 var bits = href.split("/");
                 var gif = bits[bits.length - 1];
@@ -3126,7 +3137,7 @@ GeoXml.prototype.handleStyle = function (style, sid, currstyle) {
     var fill, href, color, colormode, outline;
     fill = 1;
     outline = 1;
-    myscale = 1;
+    var myscale = 1;
     var strid = "#";
     if (sid) {
         strid = "#" + sid;
@@ -3832,13 +3843,14 @@ GeoXml.prototype.processing = function (xmlDoc, title2, latlon, desc, sbid) {
                 style.shadow = shadow + "_shadow.png";
             }
             else {
-                style = new google.maps.MarkerImage(that.rssicon, new google.maps.Size(iconsize, iconsize)); //_DEFAULT_ICONG_DEFAULT_ICON
-                style.origin = new google.maps.Point(0, 0);
-                style.anchor = new google.maps.Point(iconsize / 2, iconsize);
-                style.url = that.rssicon;
+                style = {
+                    url: that.rssicon,
+                    size: new google.maps.Size(iconsize, iconsize),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(iconsize / 2, iconsize)
+                };
                 shadow = that.rssicon.replace(".png", ".shadow.png");
                 style.shadow = shadow + "_shadow.png";
-                //alert(style.url);
             }
             style.strokeColor = "#00FFFF";
             style.strokeWeight = "3";

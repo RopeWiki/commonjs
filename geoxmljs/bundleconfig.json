@@ -2,9 +2,9 @@
   {
     "outputFileName": "out/Geoxml.min.js",
     "inputFiles": [
+      "lib/functions.js",
       "lib/geoxml.js",
       "lib/elevation.js",
-      "lib/functions.js",
       "lib/label.js",
       "lib/messagebox.js",
       "lib/gmapsextensions.js",
