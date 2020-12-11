@@ -2938,146 +2938,155 @@ GeoXml.prototype.handlePlacemarkGeometry = function (mark, geom, idx, depth, ful
 GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
 
     var scale = 1;
-    var tempstyle;
-    var anchorscale = { x: 0.5, y: 0.5 };
+    var size, scaledSize, anchorscale, shadow;
+    var origin = new google.maps.Point(0, 0);
 
+    //hotspot in a .kml file specifies the position within the Icon that is "anchored" to the <Point>
     if (hotspot) {
 
-        var thtwox, thtwoy;
+        anchorscale = {};
 
-        var x = hotspot.getAttribute("x");
-        var xu = hotspot.getAttribute("xunits");
-        var yu = hotspot.getAttribute("yunits");
-        var y = hotspot.getAttribute("y");
+        anchorscale.x = hotspot.getAttribute("x");
+        anchorscale.xunits = hotspot.getAttribute("xunits");
 
-        if (this.opts.baseicon) {
-            thtwox = this.opts.baseicon.size.width;
-            thtwoy = this.opts.baseicon.size.height;
-        }
-        else {
-            const img = new Image();
-            img.src = href;
-            //await img.decode();
-
-            //image is now loaded
-            thtwox = img.width;
-            thtwoy = img.height;
-        }
-
-        if (thtwox <= 0 || thtwoy <= 0) {
-            thtwox = thtwoy = iconsize;
-        }
-        if (xu == "fraction") {
-            anchorscale.x = parseFloat(x);
-        }
-        else {
-            anchorscale.x = parseFloat(x) / thtwox;
-        }
-        if (yu == "fraction") {
-            anchorscale.y = 1 - parseFloat(y);
-        }
-        else {
-            anchorscale.y = 1 - parseFloat(y) / thtwoy; //the y axis starts from the bottom at 0, so this should probably not be '1 minus'
-        }
+        anchorscale.y = hotspot.getAttribute("y");
+        anchorscale.yunits = hotspot.getAttribute("yunits");
+    }
+    else {
+        //no hotspot defined, default google maps anchor is center of bottom of icon
+        //however, if icon is a diamond, set it to the center
+        if (href.includes("open-diamond"))
+            anchorscale = { x: 0.5, y: 0.5 };
     }
 
     if (typeof myscale == "number") {
         scale = myscale;
     }
 
-    scale *= globalIconScaleFactor;
-
     if (href) {
+
         if (!!this.opts.baseicon) {
-            var bicon = this.opts.baseicon;
-            tempstyle = {
-                url: href,
-                size: this.opts.baseicon.size
-            };
-            tempstyle.origin = this.opts.baseicon.origin;
-            tempstyle.anchor = new google.maps.Point(this.opts.baseicon.size.width * scale * anchorscale.x, this.opts.baseicon.size.height * scale * anchorscale.y);
+
+            size = this.opts.baseicon.size;
+            origin = this.opts.baseicon.origin;
+            
             if (this.opts.baseicon.scaledSize) {
-                tempstyle.scaledSize = this.opts.baseicon.scaledSize;
-            }
-            else {
-                var w = bicon.size.width * scale;
-                var h = bicon.size.height * scale;
-                tempstyle.scaledSize = new google.maps.Size(w, h);
-            }
-            tempstyle.url = href;
-        } else {
-            var anchorx = iconsize * scale * anchorscale.x;
-            var anchory = iconsize * scale * anchorscale.y;
-            var anchor = new google.maps.Point(anchorx, anchory);
-
-            if (href.includes("paddle")) //the default anchor is the middle of the bottom of the image, so clear this if the icon is a paddle
-                anchor = null;
-
-            tempstyle = {
-                url: href,
-                origin: new google.maps.Point(0, 0),
-                anchor: anchor,
-                scaledSize: new google.maps.Size(iconsize * scale, iconsize * scale)
-            };
-
-            if (this.opts.printgif) {
-                var bits = href.split("/");
-                var gif = bits[bits.length - 1];
-                gif = this.opts.printgifpath + gif.replace(/.png/i, ".gif");
-                tempstyle.printImage = gif;
-                tempstyle.mozPrintImage = gif;
-            }
-
-            if (!!this.opts.noshadow) { //shadow image code probably needs removed 
-                tempstyle.shadow = "";
-            } else {
-                // Try to guess the shadow image
-                if (href.indexOf("/red.png") > -1 ||
-                    href.indexOf("/blue.png") > -1 ||
-                    href.indexOf("/green.png") > -1 ||
-                    href.indexOf("/yellow.png") > -1 ||
-                    href.indexOf("/lightblue.png") > -1 ||
-                    href.indexOf("/purple.png") > -1 ||
-                    href.indexOf("/orange.png") > -1 ||
-                    href.indexOf("/pink.png") > -1 ||
-                    href.indexOf("-dot.png") > -1)
-                {
-                    tempstyle.shadow = "http://maps.google.com/mapfiles/ms/icons/msmarker.shadow.png";
-                }
-                else if (href.indexOf("-pushpin.png") > -1 ||
-                    href.indexOf("/pause.png") > -1 ||
-                    href.indexOf("/go.png") > -1 ||
-                    href.indexOf("/stop.png") > -1)
-                {
-                    tempstyle.shadow = "http://maps.google.com/mapfiles/ms/icons/pushpin_shadow.png";
-                } else {
-                    var shadow = href.replace(".png", ".shadow.png");
-
-                    if (shadow.indexOf(".jpg")) shadow = "";
-
-                    tempstyle.shadow = shadow;
-                }
+                scaledSize = this.opts.baseicon.scaledSize;
             }
         }
-    } else { //no url assigned for the icon
+        else {
+            //shadow image code probably needs removed
+            //google maps removed shadows, but we could manually add them back as a separate marker
+            if (!!this.opts.noshadow
+            ) { 
+                shadow = "";
+            } else {
+                // Try to guess the shadow image
+                if (href.includes("/red.png") ||
+                    href.includes("/blue.png") ||
+                    href.includes("/green.png") ||
+                    href.includes("/yellow.png") ||
+                    href.includes("/lightblue.png") ||
+                    href.includes("/purple.png") ||
+                    href.includes("/orange.png") ||
+                    href.includes("/pink.png") ||
+                    href.includes("-dot.png")
+                ) {
+                    shadow = "http://maps.google.com/mapfiles/ms/icons/msmarker.shadow.png";
+                }
+                else if (href.includes("-pushpin.png") ||
+                    href.includes("/pause.png") ||
+                    href.includes("/go.png") ||
+                    href.includes("/stop.png")
+                ) {
+                    shadow = "http://maps.google.com/mapfiles/ms/icons/pushpin_shadow.png";
+                }
+                else if (!href.includes(".jpg"))
+                    shadow = href.replace(".png", ".shadow.png");
+            }
+        }
+    }
+    else { //no url assigned for the icon
 
         if (!!currstyle && !!currstyle.url) {
             href = currstyle.url;
             scale = currstyle.scale;
         } else {
             href = "http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png";
-            tempstyle = {
-                url: href,
-                size: new google.maps.Size(iconsize / 2 * scale, iconsize / 2 * scale),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(iconsize / 2 * scale * anchorscale.x, iconsize / 2 * scale * anchorscale.y)
-            };
-        }
+            anchorscale = { x: 0.5, y: 0.5 };
+        };
     }
 
-    if (this.opts.noshadow) tempstyle.shadow = "";
+    //now assemble the icon
+    if (!size) { //todo: load actual image from web and get size
+
+        let width, height;
+
+        const img = new Image();
+        img.src = href;
+        //await img.decode();
+
+        //image is now loaded
+        width = img.width;
+        height = img.height;
+
+        width = 32;
+        height = 32;
+        size = new google.maps.Size(width, height);
+    }
+
+    var anchor;
+    if (!!anchorscale) {
+        let x, y;
+        switch (anchorscale.xunits) {
+        case "pixels": //coordinates start at left
+            x = anchorscale.x;
+            break;
+        case "insetPixels": // reversed, coordinates start at right
+            x = size.width - anchorscale.x;
+            break;
+        case "fraction":
+        default:
+            x = anchorscale.x * size.width;
+            break;
+        }
+
+        switch (anchorscale.yunits) {
+        case "pixels": // coordinates start at top
+            y = size.height - anchorscale.y;
+            break;
+        case "insetPixels": // reversed, coordinates start at bottom
+            y = anchorscale.y;
+            break;
+        case "fraction":
+        default:
+            y = anchorscale.y * size.height;
+            break;
+        }
+
+        anchor = new google.maps.Point(x, y);
+    }
+
+    scale *= globalIconScaleFactor;
+
+    //scale icon size and anchor for desired size
+    //scaledSize = new google.maps.Size(size.width * scale, size.height * scale);
+    scaledSize = new google.maps.Size(iconsize * scale, iconsize * scale);
+
+    if (!!anchor) {
+        anchor = new google.maps.Point(anchor.x * (scaledSize.width / size.width), anchor.y * (scaledSize.height / size.height));
+    }
+
+    var icon = {
+        url: href,
+        //size: size,
+        scaledSize: scaledSize,
+        origin: origin,
+        anchor: anchor,
+        shadow: shadow
+    };
     
-    return tempstyle;
+    return icon;
 };
 
 GeoXml.prototype.handleStyle = function (style, sid, currstyle) {
