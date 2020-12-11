@@ -3065,6 +3065,7 @@ GeoXml.prototype.makeIcon = function (currstyle, href, id, myscale, hotspot) {
         const img = new Image();
         img.icon = icon;
         img.anchorscale = anchorscale;
+        img.overlaymanager = this.overlayman;
         img.onload = iconImageLoad;
         img.src = href;
     }
@@ -3079,6 +3080,7 @@ function iconImageLoad() {
 
     if (!!anchorscale) {
         let x, y;
+
         switch (anchorscale.xunits) {
         case "pixels": //coordinates start at left
             x = anchorscale.x;
@@ -3105,13 +3107,15 @@ function iconImageLoad() {
             break;
         }
 
-        let scaledSize = this.icon.scaledSize;
-
         //now scale based on scaledSize
-        let anchor = new google.maps.Point(x * (scaledSize.width / this.width), y * (scaledSize.height / this.height));
-
-        let markers = gxml.overlayman.markers.filter(marker => !!marker.icon && marker.icon.id === this.icon.id);
-        if (!!markers) markers.forEach(marker => marker.icon.anchor = anchor);
+        if (!!this.overlaymanager) {
+            let markers = this.overlaymanager.markers.filter(marker => !!marker.icon && marker.icon.id === this.icon.id);
+            if (!!markers) {
+                let anchor = new google.maps.Point(x * (this.icon.scaledSize.width / this.width),
+                    y * (this.icon.scaledSize.height / this.height));
+                markers.forEach(marker => marker.icon.anchor = anchor);
+            }
+        }
     }
 }
 
