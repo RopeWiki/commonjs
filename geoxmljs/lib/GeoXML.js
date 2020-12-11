@@ -2966,13 +2966,9 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
     if (href) {
 
         if (!!this.opts.baseicon) {
-
-            size = this.opts.baseicon.size;
             origin = this.opts.baseicon.origin;
-            
-            if (this.opts.baseicon.scaledSize) {
-                scaledSize = this.opts.baseicon.scaledSize;
-            }
+            if (!!this.opts.baseicon.size) size = this.opts.baseicon.size;
+            if (!!this.opts.baseicon.scaledSize) scaledSize = this.opts.baseicon.scaledSize;
         }
         else {
             //shadow image code probably needs removed
@@ -3018,24 +3014,67 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
     }
 
     //now assemble the icon
-    if (!size) { //todo: load actual image from web and get size
 
-        let width, height;
+    scale *= globalIconScaleFactor;
 
-        const img = new Image();
-        img.src = href;
-        //await img.decode();
+    scaledSize = new google.maps.Size(iconsize * scale, iconsize * scale);
 
-        //image is now loaded
-        width = img.width;
-        height = img.height;
+    //anchor is set based on the final 'scale size' of the image. if the anchorscale is set to 'fraction', then we can set the
+    //anchor now. but if it is set to 'pixels', we can't set it until we know the size of the image, which needs to be an async call
+    //in addition, the units of x and y can be a mix of 'fraction' and 'pixels'
+    var anchor;
+    if (!!anchorscale) {
+        let x, y;
+        switch (anchorscale.xunits) {
+        case "pixels":
+        case "insetPixels":
+            break;
+        case "fraction":
+        default:
+            x = anchorscale.x * scaledSize.width;
+            break;
+        }
 
-        width = 32;
-        height = 32;
-        size = new google.maps.Size(width, height);
+        switch (anchorscale.yunits) {
+        case "pixels":
+        case "insetPixels":
+            break;
+        case "fraction":
+        default:
+            y = scaledSize.height - anchorscale.y * scaledSize.height;
+            break;
+        }
+
+        if (!!x && !!y) { //both are set, we can set the anchor and clear the anchorscale
+            anchor = new google.maps.Point(x, y);
+            anchorscale = null;
+        }
     }
 
-    var anchor;
+    var icon = {
+        url: href,
+        size: size,
+        scaledSize: scaledSize,
+        origin: origin,
+        anchor: anchor,
+        shadow: shadow
+    };
+
+    if (!!anchorscale) { //anchorscale still needs to be set, but after we know the image size
+        const img = new Image();
+        img.icon = icon;
+        img.anchorscale = anchorscale;
+        img.onload = iconImageLoad;
+        img.src = href;
+    }
+
+    return icon;
+};
+
+function iconImageLoad() {
+
+    let anchorscale = this.anchorscale;
+
     if (!!anchorscale) {
         let x, y;
         switch (anchorscale.xunits) {
@@ -3043,51 +3082,34 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
             x = anchorscale.x;
             break;
         case "insetPixels": // reversed, coordinates start at right
-            x = size.width - anchorscale.x;
+            x = this.width - anchorscale.x;
             break;
         case "fraction":
         default:
-            x = anchorscale.x * size.width;
+            x = anchorscale.x * this.width;
             break;
         }
 
         switch (anchorscale.yunits) {
         case "pixels": // coordinates start at top
-            y = size.height - anchorscale.y;
+            y = this.height - anchorscale.y;
             break;
         case "insetPixels": // reversed, coordinates start at bottom
             y = anchorscale.y;
             break;
         case "fraction":
         default:
-            y = anchorscale.y * size.height;
+            y = this.height - anchorscale.y * this.height;
             break;
         }
 
-        anchor = new google.maps.Point(x, y);
+        let scaledSize = this.icon.scaledSize;
+
+        //now scale based on scaledSize
+        let anchor = new google.maps.Point(x * (scaledSize.width / this.width), y * (scaledSize.height / this.height));
+        this.icon.anchor = anchor;
     }
-
-    scale *= globalIconScaleFactor;
-
-    //scale icon size and anchor for desired size
-    //scaledSize = new google.maps.Size(size.width * scale, size.height * scale);
-    scaledSize = new google.maps.Size(iconsize * scale, iconsize * scale);
-
-    if (!!anchor) {
-        anchor = new google.maps.Point(anchor.x * (scaledSize.width / size.width), anchor.y * (scaledSize.height / size.height));
-    }
-
-    var icon = {
-        url: href,
-        //size: size,
-        scaledSize: scaledSize,
-        origin: origin,
-        anchor: anchor,
-        shadow: shadow
-    };
-    
-    return icon;
-};
+}
 
 GeoXml.prototype.handleStyle = function (style, sid, currstyle) {
     var that = this;
