@@ -2533,9 +2533,9 @@ GeoXml.prototype.handlePlacemarkGeometry = function (mark, geom, idx, depth, ful
     var markerurl = "";
     var snippet = "";
     l = mark.getAttribute("lat");
-    if (typeof l != "undefined") { lat = l; }
+    if (!!l) { lat = l; }
     l = mark.getAttribute("lon");
-    if (typeof l != "undefined") {
+    if (!!l) {
         newcoords = true;
         lon = l;
     }
@@ -2935,7 +2935,7 @@ GeoXml.prototype.handlePlacemarkGeometry = function (mark, geom, idx, depth, ful
     }
 };
 
-GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
+GeoXml.prototype.makeIcon = function (currstyle, href, id, myscale, hotspot) {
 
     var scale = 1;
     var size, scaledSize, anchorscale, shadow;
@@ -3052,6 +3052,7 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
     }
 
     var icon = {
+        id: id,
         url: href,
         size: size,
         scaledSize: scaledSize,
@@ -3060,7 +3061,7 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
         shadow: shadow
     };
 
-    if (!!anchorscale) { //anchorscale still needs to be set, but after we know the image size
+    if (!!anchorscale) { //anchorscale still needs to be set, but not until we know the image size
         const img = new Image();
         img.icon = icon;
         img.anchorscale = anchorscale;
@@ -3073,6 +3074,7 @@ GeoXml.prototype.makeIcon = function (currstyle, href, myscale, hotspot) {
 
 function iconImageLoad() {
 
+    //image is loaded, we can set the anchor based on its dimensions now that we know them
     let anchorscale = this.anchorscale;
 
     if (!!anchorscale) {
@@ -3099,7 +3101,7 @@ function iconImageLoad() {
             break;
         case "fraction":
         default:
-            y = this.height - anchorscale.y * this.height;
+            y = this.height - (anchorscale.y * this.height);
             break;
         }
 
@@ -3107,7 +3109,9 @@ function iconImageLoad() {
 
         //now scale based on scaledSize
         let anchor = new google.maps.Point(x * (scaledSize.width / this.width), y * (scaledSize.height / this.height));
-        this.icon.anchor = anchor;
+
+        let markers = gxml.overlayman.markers.filter(marker => !!marker.icon && marker.icon.id === this.icon.id);
+        if (!!markers) markers.forEach(marker => marker.icon.anchor = anchor);
     }
 }
 
@@ -3139,7 +3143,7 @@ GeoXml.prototype.handleStyle = function (style, sid, currstyle) {
                 myscale = scale;
             }
             var hs = icons[0].getElementsByTagName("hotSpot");
-            tempstyle = this.makeIcon(currstyle, href, myscale, hs[0]);
+            tempstyle = this.makeIcon(currstyle, href, sid, myscale, hs[0]);
             tempstyle.scale = myscale;
             that.styles[strid] = tempstyle;
         }

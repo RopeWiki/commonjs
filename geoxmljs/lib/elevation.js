@@ -53,7 +53,7 @@ function plotelevation(results, ticks, conv) {
 
     var elem = document.getElementById('elevationgraph');
     elem.style.display = 'block';
-    var elem = document.getElementById('elevationgraph');
+
     var chart = new google.visualization.AreaChart(elem);
     chart.draw(data, {
         //width: 100,
