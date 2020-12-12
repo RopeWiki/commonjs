@@ -3108,13 +3108,11 @@ function iconImageLoad() {
         }
 
         //now scale based on scaledSize
-        if (!!this.overlaymanager) {
+        if (!!this.overlaymanager && !!this.overlaymanager.markers) {
             let markers = this.overlaymanager.markers.filter(marker => !!marker.icon && marker.icon.id === this.icon.id);
-            if (!!markers) {
-                let anchor = new google.maps.Point(x * (this.icon.scaledSize.width / this.width),
-                    y * (this.icon.scaledSize.height / this.height));
-                markers.forEach(marker => marker.icon.anchor = anchor);
-            }
+            
+            let anchor = new google.maps.Point(x * (this.icon.scaledSize.width / this.width), y * (this.icon.scaledSize.height / this.height));
+            markers.forEach(marker => marker.icon.anchor = anchor);
         }
     }
 }
