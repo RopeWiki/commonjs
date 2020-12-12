@@ -7,8 +7,6 @@ var miperslope = 0.1;
 var samplesize = 200;
 var zeroelev = 0;
 var mousemarker;
-//var pelevations;
-
 
 var elevationService;
 
@@ -25,16 +23,13 @@ function elevationinfowindowm(m) {
     if (elevationService)
         elevationService.getElevationForLocations({ 'locations': latlngs }, function (results) {
             // process elevation for marker
-            //var div = document.getElementById('elevation');
-            //if (div!=null) 
             if (results[0]) {
-                var str = m.infoWindow.getContent(); //div.innerHTML;
+                var str = m.infoWindow.getContent();
                 var elev = Math.round(results[0].elevation * m2ft);
                 str = str.replace("#Computing#", ft(elev));
-                m.infoWindow.setContent(str); //div.innerHTML = str;
+                m.infoWindow.setContent(str);
             }
             m.elevation = results;
-            //m.infoWindow.open(map);
         });
 }
 
@@ -48,6 +43,7 @@ function plotelevation(results, ticks, conv) {
         var slope = "";
         if (results[i].g != 0)
             slope = "Slope: " + xdeg(results[i].g) + "º " + results[i].g + "% " + ftxmi(results[i].g / 100 * mi2ft);
+
         data.addRow([slope, Math.round(conv * results[i].elevation)]);
     }
 
@@ -55,6 +51,7 @@ function plotelevation(results, ticks, conv) {
     elem.style.display = 'block';
 
     var chart = new google.visualization.AreaChart(elem);
+
     chart.draw(data, {
         //width: 100,
         //height: height-5, //$("#elevationgraph").height(),
@@ -72,6 +69,15 @@ function plotelevation(results, ticks, conv) {
         focusTarget: 'category',
         tooltip: { trigger: 'selection' }
     });
+
+    // orgChart is my global orgchart chart variable.
+    google.visualization.events.addListener(chart, 'select', selectHandler);
+    
+    // Notice that e is not used or needed.
+    function selectHandler(e) {
+        alert('The user selected' + chart.getSelection().length + ' items.');
+    }
+
     google.visualization.events.addListener(chart, 'onmouseover', function (e) {
         if (mousemarker == null) {
             mousemarker = new google.maps.Marker({
@@ -79,26 +85,50 @@ function plotelevation(results, ticks, conv) {
                 map: map,
                 icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
             });
+
             mousemarker.infowindow = new google.maps.InfoWindow({ content: "" });
+
             google.maps.event.addListener(mousemarker, 'click', function () {
-                //alert("click");
                 mousemarker.infowindow.open(map, mousemarker);
             });
         }
         mousemarker.setPosition(results[e.row].location);
         mousemarker.infowindow.setContent(results[e.row].location.lat().toFixed(4) + "," + results[e.row].location.lng().toFixed(4));
+
+        // code to vertically scroll the elevation chart. I decided it is a better user experience to just shrink the chart instead of scrolling
+        //var graph = document.getElementById('elevationgraph');
+
+        //let graphMin = results.minTick;
+        //let graphMax = results.maxTick;
+        //let currentElevation = results[e.row].elevation;
+        //let scrollTop = graph.scrollTop;
+        //let clientHeight = graph.clientHeight;
+        //let scrollHeight = graph.scrollHeight;
+        //let scalePerPixel = (graphMax - graphMin) / scrollHeight;
+        //let currentDisplayedElevationMax = graphMax - (scrollTop) * scalePerPixel; //top of graph on screen
+        //let currentDisplayedElevationMin = graphMax - (scrollTop + clientHeight) * scalePerPixel; //bottom of graph on screen
+
+        //if (currentElevation < currentDisplayedElevationMin) {
+        //    graph.scrollTop = (graphMax - currentElevation) / scalePerPixel - clientHeight;
+        //}
+
+        //if (currentElevation > currentDisplayedElevationMax) {
+        //    graph.scrollTop = (graphMax - currentElevation) / scalePerPixel;
+        //}
     });
 }
 
 var elevationpl = [];
+function getelevation(pl) {
+    elevationpl.push(pl);
+
+    if (elevationpl.length == 1)
+        getnextelevation();
+}
+
 function getnextelevation() {
     if (elevationpl.length > 0)
         elevationinfowindowp(elevationpl[0], getnextelevation);
-}
-function getelevation(pl) {
-    elevationpl.push(pl);
-    if (elevationpl.length == 1)
-        getnextelevation();
 }
 
 function elevationinfowindowp(pl, computeonly) {
@@ -109,16 +139,25 @@ function elevationinfowindowp(pl, computeonly) {
         var ticks = [];
         var mint = Math.floor(pl.minelev / pertick) * pertick;
         var maxt = Math.ceil(pl.maxelev / pertick) * pertick;
+
         for (var t = mint; t <= maxt; t += pertick)
             ticks.push(t);
-        //alert(ticks);
+
         ticks[0] = pl.minelev;
         var height = Math.round((ticks[ticks.length - 1] - ticks[0]) / pl.conv * hscale);
         pl.ticks = ticks;
 
-        //var elem = document.getElementById('elevationgraph');
-        //elem.style.height = height;
-        $("#elevationgraph").height(height);
+        //only needed if scrolling the client window
+        //pl.elevation.minTick = ticks[0];
+        //pl.elevation.maxTick = maxt;
+
+        let graph = $("#elevationgraph")[0];
+
+        let parentHeight = graph.parentElement.offsetHeight;
+        let greatgrandparentHeight = parseInt(graph.parentElement.parentElement.parentElement.style.maxHeight, 10);
+        let maxHeight = greatgrandparentHeight - parentHeight;
+        graph.style.maxHeight = maxHeight + 'px';
+        graph.style.height = height + 'px';
 
         pl.infoWindow.setContent(document.getElementById('elevationiw').innerHTML);
         pl.infoWindow.open(map);
@@ -133,12 +172,14 @@ function elevationinfowindowp(pl, computeonly) {
             console.log("getElevationAlongPath failed len:" + len);
             return;
         }
+
         var dist = 0;
         for (var i = 0; i < results.length; i++) {
             results[i].elevation = Math.round(results[i].elevation * m2ft);
             if (i > 0) dist += DistanceLength(results[i - 1].location, results[i].location);
             results[i].distance = dist;
         }
+
         var gup = 0, gdn = 0, cup = 0, cdn = 0, gmax = 0, gmin = 0;
         var miperslope2 = miperslope / 2;
         for (var i = 0; i < results.length; i++) {
@@ -154,6 +195,7 @@ function elevationinfowindowp(pl, computeonly) {
                 if (g < -1) { gdn += g; cdn++; if (g < gmin) gmin = g; }
             }
         }
+
         gup = cup > 0 ? Math.round(gup / cup) : 0;
         gdn = cdn > 0 ? Math.round(gdn / cdn) : 0;
 
@@ -188,10 +230,8 @@ function elevationinfowindowp(pl, computeonly) {
         if (absdist < miperslope) absdist = miperslope;
         var slope = Math.round(abselev / (absdist * mi2ft) * 100);
 
-        //var iwstr = pl.infoWindow.content; //
         var div = document.getElementById('elevation');
         if (div != null) {
-            //var str = iwstr; //
             var str = div.innerHTML;
             str = str.replace("####Computing1####", ft(minelev) + " - " + ft(maxelev));
             //str = str.replace("#GL#", abselev>0 ? "Gain" : "Loss");
@@ -200,7 +240,7 @@ function elevationinfowindowp(pl, computeonly) {
             str = str.replace("####Computing4####", xdeg(gup) + "º / " + xdeg(gdn) + "º (Max " + xdeg(gmax) + "º / " + xdeg(gmin) + "º)");
             str = str.replace("####Computing5####", gup + "% / " + gdn + "% (Max " + gmax + "% / " + gmin + "%)");
             str = str.replace("####Computing6####", ftxmi(gup / 100 * mi2ft) + " / " + ftxmi(gdn / 100 * mi2ft));
-            //iwstr = str; //
+
             div.innerHTML = str;
         }
 

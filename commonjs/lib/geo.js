@@ -20,7 +20,7 @@ function distance(p1, p2) {
 
 // See uconv below.
 function ftStr(feet, space) {
-    feet = feet.replace(",", "");
+    feet = feet.toString().replace(",", "");
 
     var wasMetric = feet.includes("m");
 
@@ -42,7 +42,7 @@ function ftStr(feet, space) {
 
 // See uconv below.
 function miStr(miles, space) {
-    miles = miles.replace(",", "");
+    miles = miles.toString().replace(",", "");
 
     var wasMetric = miles.includes("km");
 
