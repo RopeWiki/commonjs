@@ -40,11 +40,11 @@ function plotelevation(results, ticks, conv) {
     data.addColumn('number', 'Elevation');
 
     for (var i = 0; i < results.length; i++) {
-        var slope = "";
-        if (results[i].g != 0)
-            slope = "Slope: " + xdeg(results[i].g) + "º " + results[i].g + "% " + ftxmi(results[i].g / 100 * mi2ft);
-
-        data.addRow([slope, Math.round(conv * results[i].elevation)]);
+        if (results[i].g != 0) {
+            let slope = ftxmi(results[i].g / 100 * mi2ft);
+            var slopeStr = "Slope: " + (slope >= 0 ? "+":"") + ftxmi(results[i].g / 100 * mi2ft) + " ft/mi";
+            data.addRow([slopeStr, Math.round(conv * results[i].elevation)]);
+        }
     }
 
     var elem = document.getElementById('elevationgraph');
@@ -70,14 +70,6 @@ function plotelevation(results, ticks, conv) {
         tooltip: { trigger: 'selection' }
     });
 
-    // orgChart is my global orgchart chart variable.
-    google.visualization.events.addListener(chart, 'select', selectHandler);
-    
-    // Notice that e is not used or needed.
-    function selectHandler(e) {
-        alert('The user selected' + chart.getSelection().length + ' items.');
-    }
-
     google.visualization.events.addListener(chart, 'onmouseover', function (e) {
         if (mousemarker == null) {
             mousemarker = new google.maps.Marker({
@@ -95,7 +87,7 @@ function plotelevation(results, ticks, conv) {
         mousemarker.setPosition(results[e.row].location);
         mousemarker.infowindow.setContent(results[e.row].location.lat().toFixed(4) + "," + results[e.row].location.lng().toFixed(4));
 
-        // code to vertically scroll the elevation chart. I decided it is a better user experience to just shrink the chart instead of scrolling
+        // code to vertically scroll the elevation chart. imo it is a better user experience to just shrink the chart to fit instead of scrolling it
         //var graph = document.getElementById('elevationgraph');
 
         //let graphMin = results.minTick;
@@ -156,8 +148,11 @@ function elevationinfowindowp(pl, computeonly) {
         let parentHeight = graph.parentElement.offsetHeight;
         let greatgrandparentHeight = parseInt(graph.parentElement.parentElement.parentElement.style.maxHeight, 10);
         let maxHeight = greatgrandparentHeight - parentHeight;
+        if (maxHeight / ticks.Length < 10) maxHeight = 1; //available window area too small, hide chart altogether
         graph.style.maxHeight = maxHeight + 'px';
+
         graph.style.height = height + 'px';
+
 
         pl.infoWindow.setContent(document.getElementById('elevationiw').innerHTML);
         pl.infoWindow.open(map);
@@ -214,13 +209,6 @@ function elevationinfowindowp(pl, computeonly) {
             path.push(results[i].location);
         }
 
-        /*
-        polyline = new google.maps.Polyline({
-          path: path,
-          strokeColor: "#000000",
-          map: map});
-        */
-
         var abselev = (maxelev - minelev) * (mini < maxi ? 1 : -1);
         var bar = Lance$(pl.sidebarid);
         if (bar && bar.innerHTML)
@@ -228,18 +216,18 @@ function elevationinfowindowp(pl, computeonly) {
 
         var absdist = (results[maxi].distance - results[mini].distance) * (mini < maxi ? 1 : -1);
         if (absdist < miperslope) absdist = miperslope;
-        var slope = Math.round(abselev / (absdist * mi2ft) * 100);
+        //var slope = Math.round(abselev / (absdist * mi2ft) * 100);
 
         var div = document.getElementById('elevation');
         if (div != null) {
             var str = div.innerHTML;
-            str = str.replace("####Computing1####", ft(minelev) + " - " + ft(maxelev));
+            /* Min/Max Elev*/         str = str.replace("####Computing1####", ft(maxelev) + " / " + ft(minelev));
             //str = str.replace("#GL#", abselev>0 ? "Gain" : "Loss");
-            str = str.replace("####Computing2####", ft(abselev) + " / " + mi(absdist) + " = " + ftxmi(abselev / absdist) + "ft/mi");
-            str = str.replace("####Computing3####", ft(gainelev) + " / " + ft(losselev));
-            str = str.replace("####Computing4####", xdeg(gup) + "º / " + xdeg(gdn) + "º (Max " + xdeg(gmax) + "º / " + xdeg(gmin) + "º)");
-            str = str.replace("####Computing5####", gup + "% / " + gdn + "% (Max " + gmax + "% / " + gmin + "%)");
-            str = str.replace("####Computing6####", ftxmi(gup / 100 * mi2ft) + " / " + ftxmi(gdn / 100 * mi2ft));
+            /* Elev. Change*/         str = str.replace("####Computing2####", (abselev >= 0 ? "+" : "") + ft(abselev) + " in " + mi(absdist));
+            /* Cumulative Gain/Loss*/ str = str.replace("####Computing3####", "+" + ft(gainelev) + " / " + ft(losselev));
+            /* Average Slope*/        //str = str.replace("####Computing4####", xdeg(gup) + "º / " + xdeg(gdn) + "º (Max " + xdeg(gmax) + "º / " + xdeg(gmin) + "º)");
+            /* Average Slope %*/      //str = str.replace("####Computing5####", gup + "% / " + gdn + "% (Max " + gmax + "% / " + gmin + "%)");
+            /* Average Slope ft/mi*/  //str = str.replace("####Computing6####", ftxmi(gup / 100 * mi2ft) + " / " + ftxmi(gdn / 100 * mi2ft));
 
             div.innerHTML = str;
         }
