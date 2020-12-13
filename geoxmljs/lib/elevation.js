@@ -136,27 +136,27 @@ function elevationinfowindowp(pl, computeonly) {
             ticks.push(t);
 
         ticks[0] = pl.minelev;
-        var height = Math.round((ticks[ticks.length - 1] - ticks[0]) / pl.conv * hscale);
         pl.ticks = ticks;
 
         //only needed if scrolling the client window
         //pl.elevation.minTick = ticks[0];
         //pl.elevation.maxTick = maxt;
-
-        let graph = $("#elevationgraph")[0];
-
-        let parentHeight = graph.parentElement.offsetHeight;
-        let greatgrandparentHeight = parseInt(graph.parentElement.parentElement.parentElement.style.maxHeight, 10);
-        let maxHeight = greatgrandparentHeight - parentHeight;
-        if (maxHeight / ticks.Length < 10) maxHeight = 1; //available window area too small, hide chart altogether
-        graph.style.maxHeight = maxHeight + 'px';
-
-        graph.style.height = height + 'px';
-
-
+        
         pl.infoWindow.setContent(document.getElementById('elevationiw').innerHTML);
         pl.infoWindow.open(map);
         google.maps.event.addListener(pl.infoWindow, 'domready', function () {
+
+            var height = Math.round((pl.ticks[pl.ticks.length - 1] - pl.ticks[0]) / pl.conv * hscale);
+
+            let graph = $("#elevationgraph")[0];
+
+            let parentHeight = graph.parentElement.offsetHeight;
+            let grandparentHeight = parseInt(graph.parentElement.parentElement.style.maxHeight, 10);
+            let maxHeight = grandparentHeight - (parentHeight - graph.offsetHeight);
+            graph.style.maxHeight = maxHeight + 'px';
+
+            graph.style.height = height + 'px';
+
             plotelevation(pl.elevation, pl.ticks, pl.conv);
         });
     }
