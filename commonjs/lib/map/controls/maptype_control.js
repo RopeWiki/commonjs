@@ -1,5 +1,10 @@
 ﻿//google maps custom control to select the map type layer
 
+//import { google } from './constants.js';
+//import { getCookie, setCookie } from './cookies.js';
+//import { GetMapTypeIds } from './layers.js';
+//import { displayWeatherLayer } from './layers_weather.js';
+
 function initMapTypeControl() {
 
     var mapTypeIds = GetMapTypeIds();
@@ -48,16 +53,16 @@ function initMapTypeControl() {
 
     var ddDivOptions = {
         items: ddEntries,
-        id: "mapCustomTypeControl"
+        id: "mapTypeSelectionControl"
     }
 
     var dropDownDiv = new dropDownItemsList(ddDivOptions);
 
     var dropDownOptions = {
         gmap: map,
-        name: 'Map Type',
-        id: 'ddControl',
-        title: 'Map Type Selector',
+        name: "Map Type",
+        id: "ddControl",
+        title: "Map Type Selector",
         position: google.maps.ControlPosition.TOP_RIGHT,
         dropDown: dropDownDiv
     }
@@ -71,7 +76,7 @@ function addLayerTerrain(ddEntries) {
     var options = {
         gmap: map,
         type: google.maps.MapTypeId.TERRAIN,
-        text: 'Terrain',
+        text: "Terrain",
         info: "Show street map with terrain"
     }
     ddEntries.push(new ddItem(options));
@@ -81,7 +86,7 @@ function addLayerStreetmap(ddEntries) {
     var options = {
         gmap: map,
         type: google.maps.MapTypeId.ROADMAP,
-        text: 'Streets',
+        text: "Streets",
         info: "Show street map"
     }
     ddEntries.push(new ddItem(options));
@@ -94,7 +99,7 @@ function addLayerHybrid(ddEntries) {
     var options = {
         gmap: map,
         type: google.maps.MapTypeId.HYBRID,
-        text: 'Satellite',
+        text: "Satellite",
         info: "Show satellite view"
     }
     ddEntries.push(new ddItem(options));
@@ -106,8 +111,8 @@ function addLayerHybrid(ddEntries) {
 function addLayerTopoUsa(ddEntries) {
     var options = {
         gmap: map,
-        type: 'topousa',
-        text: 'TopoUSA',
+        type: "topousa",
+        text: "TopoUSA",
         info: "Show USA specific topo"
     }
     ddEntries.push(new ddItem(options));
@@ -116,8 +121,8 @@ function addLayerTopoUsa(ddEntries) {
 function addLayerTopoWorld(ddEntries) {
     var options = {
         gmap: map,
-        type: 'topoworld',
-        text: 'TopoWorld',
+        type: "topoworld",
+        text: "TopoWorld",
         info: "Show Worldwide topo"
     }
     ddEntries.push(new ddItem(options));
@@ -126,8 +131,8 @@ function addLayerTopoWorld(ddEntries) {
 function addLayerTopoSpain(ddEntries) {
     var options = {
         gmap: map,
-        type: 'estopo',
-        text: 'TopoSpain',
+        type: "estopo",
+        text: "TopoSpain",
         info: "Mostrar mapa específico de España"
     }
     ddEntries.push(new ddItem(options));
@@ -139,7 +144,7 @@ function addLayerTopoSpain(ddEntries) {
  ************/
 
 function ddItem(options) {
-    var control = document.createElement('DIV');
+    var control = document.createElement("DIV");
     control.className = "map-type-control item";
     control.title = options.info;
     control.id = "mapSelect" + options.type;
@@ -150,7 +155,7 @@ function ddItem(options) {
     control.appendChild(controlText);
 
     google.maps.event.addDomListener(control,
-        'click',
+        "click",
         function() {
             map.setMapTypeId(options.type);
             setMapTypeSelection(options.type);
@@ -160,11 +165,11 @@ function ddItem(options) {
 }
 
 function ddCheckBox(options) {
-    var container = document.createElement('DIV');
+    var container = document.createElement("DIV");
     container.className = "map-type-control checkbox";
     container.title = options.title;
 
-    var span = document.createElement('SPAN');
+    var span = document.createElement("SPAN");
     span.role = "checkbox";
 
     var chk = document.createElement("INPUT");
@@ -179,7 +184,7 @@ function ddCheckBox(options) {
     container.appendChild(controlText);
 
     google.maps.event.addDomListener(chk,
-        'change',
+        "change",
         function() {
             options.action();
         });
@@ -188,13 +193,13 @@ function ddCheckBox(options) {
 }
 
 function separator() {
-    var sep = document.createElement('hr');
+    var sep = document.createElement("hr");
     sep.className = "map-type-control separator";
     return sep;
 }
 
 function dropDownItemsList(options) {
-    var container = document.createElement('DIV');
+    var container = document.createElement("DIV");
     container.className = "map-type-control items-list";
     container.id = options.id;
 
@@ -208,24 +213,24 @@ function dropDownItemsList(options) {
 var ddTimeoutHide;
 
 function dropDownControl(options) {
-    var container = document.createElement('DIV');
-    container.id = 'map-type-control-custom';
-    container.className = 'map-type-control';
+    var container = document.createElement("DIV");
+    container.id = "map-type-control-custom";
+    container.className = "map-type-control";
     container.style.cssText = "z-index:1000;"; //we want this to overlay the 'legend' if it present
 
-    var control = document.createElement('DIV');
-    control.className = 'map-type-control selection';
+    var control = document.createElement("DIV");
+    control.className = "map-type-control selection";
     control.id = options.name;
     
     var controlText = document.createElement("SPAN");
-    controlText.className = 'map-type-control selection-text';
+    controlText.className = "map-type-control selection-text";
     controlText.id = "currentMapType";
     controlText.innerHTML = options.dropDown.firstChild.firstChild.innerHTML;
     control.appendChild(controlText);
 
-    var arrow = document.createElement('IMG');
+    var arrow = document.createElement("IMG");
     arrow.src = "http://maps.gstatic.com/mapfiles/arrow-down.png";
-    arrow.className = 'map-type-control arrow';
+    arrow.className = "map-type-control arrow";
     control.appendChild(arrow);
 
     container.appendChild(control);
@@ -235,7 +240,7 @@ function dropDownControl(options) {
     options.gmap.controls[options.position].push(container);
 
     google.maps.event.addDomListener(control,
-        'click',
+        "click",
         function() {
             if (document.getElementById(options.dropDown.id).style.display === "" ||
                 document.getElementById(options.dropDown.id).style.display === "none") {
@@ -246,7 +251,7 @@ function dropDownControl(options) {
         });
 
     google.maps.event.addDomListener(container,
-        'mouseleave',
+        "mouseleave",
         function () {
             ddTimeoutHide = setTimeout(function () {
                 hideMapTypeOptions(options);
@@ -255,19 +260,19 @@ function dropDownControl(options) {
         });
 
     google.maps.event.addDomListener(container,
-        'mouseenter',
+        "mouseenter",
         function () { clearTimeout(ddTimeoutHide); }
     );
 
-    document.addEventListener('click',
+    document.addEventListener("click",
         function(event) {
             var targetElement = event.target || event.srcElement;
-            if (targetElement.id !== 'currentMapType' &&
-                targetElement.id !== 'Map Type' &&
-                targetElement.parentElement && targetElement.parentElement.id !== 'mapCustomTypeControl' &&
-                targetElement.parentElement.parentElement && targetElement.parentElement.parentElement.id !== 'mapCustomTypeControl') {
+            if (targetElement.id !== "currentMapType" &&
+                targetElement.id !== "Map Type" &&
+                targetElement.parentElement && targetElement.parentElement.id !== "mapTypeSelectionControl" &&
+                targetElement.parentElement.parentElement && targetElement.parentElement.parentElement.id !== "mapTypeSelectionControl") {
                 var dd = document.getElementById(options.dropDown.id);
-                if (dd && dd.style.display === 'block')
+                if (dd && dd.style.display === "block")
                     hideMapTypeOptions(options);
             }
         });
@@ -276,7 +281,7 @@ function dropDownControl(options) {
 function setMapTypeSelection(selected) {
     var item, i;
 
-    var fullList = document.getElementById("mapCustomTypeControl").childNodes;
+    var fullList = document.getElementById("mapTypeSelectionControl").childNodes;
 
     if (!selected) {
         var label = document.getElementsByClassName("map-type-control selection-text")[0].innerHTML;
@@ -302,10 +307,10 @@ function setMapTypeSelection(selected) {
 }
 
 function hideMapTypeOptions(options) {
-    document.getElementById(options.dropDown.id).style.display = 'none';
+    document.getElementById(options.dropDown.id).style.display = "none";
 }
 
-var DEFAULT_MAP_LAYER_COOKIE = 'defaultMapType';
+var DEFAULT_MAP_LAYER_COOKIE = "defaultMapType";
 
 function setDefaultMapLayer() {
     var defaultLayer = getCookie(DEFAULT_MAP_LAYER_COOKIE);
@@ -318,14 +323,14 @@ function setDefaultMapLayer() {
         map.setMapTypeId(defaultLayer);
     }
 
-    mapTypeObserver.observe(document.getElementById('mapbox'), { attributes: true, childList: true, subtree: true });
+    mapTypeObserver.observe(document.getElementById("mapbox"), { attributes: true, childList: true, subtree: true });
 }
 
 var mapTypeChangeCallback = function (mutationsList, observer) {
     for (var i = 0; i < mutationsList.length; i++) {
         var mutation = mutationsList[i];
 
-        if (mutation.type === 'childList') {
+        if (mutation.type === "childList") {
             for (var j = 0; j < mutation.addedNodes.length; j++) {
                 var item = mutation.addedNodes[j];
                 if (item.id === "map-type-control-custom") {
