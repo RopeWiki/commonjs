@@ -18,12 +18,14 @@
       "lib/map/layers_weather.js",
       "lib/map/map.js",
       "lib/map/map_init.js",
-      "lib/map/control_fullscreen.js",
-      "lib/map/control_maptype.js",
       "lib/map/search.js",
       "lib/map/toggle.js",
       "lib/map/ui.js",
       "lib/map/utils.js",
+      "lib/map/controls/fullscreen_control.js",
+      "lib/map/controls/legend_control.js",
+      "lib/map/controls/maptype_control.js",
+      "lib/map/controls/tracksource_control.js",
       "lib/navigation.js",
       "lib/pdf.js",
       "lib/pictures.js",
@@ -44,7 +46,7 @@
       "lib/zzz_onload.js"
     ],
     "minify": {
-      "enabled": true,
+      "enabled": false,
       "commentMode": "all"
     }
   }

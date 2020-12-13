@@ -1,4 +1,5 @@
-﻿
+﻿//google maps custom control to toggle fullscreen
+
 function initFullscreenControl() {
     var fullscreenControl = document.createElement('DIV');
     fullscreenControl.className = 'controls fullscreen-control';
@@ -11,7 +12,7 @@ function initFullscreenControl() {
             '<div class="fullscreen-control-icon fullscreen-control-bottom-right"></div>' +
         '</button>';
 
-    map.controls[google.maps.ControlPosition.LEFT_TOP].push(fullscreenControl);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].insertAt(0, fullscreenControl);
 
     var elementToSendFullscreen = map.getDiv().firstChild;
 

@@ -38,7 +38,7 @@ function toggleRoutes(kmlfile, kmlgroup) {
         return;
 
     // the 'Show kml' checkbox is hidden initially until a route is first downloaded
-    var lbl = document.getElementById("showKmlButton");
+    var lbl = document.getElementById("showKmlCheckbox");
     if (lbl.style.display !== "block") {
         lbl.style.display = "block";
         var chk = document.getElementById("routeschk");

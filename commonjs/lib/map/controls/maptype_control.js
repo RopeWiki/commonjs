@@ -1,4 +1,4 @@
-﻿//gdropdown
+﻿//google maps custom control to select the map type layer
 
 function initMapTypeControl() {
 

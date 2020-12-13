@@ -66,6 +66,11 @@ function validateIconUrl(href) {
             href = 'http://maps.google.com/mapfiles/kml/shapes/open-diamond.png';
 
         // replace known bad icon urls:
+
+        //google maps icons list: 
+        //http://kml4earth.appspot.com/icons.html
+        //http://miftyisbored.com/a-complete-list-of-standard-google-maps-marker-icons/
+
         if (href.includes("nps-parking"))
             href = 'http://maps.google.com/mapfiles/kml/shapes/parking_lot.png';
 
@@ -78,6 +83,9 @@ function validateIconUrl(href) {
 
         if (href.includes("crossbones.png"))
             href = 'http://maps.google.com/mapfiles/kml/shapes/caution.png';
+
+        if (href.includes("waterfall.png"))
+            href = 'http://maps.google.com/mapfiles/ms/icons/waterfalls.png';
     }
 
     // add others as needed

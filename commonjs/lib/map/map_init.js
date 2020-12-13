@@ -437,11 +437,11 @@ function loadInteractiveMap() {
         //var controls = '<div style="position:absolute;left:0;right:0;width:99%;height:99%;border-color:red;border-width:50px;border-style: solid;background-color:transparent"></div>';
 
         // this is the fullscreen button, which used to have an image, but is removed. This code is still here or mobile 'click to maximize' doesn't work
-        var controls = spstart + '<img class="gmnoprint" id="fullscreenchk" onclick="toggleFullScreen()">' + spend;
+        var controls = spstart + '<img class="gmnoprint" id="fullscreenchk" style="display:none" onclick="toggleFullScreen()">' + spend;
 
         if (kmllist) {
 
-            controls += spstart + '<label id="showKmlButton" style="display:none"><input class="gmnoprint" id="routeschk" type="checkbox" onclick="toggleRoutes()">Show&nbsp;track&nbsp;data</label>' + spend;
+            controls += spstart + '<label id="showKmlCheckbox" class="controls show-kml-checkbox"><input class="gmnoprint" id="routeschk" type="checkbox" onclick="toggleRoutes()">Show&nbsp;track&nbsp;data</label>' + spend;
 
             // map search
             if (document.getElementById('locsearch')) {
@@ -525,7 +525,7 @@ function loadInteractiveMap() {
 
             var bskmlfile = document.getElementById("bskmlfile");
             if (bskmlfile != null) {
-                var sourceDiv = document.createElement('DIV');
+                var sourceDiv = document.createElement("DIV");
                 var text = '<div class = "dropDownOptionsDiv" id="myddOptsDiv">';
                 file = file.split("&amp;").join("&");
                 var selection = bskmlfile.innerHTML.toString().split("&amp;").join("&").split(',');
@@ -552,7 +552,7 @@ function loadInteractiveMap() {
                     var link = urlencode(big[0].innerHTML);
                     text += '<div class="dropDownItemDiv" onClick="loadSource(\'' + link + '\',\'ALL COMBINED\')" style="font-weight:bold">ALL COMBINED</div>';
                 }
-                text += '</div>';
+                text += "</div>";
                 var name = getdomain(selection[0]);
                 text +=
                     '<div class="dropDownControl" onclick="(document.getElementById(\'myddOptsDiv\').style.display == \'block\') ? document.getElementById(\'myddOptsDiv\').style.display = \'none\' : document.getElementById(\'myddOptsDiv\').style.display = \'block\';"><span id="myddOptsText">' +
@@ -564,7 +564,6 @@ function loadInteractiveMap() {
                 sourceDiv.style.zIndex = 1000;
                 sourceDiv.innerHTML = text;
                 map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(sourceDiv);
-                //document.body.appendChild(sourceDiv);
 
                 if (selection.length < 2)
                     sourceDiv.style.display = "none";
@@ -587,20 +586,15 @@ function loadInteractiveMap() {
             
             function geoxmlinitp() {
                 // Here you can use anything you defined in the loaded script
-                //map.panTo(new google.map.LatLng(0, 0));
-                gxml = new GeoXml("gxml",
+                gxml = new GeoXml(
+                    "gxml",
                     map,
                     "",
                     {
                         sidebarid: mapsidebar,
                         sortbyname: true,
-                        //publishdirectory:"http://www.dyasdesigns.com/tntmap/",
-                        //iwwidth:280,
-                        //iwmethod:"mouseover",
-                        //nolegend:false,
                         simplelegend: true,
                         suppressallfolders: true,
-                        //sidebarsnippet:true,
                         showArrows: true,
                         showLabels: true,
                         showRouteLabels: labels && kmltitle,
@@ -615,7 +609,6 @@ function loadInteractiveMap() {
                 google.maps.event.addListener(gxml,
                     "loaded",
                     function() {
-                        //console.log("event:kml loaded");
                         setTimeout(function() {
                                 loadingkml = false;
                                 console.log("loadingkml false");
@@ -633,7 +626,6 @@ function loadInteractiveMap() {
                                         if (wlegend * hlegend > wmap * hmap / 4)
                                             toggleLegend(false);
                                         clearInterval(interval);
-                                        //console.log("legend is here!");
                                     }
                                 },
                                 500);

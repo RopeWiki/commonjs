@@ -1,8 +1,14 @@
 function searchmap() {
-    map.setOptions({draggableCursor: 'crosshair'});
     var element = document.getElementById('searchinfo');
-    if (element) element.innerHTML = '<span class="rwwarningbox"><b>CLICK ON MAP TO DEFINE SEARCH AREA</b></span>';
-    searchmapn = 0;
+    if (searchmapn < 0) {
+        map.setOptions({ draggableCursor: 'crosshair' });
+        if (element) element.innerHTML = '<span class="rwwarningbox"><b>CLICK ON MAP TO DEFINE SEARCH AREA</b></span>';
+        searchmapn = 0;
+    } else {
+        map.setOptions({ draggableCursor: 'pointer' });
+        if (element) element.innerHTML = '';
+        searchmapn = -1;
+    }
 }
 
 function searchmaprun() {
