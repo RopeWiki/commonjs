@@ -34,6 +34,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="lib\map\controls\searchmap_control.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="lib\map\controls\searchmap_control.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="bundleconfig.json" />
   </ItemGroup>
 

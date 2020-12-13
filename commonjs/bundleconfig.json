@@ -25,6 +25,7 @@
       "lib/map/controls/fullscreen_control.js",
       "lib/map/controls/legend_control.js",
       "lib/map/controls/maptype_control.js",
+      "lib/map/controls/searchmap_control.js",
       "lib/map/controls/tracksource_control.js",
       "lib/navigation.js",
       "lib/pdf.js",
@@ -46,7 +47,7 @@
       "lib/zzz_onload.js"
     ],
     "minify": {
-      "enabled": false,
+      "enabled": true,
       "commentMode": "all"
     }
   }
