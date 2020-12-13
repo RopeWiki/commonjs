@@ -420,15 +420,15 @@ function loadInteractiveMap() {
     // ropewiki.com/Category:Books
     var kmltitle = document.getElementById("kmltitle");
     if (kmltitle != null) {
-        var controlsDiv = document.createElement('DIV');
-        controlsDiv.style.margin = "4px 4px 4px 4px";
-        //controlsDiv.style.fontSize = "big";
-        controlsDiv.innerHTML =
+        var titleControlsDiv = document.createElement('DIV');
+        titleControlsDiv.style.margin = "4px 4px 4px 4px";
+        //titleControlsDiv.style.fontSize = "big";
+        titleControlsDiv.innerHTML =
             '<img src="https://chart.apis.google.com/chart?chst=d_text_outline&chld=000000|32|h|FFFFFF|b|' +
             urlencode(kmltitle.innerHTML) +
             '"/>';
         //"<h2>"+kmltitle.innerHTML+"</h2>";
-        map.controls[google.maps.ControlPosition.TOP_CENTER].push(controlsDiv);
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(titleControlsDiv);
     }
 
     // add additional controls (i.e. fullscreen, Show track data, Search Map, TrkLabels (for Books) )
@@ -441,55 +441,11 @@ function loadInteractiveMap() {
 
         if (kmllist) {
 
-            controls += spstart + '<label id="showKmlCheckbox" class="controls show-kml-checkbox"><input class="gmnoprint" id="routeschk" type="checkbox" onclick="toggleRoutes()">Show&nbsp;track&nbsp;data</label>' + spend;
+            controls += spstart + initShowTracksControl() + spend;
 
             // map search
             if (document.getElementById('locsearch')) {
-                var controlsDiv2 = document.createElement('DIV');
-
-                controlsDiv2.innerHTML =
-                    '<div id="searchmap"><span id="searchinfo"></span><button type="search" value="" onclick="searchmap()">Search Map</button></div>';
-
-                map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlsDiv2);
-                searchmaprectangle = new google.maps.Rectangle({
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 0.5,
-                    strokeWeight: 2,
-                    fillColor: '#FF0000',
-                    fillOpacity: 0.05,
-                    bounds: new google.maps.LatLngBounds(
-                        new google.maps.LatLng(0, 0),
-                        new google.maps.LatLng(0, 0)),
-                    draggable: false,
-                    clickable: false,
-                    optimized: false
-                });
-
-                map.addListener('click',
-                    function(e) {
-                        if (searchmapn >= 0) {
-                            var marker = new google.maps.Marker({ position: e.latLng, map: map, optimized: false });
-                            searchmappt.push(e.latLng);
-                            ++searchmapn;
-                            var bounds = new google.maps.LatLngBounds();
-                            bounds.extend(searchmappt[0]);
-                            bounds.extend(searchmappt[searchmappt.length >= 2 ? 1 : 0]);
-                            searchmaprectangle.setBounds(bounds);
-                            searchmaprectangle.setMap(map);
-                            if (searchmapn >= 2)
-                                searchmaprun();
-                        }
-                    });
-                map.addListener('mousemove',
-                    function(e) {
-                        if (searchmapn > 0 && searchmapn < 2) {
-                            var bounds = new google.maps.LatLngBounds();
-                            bounds.extend(searchmappt[0]);
-                            bounds.extend(e.latLng);
-                            searchmaprectangle.setBounds(bounds);
-                            searchmaprectangle.setMap(map);
-                        }
-                    });
+                initSearchMapControl();
             }
         }
         else {
@@ -497,10 +453,10 @@ function loadInteractiveMap() {
                 controls += spstart + '<label><input class="gmnoprint" id="labelschk" type="checkbox" onclick="toggleLabels()" ' + (labels ? 'checked' : '') + '>TrkLabels&nbsp;</label>' + spend;
         }
 
-        var controlsDiv = document.createElement('DIV');
-        controlsDiv.style.cssText = "z-index:9999;";
-        controlsDiv.innerHTML = controls;
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(controlsDiv);
+        var mapTopControlsDiv = document.createElement('DIV');
+        mapTopControlsDiv.style.cssText = "z-index:9999;";
+        mapTopControlsDiv.innerHTML = controls;
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(mapTopControlsDiv);
     }
 
     // cover
@@ -525,64 +481,23 @@ function loadInteractiveMap() {
 
             var bskmlfile = document.getElementById("bskmlfile");
             if (bskmlfile != null) {
-                var sourceDiv = document.createElement("DIV");
-                var text = '<div class = "dropDownOptionsDiv" id="myddOptsDiv">';
+
                 file = file.split("&amp;").join("&");
+
                 var selection = bskmlfile.innerHTML.toString().split("&amp;").join("&").split(',');
+
                 if (urldecode(file).indexOf(urldecode(selection[0])) < 0)
                     selection.unshift(file);
-                var domains = [];
-                for (var i = 0; i < selection.length; ++i) {
-                    var style = "";
-                    var link = selection[i];
-                    if (noextraction(link))
-                        style = "color:red;";
-                    var counter = 0;
-                    var domain = getdomain(link);
-                    domains.push(domain);
-                    for (var d = 0; d < domains.length; ++d)
-                        if (domains[d] == domain)
-                            ++counter;
-                    if (counter > 1)
-                        domain += "#" + counter;
-                    text += '<div class="dropDownItemDiv" onClick="loadSource(\'' + link + '\',\'' + domain + '\')" style="' + style + '">' + domain + '</div>';
-                }
-                var big = document.getElementsByTagName('BIG');
-                if (big && big.length > 0 && selection.length > 1) {
-                    var link = urlencode(big[0].innerHTML);
-                    text += '<div class="dropDownItemDiv" onClick="loadSource(\'' + link + '\',\'ALL COMBINED\')" style="font-weight:bold">ALL COMBINED</div>';
-                }
-                text += "</div>";
-                var name = getdomain(selection[0]);
-                text +=
-                    '<div class="dropDownControl" onclick="(document.getElementById(\'myddOptsDiv\').style.display == \'block\') ? document.getElementById(\'myddOptsDiv\').style.display = \'none\' : document.getElementById(\'myddOptsDiv\').style.display = \'block\';"><span id="myddOptsText">' +
-                    name +
-                    '</span><img class="dropDownArrow" src="https://maps.gstatic.com/mapfiles/arrow-down.png"/></div>';
-                lastlinks.push(filelink = selection[0]);
 
-                sourceDiv.className = "dropDownControlDiv";
-                sourceDiv.style.zIndex = 1000;
-                sourceDiv.innerHTML = text;
-                map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(sourceDiv);
-
-                if (selection.length < 2)
-                    sourceDiv.style.display = "none";
+                initTrackSourceControl(selection);
             }
 
             var sidebar = document.createElement('div');
             sidebar.setAttribute('id', mapsidebar);
             sidebar.className = "notranslate";
             document.body.appendChild(sidebar);
-            
-            var controlsDiv = document.createElement('DIV');
-            controlsDiv.innerHTML =
-                '<div id="legendbar"><label><input class="gmnoprint" id="legendchk" type="checkbox" onclick="toggleLegend()"><span id="legendlabel">Legend</span></label><br><div id="legend" class="notranslate"></div></div><div id="loadlinks"></div>';
-            
-            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlsDiv);
-            controlsDiv.style.maxHeight = "90%";
-            controlsDiv.style.overflow = "auto";
-            controlsDiv.style.zIndex = 999;
-            controlsDiv.style.marginRight = "5px";
+
+            initLegendControl();
             
             function geoxmlinitp() {
                 // Here you can use anything you defined in the loaded script
