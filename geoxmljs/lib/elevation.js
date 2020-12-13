@@ -159,6 +159,13 @@ function elevationinfowindowp(pl, computeonly) {
 
             plotelevation(pl.elevation, pl.ticks, pl.conv);
         });
+
+        google.maps.event.addListener(pl.infoWindow, 'closeclick', function () {
+            if (!!mousemarker) {
+                mousemarker.setMap(null);
+                mousemarker = null;
+            }
+        });
     }
 
     function getresults(results) {

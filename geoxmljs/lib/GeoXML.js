@@ -127,8 +127,14 @@ function GeoXml(myvar, map, url, opts) {
                 if (this.geoxml.lastMarker &&
                     this.geoxml.lastMarker.infoWindow &&
                     this.geoxml.lastMarker.infoWindow.getMap()
-                )
+                ) {
                     this.geoxml.lastMarker.infoWindow.close();
+
+                    if (!!mousemarker) {
+                        mousemarker.setMap(null);
+                        mousemarker = null;
+                    }
+                }
 
                 this.geoxml.lastmarker = null;
             });
@@ -968,7 +974,7 @@ GeoXml.prototype.processLine = function (pnum, lnum, idx, multi) {
 
     var html = "<div id='elevationiw' style='width:auto;height:auto;overflow:hidden;'><div style='font-weight: bold; font-size: medium; margin-bottom: 0em;width:auto;overflow:hidden;'>" + op.name + "</div>";
     html += "<div style='font-family: Arial, sans-serif;font-size: small;width:auto;overflow:hidden;'>" + desc + "</div>"; //"+awidth+"px
-    html += "<div id='elevation' style='font-family: Arial, sans-serif;font-size: small;width:auto;overflow:hidden;'><p>High / low elev: ####Computing1####<br>Max elev change: ####Computing2####<br>Total gain / loss: ####Computing3####</div>";
+    html += "<div id='elevation' style='font-family: Arial, sans-serif;font-size: small;width:auto;overflow:hidden;'><p>Highest / lowest pt: ####Computing1####<br>Max elev change: ####Computing2####<br>Total gain / loss: ####Computing3####</div>";
     html += "<div id='elevationgraph' style='height:5px;overflow:hidden;'></div>";
 
     if (lnum == 0) {
