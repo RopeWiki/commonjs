@@ -9,10 +9,10 @@ function SetupMapLayers() {
     // setup map layers
     var credits = [];
 
-    var mapTypeIds = GetMapTypeIds();
+    var mapLayerIds = GetMapLayerIds();
 
-    for (var i = 0; i < mapTypeIds.length; i++) {
-        switch (mapTypeIds[i]) {
+    for (var i = 0; i < mapLayerIds.length; i++) {
+        switch (mapLayerIds[i]) {
         case google.maps.MapTypeId.TERRAIN:
             credits[google.maps.MapTypeId.TERRAIN] = " ";
             break;
@@ -110,18 +110,18 @@ function SetupMapLayers() {
 }
 
 // set map type layers to include in the dropdown
-function GetMapTypeIds() {
-    var mapTypeIds = [google.maps.MapTypeId.TERRAIN];
+function GetMapLayerIds() {
+    var mapLayerIds = [google.maps.MapTypeId.TERRAIN];
 
     if (isUSAorCanada())
-        mapTypeIds.push("topousa");
+        mapLayerIds.push("topousa");
 
     if (isSpain())
-        mapTypeIds.push("estopo");
+        mapLayerIds.push("estopo");
 
-    mapTypeIds.push("topoworld", google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID);
+    mapLayerIds.push("topoworld", google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID);
 
-    return mapTypeIds;
+    return mapLayerIds;
 }
 
 function isUSAorCanada() {

@@ -680,7 +680,7 @@ function loadInteractiveMap() {
         }
     });
 
-    initMapTypeControl();
+    initMapLayerControl();
     initFullscreenControl();
 }
 
