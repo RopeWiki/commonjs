@@ -153,6 +153,10 @@ function prettyPrint(url) {
     if (url.includes("wikiloc"))          name = "Wikiloc";
     if (url.includes("brennen"))          name = "Adventure Hikes";
     if (url.includes("roadtripryan"))     name = "Road Trip Ryan";
+    if (url.includes("canyoncollective")) name = "Canyon Collective";
+    if (url.includes("onropecanyoneer"))  name = "On Rope";
+    if (url.includes("descente-canyon"))  name = "Descente Canyon";
+    if (url.includes("carto.net"))        name = "Canyon Carto";
 
     var multiple = url.indexOf("#");
 

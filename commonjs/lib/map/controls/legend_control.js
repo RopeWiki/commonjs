@@ -2,15 +2,77 @@
 
 function initLegendControl() {
 
-    var controlsDiv = document.createElement('DIV');
-    //controlsDiv.id = "legend";
-    controlsDiv.innerHTML =
-        '<div id="legendbar"><label><input class="gmnoprint" id="legendchk" type="checkbox" onclick="toggleLegend()"><span id="legendlabel">Legend</span></label><br><div id="legend" class="notranslate"></div></div>';
-    controlsDiv.innerHTML += '<div id="loadlinks"></div>'; //doesn't seem to do anything
+    //var legendBox = document.createElement('div');
+    //legendBox.innerHTML =
+    //    '<div id="legendbar" class="map-control legend">' +
+    //        '<label>' +
+    //            '<input class="gmnoprint" id="legendchk" type="checkbox">' +
+    //            '<span id="legendlabel">Legend</span>' +
+    //        '</label><br>' +
+    //        '<div id="legend" class="notranslate"></div>' +
+    //    '</div>';
 
-    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlsDiv);
-    controlsDiv.style.maxHeight = "90%";
-    controlsDiv.style.overflow = "auto";
-    controlsDiv.style.zIndex = 999;
-    controlsDiv.style.marginRight = "5px";
+
+    var legendBox = document.createElement("div");
+
+    var legendBoxInner = document.createElement("div");
+    legendBoxInner.id = "legendbar";
+    legendBoxInner.className = "controls legend";
+
+    var span = document.createElement("span");
+    span.role = "checkbox";
+    span.id = "legendlabel";
+
+    var chk = document.createElement("input");
+    chk.setAttribute("type", "checkbox");
+    chk.id = "legendchk";
+    chk.className = "gmnoprint";
+
+    var controlText = document.createElement("label");
+    controlText.id = "legendlabel";
+    controlText.setAttribute("for", chk.id);
+    controlText.innerHTML = "Legend";
+
+    var legendContent = document.createElement("div");
+    legendContent.id = "legend";
+    legendContent.className = "notranslate";
+
+    legendBoxInner.appendChild(chk);
+    legendBoxInner.appendChild(controlText);
+    legendBoxInner.appendChild(legendContent);
+
+    legendBox.appendChild(legendBoxInner);
+
+    google.maps.event.addDomListener(chk,
+        "change",
+        function () {
+            toggleLegend();
+        });
+
+
+    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legendBox);
+}
+
+var showLegend;
+
+function toggleLegend(force) {
+    var legend = document.getElementById("legend");
+    var label = document.getElementById("legendlabel");
+    var mapsidebar = document.getElementById("mapsidebar");
+
+    if (showLegend == null || force) {
+        if (legend && mapsidebar) {
+            legend.style.display = "block";
+            legend.innerHTML = legend.innerHTML + mapsidebar.innerHTML;
+            mapsidebar.innerHTML = "";
+        }
+        if (label && showLegend == null)
+            showLegend = label.innerHTML;
+    } else {
+        if (legend) legend.style.display = "none";
+        showLegend = null;
+    }
+
+    var chk = document.getElementById("legendchk");
+    if (chk) chk.checked = showLegend != null;
 }

@@ -70,9 +70,6 @@ var searchmappt = [];
 // Variables for searchmaprun function
 var searchmaprectangle;
 
-// Variables for toggleLegend function
-var showLegend;
-
 // Variables for toggleRoutes function
 var showRoutes, loadedRoutes;
 
