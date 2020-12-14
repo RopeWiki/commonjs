@@ -1,5 +1,27 @@
 ﻿//google maps custom control to create a dropdown list for the map element
 
+/**
+ This is how the structure of the id's and class naming goes (using map-layer as the example):
+ 
+basename = 'map-layer'
+
+id=map-layer-control		    class = map-control dropdown map-layer
+
+  id=map-layer			        class = map-control dropdown map-layer selection
+     id=map-layer-current	    class = map-control dropdown map-layer selection-text
+     (arrow)			        class = map-control dropdown map-layer arrow
+
+  id=map-layer-items-list	    class = map-control dropdown map-layer items-list
+   each entry:
+      id=map-layer-item-terrain	class = map-control dropdown map-layer item
+      (etc)  			        --and 'selected' for the one selected
+
+also these classes:
+ map-control dropdown map-layer checkbox
+ map-control dropdown map-layer separator
+ map-control dropdown map-layer item:hover,  map-control dropdown map-layer checkbox:hover
+ */
+
 
 /************
  Classes to set up the drop-down control
@@ -88,12 +110,20 @@ function createDropdownControl(options) {
     control.appendChild(controlText);
 
     var arrow = document.createElement("img");
-    arrow.src = "http://maps.gstatic.com/mapfiles/arrow-down.png";
+    arrow.src = !options.bottomUp
+        ? "http://maps.gstatic.com/mapfiles/arrow-down.png"
+        : "http://maps.gstatic.com/mapfiles/arrow-up.png";
+
     arrow.className = dropdownCssBasename(basename) + " arrow";
     control.appendChild(arrow);
 
-    container.appendChild(control);
-    container.appendChild(dropdown);
+    if (!options.bottomUp) {
+        container.appendChild(control);
+        container.appendChild(dropdown);
+    } else {
+        container.appendChild(dropdown);
+        container.appendChild(control);
+    }
 
     options.gmap.controls[options.position].push(container);
 

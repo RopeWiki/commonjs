@@ -32,6 +32,7 @@ function initTrackSourceControl(selection) {
         };
 
         var item = new dropdownItem(options);
+        if (link === selection[0]) item.classList.add("selected"); //set first item to 'selected' state
         if (noextraction(link)) item.classList.add("noextraction");
 
         entries.push(item);
@@ -63,9 +64,10 @@ function initTrackSourceControl(selection) {
         basename: trackSourceControlBasename,
         gmap: map,
         items: entries,
-        position: google.maps.ControlPosition.RIGHT_BOTTOM,
+        position: google.maps.ControlPosition.LEFT_BOTTOM,
         zIndex: 1000,
-        dropdownHideTimer: trackSourceDropdownHideTimer
+        dropdownHideTimer: trackSourceDropdownHideTimer,
+        bottomUp: true
     }
     createDropdownControl(dropdownOptions);
 }
