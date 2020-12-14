@@ -145,6 +145,34 @@ function createDropdownControl(options) {
     }
 }
 
+function setDropdownSelection(basename, selected) {
+    var item, i;
+
+    var fullList = document.getElementById(basename + "-items-list").childNodes;
+
+    if (!selected) { //this would be null if the cookie was set to a map layer that is not available on the current map
+        var label = document.getElementById(basename + "-current").innerHTML;
+        for (i = 0; i < fullList.length; i++) {
+            item = fullList[i];
+            if (item.firstChild && item.firstChild.innerHTML === label) {
+                selected = item.id;
+                break;
+            }
+        }
+    }
+
+    var element = document.getElementById(basename + "-item-" + selected);
+    document.getElementById(basename + "-current").innerHTML = element.firstChild.innerHTML;
+    for (i = 0; i < fullList.length; i++) {
+        item = fullList[i];
+        if (item.classList.contains("selected")) {
+            item.classList.remove("selected");
+        }
+    }
+
+    element.classList.add("selected");
+}
+
 function dropdownCssBasename(basename) {
     return "map-control dropdown " + basename;
 }

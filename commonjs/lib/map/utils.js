@@ -1,37 +1,3 @@
-function smallstyle() {
-    WebViewStyle();
-    $("#p-logo a").attr("href", "#");
-
-    /* DISABLED! USING CSS
-    // set meta viewport (not used)
-    // $('head').append('<meta name="viewport" content="width=device-width; initial-scale=1.0;">');
-     // set style based on screen size
-     var width = $(window).width();
-     if (screen)
-        if (screen.width<width)
-         width = screen.width;
-     var e = document.getElementById('p-navigation-label');
-     if (e) e.innerHTML = width;
-     if (width<970)
-      {
-      // small screen
-       var sheet = document.createElement('style')
-       sheet.id = 'smallstyle';
-       sheet.innerHTML = " .floatright { float: none !important; } .tablecanyon { width: 100% !important; float: none !important; } .tableregion { width: 100% !important; float: none !important; } .bigdisplay { display: none !important; }";
-       document.body.appendChild(sheet);
-      }
-     else
-      {
-       // large screen
-      var sheetToBeRemoved = document.getElementById('smallstyle');
-      if (sheetToBeRemoved)
-        {
-        var sheetParent = sheetToBeRemoved.parentNode;
-        sheetParent.removeChild(sheetToBeRemoved);
-        }
-      }
-    */
-}
 
 function acaconv(str, more) {
     var end = str.indexOf(')');
@@ -40,7 +6,7 @@ function acaconv(str, more) {
     var start = str.indexOf('*') + 1;
     while (start < end && !(str.charAt(start) >= '1' && str.charAt(start) <= '4'))
         ++start;
-    if (start >= 3 && str.substr(start - 3, 3) == '<i>')
+    if (start >= 3 && str.substr(start - 3, 3) === '<i>')
         start -= 3;
     var rating = str.substr(start, end - start).split('(');
     if (rating.length < 2)
@@ -51,24 +17,7 @@ function acaconv(str, more) {
     return str.substr(0, start) + val + str.substr(end + 1);
 }
 
-/* Google Maps integration with external Topo map sources */
-function getTextFromHyperlink(linkText) {
-    var start = linkText.search('href=');
-    var str = linkText.slice(start).split('"')[1];
-    //document.getElementById("firstHeading").innerHTML = str;
-    return str;
-    //return linkText.match(/<a [^>]+>([^<]+)<\/a>/)[1];
-}
-
-// Custom Map functions
-function slippyClip(xy, z) {
-    return xy % (1 << z);
-}
-
-function TYZ(y, z) {
-    return (1 << z) - y - 1;
-}
-
+//cool code to create a bounding box from a point, but isn't used anywhere:
 function latLngBox(px, py, pz, tsize) {
     function Clip(n, minValue, maxValue) {
         return Math.min(Math.max(n, minValue), maxValue);
@@ -88,6 +37,7 @@ function latLngBox(px, py, pz, tsize) {
     return b;
 }
 
+//also isn't used anywhere:
 function WmsBox(b, epsg, invert) {
     function Wms(epsg, lat, lng) {
         var p = { x: lat, y: lng };
@@ -107,8 +57,4 @@ function WmsBox(b, epsg, invert) {
         return wb[1] + "," + wb[0] + "," + wb[3] + "," + wb[2];
     else
         return wb[0] + "," + wb[1] + "," + wb[2] + "," + wb[3];
-}
-
-function noextraction(name) {
-    return name.indexOf("roadtripryan.com") >= 0;
 }

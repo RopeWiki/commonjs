@@ -150,3 +150,7 @@ function isSpain() {
 
     return (embeddedMapType === "estopo");
 }
+
+function slippyClip(xy, z) {
+    return xy % (1 << z);
+}

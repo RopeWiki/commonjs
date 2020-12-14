@@ -490,6 +490,8 @@ function loadInteractiveMap() {
                     selection.unshift(file);
 
                 initTrackSourceControl(selection);
+
+                lastlinks.push(filelink = selection[0]);
             }
 
             var sidebar = document.createElement('div');
@@ -685,7 +687,7 @@ function loadInteractiveMap() {
 }
 
 function waterflowinit() {
-    waterflow();
+    waterflow(); //this is in waterflow.js, which needs to be loaded first
 }
 
 function loadMapInterface() {
@@ -746,69 +748,37 @@ function loadmapScript() {
     document.body.appendChild(script);
 }
 
-function loadSource(link, domain) {
-    var optdiv = document.getElementById("myddOptsDiv");
-    var opttext = document.getElementById("myddOptsText");
-    if (!opttext || !optdiv)
-        return;
-    optdiv.style.display = "none";
-    opttext.innerHTML = domain;
+function smallstyle() {
+    WebViewStyle();
+    $("#p-logo a").attr("href", "#");
 
-    gxml.overlayman.Hide();
-
-    // set up new KML
-    var isropewiki = link.indexOf(SITE_HOSTNAME) >= 0;
-    var kmlfile = link;
-    if (!isropewiki)
-        kmlfile = LUCA_BASE_URL + '/rwr?gpx=off&filename=tmp&kmlnfx&kmlx=' + kmlfile;
-
-    var kmlfilep = document.getElementById("kmlfilep");
-    if (kmlfilep)
-        kmlfilep.innerHTML = kmlfile;
-
-    if (lastlinks.indexOf(link) >= 0) {
-        // display pre-loaded kml
-        gxml.overlayman.Show(link);
-    } else {
-        gxml.load(kmlfile, link);
-        lastlinks.push(link);
-    }
-
-    // display warning or hide it for ropewiki
-    var noex = noextraction(link);
-    var dlist = ["rw", "ex", "noex"];
-    var dshow = [isropewiki, !isropewiki && !noex, !isropewiki && noex];
-    for (var i = 0; i < dlist.length; ++i) {
-        var elem = document.getElementsByClassName('display' + dlist[i]);
-        for (var e = 0; e < elem.length; ++e)
-            elem[e].style.display = dshow[i] ? "block" : "none";
-    }
-
-    // change links
-    var dlist2 = ["ex", "noex"];
-    for (var i = 0; i < dlist2.length; ++i) {
-        var elem = document.getElementsByClassName('display' + dlist2[i]);
-        for (var e = 0; e < elem.length; e++) {
-            var links = elem[e].getElementsByTagName('A');
-            for (var l = 0; l < links.length; ++l) {
-                var clink = links[l].href;
-                if (clink.indexOf("caltopo.com") > 0) {
-                    var prefix = "kmlx%253D";
-                    var postfix = "ext%253D.kml";
-                    var start = clink.indexOf(prefix);
-                    var end = clink.indexOf(postfix, start + 1);
-                    links[l].href = clink.substr(0, start + prefix.length) + urlencode(link + '&') + clink.substr(end);
-                } else if (clink.indexOf(LUCA_HOSTNAME) > 0) {
-                    var prefix = "kmlx%3D";
-                    var postfix = "ext%3D.kml";
-                    var start = clink.indexOf(prefix);
-                    var end = clink.indexOf(postfix, start + 1);
-                    links[l].href = clink.substr(0, start + prefix.length) + link + '&' + clink.substr(end);
-                } else if (clink.indexOf("/Map?pagename=") < 0) {
-                    links[l].href = link;
-                    links[l].innerHTML = domain;
-                }
-            }
+    /* DISABLED! USING CSS
+    // set meta viewport (not used)
+    // $('head').append('<meta name="viewport" content="width=device-width; initial-scale=1.0;">');
+     // set style based on screen size
+     var width = $(window).width();
+     if (screen)
+        if (screen.width<width)
+         width = screen.width;
+     var e = document.getElementById('p-navigation-label');
+     if (e) e.innerHTML = width;
+     if (width<970)
+      {
+      // small screen
+       var sheet = document.createElement('style')
+       sheet.id = 'smallstyle';
+       sheet.innerHTML = " .floatright { float: none !important; } .tablecanyon { width: 100% !important; float: none !important; } .tableregion { width: 100% !important; float: none !important; } .bigdisplay { display: none !important; }";
+       document.body.appendChild(sheet);
+      }
+     else
+      {
+       // large screen
+      var sheetToBeRemoved = document.getElementById('smallstyle');
+      if (sheetToBeRemoved)
+        {
+        var sheetParent = sheetToBeRemoved.parentNode;
+        sheetParent.removeChild(sheetToBeRemoved);
         }
-    }
+      }
+    */
 }

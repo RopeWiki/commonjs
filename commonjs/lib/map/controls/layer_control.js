@@ -5,7 +5,7 @@
 //import { GetMapLayerIds } from './layers.js';
 //import { displayWeatherLayer } from './layers_weather.js';
 
-var mapLayerControlBasename = "map-layer";
+const mapLayerControlBasename = "map-layer";
 var mapLayerDropdownHideTimer = true; //this holds the function, but give it some initial value so it's not undefined
 
 function initMapLayerControl() {
@@ -141,45 +141,15 @@ function mapLayerDropdownItem(options) {
 
     options.action = function () {
         map.setMapTypeId(options.type);
-        setMapTypeSelection(options.type);
+        setDropdownSelection(mapLayerControlBasename, options.type);
         setCookie(DEFAULT_MAP_LAYER_COOKIE, options.type);
     };
     
     return new dropdownItem(options);
 }
 
-
-function setMapTypeSelection(selected) {
-    var item, i;
-
-    var fullList = document.getElementById(mapLayerControlBasename + "-items-list").childNodes;
-
-    if (!selected) { //this would be null if the cookie was set to a map layer that is not available on the current map
-        var label = document.getElementById(mapLayerControlBasename + "-current").innerHTML;
-        for (i = 0; i < fullList.length; i++) {
-            item = fullList[i];
-            if (item.firstChild && item.firstChild.innerHTML === label) {
-                selected = item.id;
-                break;
-            }
-        }
-    }
-
-    var element = document.getElementById(mapLayerControlBasename + "-item-" + selected);
-    document.getElementById(mapLayerControlBasename + "-current").innerHTML = element.firstChild.innerHTML;
-    for (i = 0; i < fullList.length; i++) {
-        item = fullList[i];
-        if (item.classList.contains("selected")) {
-            item.classList.remove("selected");
-        }
-    }
-
-    element.classList.add("selected");
-}
-
-
 //code to set the default map layer
-var DEFAULT_MAP_LAYER_COOKIE = "defaultMapType";
+const DEFAULT_MAP_LAYER_COOKIE = "defaultMapType";
 
 function setDefaultMapLayer() {
     var defaultLayer = getCookie(DEFAULT_MAP_LAYER_COOKIE);
@@ -195,7 +165,7 @@ function setDefaultMapLayer() {
     mapTypeObserver.observe(document.getElementById("mapbox"), { attributes: true, childList: true, subtree: true });
 }
 
-var mapTypeChangeCallback = function (mutationsList, observer) {
+const mapTypeChangeCallback = function (mutationsList, observer) {
     for (var i = 0; i < mutationsList.length; i++) {
         var mutation = mutationsList[i];
 
@@ -204,7 +174,7 @@ var mapTypeChangeCallback = function (mutationsList, observer) {
                 var item = mutation.addedNodes[j];
                 if (item.id === mapLayerControlBasename + "-control") {
                     observer.disconnect();
-                    setMapTypeSelection(map.getMapTypeId());
+                    setDropdownSelection(mapLayerControlBasename, options.type);
                 }
             }
         }
@@ -212,4 +182,4 @@ var mapTypeChangeCallback = function (mutationsList, observer) {
 };
 
 //waits to set the default map type until after the map element is initialized on the page
-var mapTypeObserver = new MutationObserver(mapTypeChangeCallback);
+const mapTypeObserver = new MutationObserver(mapTypeChangeCallback);
