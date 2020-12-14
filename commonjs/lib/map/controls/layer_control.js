@@ -174,7 +174,7 @@ const mapTypeChangeCallback = function (mutationsList, observer) {
                 var item = mutation.addedNodes[j];
                 if (item.id === mapLayerControlBasename + "-control") {
                     observer.disconnect();
-                    setDropdownSelection(mapLayerControlBasename, options.type);
+                    setDropdownSelection(mapLayerControlBasename, map.getMapTypeId());
                 }
             }
         }
