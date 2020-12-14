@@ -5,7 +5,7 @@
 //import { GetMapLayerIds } from './layers.js';
 //import { displayWeatherLayer } from './layers_weather.js';
 
-var mapLayerControlBasename = "map-type";
+var mapLayerControlBasename = "map-layer";
 var mapLayerDropdownHideTimer = true; //this holds the function, but give it some initial value so it's not undefined
 
 function initMapLayerControl() {
@@ -154,8 +154,8 @@ function setMapTypeSelection(selected) {
 
     var fullList = document.getElementById(mapLayerControlBasename + "-items-list").childNodes;
 
-    if (!selected) {
-        var label = document.getElementsByClassName(mapLayerControlBasename + "-control selection-text")[0].innerHTML;
+    if (!selected) { //this would be null if the cookie was set to a map layer that is not available on the current map
+        var label = document.getElementById(mapLayerControlBasename + "-current").innerHTML;
         for (i = 0; i < fullList.length; i++) {
             item = fullList[i];
             if (item.firstChild && item.firstChild.innerHTML === label) {
@@ -169,7 +169,7 @@ function setMapTypeSelection(selected) {
     document.getElementById(mapLayerControlBasename + "-current").innerHTML = element.firstChild.innerHTML;
     for (i = 0; i < fullList.length; i++) {
         item = fullList[i];
-        if (item.className === mapLayerControlBasename + "-control item selected") {
+        if (item.classList.contains("selected")) {
             item.classList.remove("selected");
         }
     }
@@ -202,7 +202,7 @@ var mapTypeChangeCallback = function (mutationsList, observer) {
         if (mutation.type === "childList") {
             for (var j = 0; j < mutation.addedNodes.length; j++) {
                 var item = mutation.addedNodes[j];
-                if (item.id === mapLayerControlBasename + "-control-custom") {
+                if (item.id === mapLayerControlBasename + "-control") {
                     observer.disconnect();
                     setMapTypeSelection(map.getMapTypeId());
                 }

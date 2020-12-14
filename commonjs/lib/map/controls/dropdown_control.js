@@ -9,7 +9,7 @@
 function dropdownItem(options) {
     var control = document.createElement("div");
     control.id = options.basename + "-item-" + options.type;
-    control.className = options.basename + "-control item";
+    control.className = dropdownCssBasename(options.basename) + " item";
     control.title = options.tooltip;
 
     // Set CSS for the control interior.
@@ -28,7 +28,7 @@ function dropdownItem(options) {
 
 function dropdownCheckbox(options) {
     var container = document.createElement("div");
-    container.className = options.basename + "-control checkbox";
+    container.className = dropdownCssBasename(options.basename) + " checkbox";
     container.title = options.tooltip;
 
     var span = document.createElement("span");
@@ -56,7 +56,7 @@ function dropdownCheckbox(options) {
 
 function dropdownSeparator(basename) {
     var sep = document.createElement("hr");
-    sep.className = basename + "-control separator";
+    sep.className = dropdownCssBasename(basename) + " separator";
     return sep;
 }
 
@@ -65,7 +65,7 @@ function createDropdownControl(options) {
     var basename = options.basename;
 
     var dropdown = document.createElement("div");
-    dropdown.className = basename + "-control items-list";
+    dropdown.className = dropdownCssBasename(basename) + " items-list";
     dropdown.id = basename + "-items-list";
 
     for (var i = 0; i < options.items.length; i++) {
@@ -73,23 +73,23 @@ function createDropdownControl(options) {
     }
 
     var container = document.createElement("div");
-    container.id = basename + "-control-custom";
-    container.className = basename + "-control";
+    container.id = basename + "-control";
+    container.className = dropdownCssBasename(basename);
     container.style.cssText = "z-index: " + options.zIndex;
 
     var control = document.createElement("div");
-    control.className = basename + "-control selection";
+    control.className = dropdownCssBasename(basename) + " selection";
     control.id = basename;
 
     var controlText = document.createElement("span");
-    controlText.className = basename + "-control selection-text";
+    controlText.className = dropdownCssBasename(basename) + " selection-text";
     controlText.id = basename + "-current";
     controlText.innerHTML = dropdown.firstChild.firstChild.innerHTML;
     control.appendChild(controlText);
 
     var arrow = document.createElement("img");
     arrow.src = "http://maps.gstatic.com/mapfiles/arrow-down.png";
-    arrow.className = basename + "-control arrow";
+    arrow.className = dropdownCssBasename(basename) + " arrow";
     control.appendChild(arrow);
 
     container.appendChild(control);
@@ -143,4 +143,8 @@ function createDropdownControl(options) {
             }
         );
     }
+}
+
+function dropdownCssBasename(basename) {
+    return "map-control dropdown " + basename;
 }
