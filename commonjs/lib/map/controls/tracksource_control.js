@@ -74,9 +74,14 @@ function initTrackSourceControl(selection) {
 
 function loadSource(link, domain) {
 
-    //TODO: hide dropdown on click
-    
     gxml.overlayman.Hide();
+
+    var legend = document.getElementById("legend");
+    if (legend != null) {
+        legend.style.width = "auto";
+        legendInitialWidth = 0;
+        legendCondensed = false;
+    }
 
     // set up new KML
     var isropewiki = link.includes(SITE_HOSTNAME);

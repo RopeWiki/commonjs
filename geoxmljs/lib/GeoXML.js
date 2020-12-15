@@ -987,7 +987,7 @@ GeoXml.prototype.processLine = function (pnum, lnum, idx, multi) {
             var blob;
             if (this.rectangleLegend) {
                 var m_w = parseInt(((16 - s_w) / 2));
-                blob = '<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" fill="#ffeecc" width="16px" height="16px">';
+                blob = '<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:2px;;margin-right:2px;margin-top:0px" version="1.2" fill="#ffeecc" width="16px" height="16px">';
                 if (op.color == '#ffffff' || op.color == '#FFFFFF') {
                     blob += ' <rect stroke="none" height="16" width="16" y="0" x="0" stroke-width="null" fill="#cbcbcb"/>';
                 }
@@ -3117,7 +3117,7 @@ function iconImageLoad() {
 
         //now scale based on scaledSize
         if (!!this.overlaymanager && !!this.overlaymanager.markers) {
-            let markers = this.overlaymanager.markers.filter(marker => !!marker.icon && marker.icon.id === this.icon.id);
+            let markers = this.overlaymanager.markers.filter(marker => (typeof marker.icon !== 'undefined') && marker.icon.id === this.icon.id);
             
             let anchor = new google.maps.Point(x * (this.icon.scaledSize.width / this.width), y * (this.icon.scaledSize.height / this.height));
             markers.forEach(marker => marker.icon.anchor = anchor);

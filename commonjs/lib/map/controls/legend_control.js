@@ -14,6 +14,7 @@ function initLegendControl() {
 
 
     var legendBox = document.createElement("div");
+    legendBox.id = "legend-outer";
 
     var legendBoxInner = document.createElement("div");
     legendBoxInner.id = "legendbar";
@@ -33,12 +34,19 @@ function initLegendControl() {
     controlText.setAttribute("for", chk.id);
     controlText.innerHTML = "Legend";
 
+    var condenseButton = document.createElement("span");
+    condenseButton.id = "legendCondense";
+    condenseButton.className = "controls legend condense";
+    condenseButton.style.display = "none";
+    condenseButton.innerHTML = ">>";
+
     var legendContent = document.createElement("div");
     legendContent.id = "legend";
     legendContent.className = "notranslate";
 
     legendBoxInner.appendChild(chk);
     legendBoxInner.appendChild(controlText);
+    legendBoxInner.appendChild(condenseButton);
     legendBoxInner.appendChild(legendContent);
 
     legendBox.appendChild(legendBoxInner);
@@ -49,9 +57,19 @@ function initLegendControl() {
             toggleLegend();
         });
 
+    google.maps.event.addDomListener(condenseButton,
+        "click",
+        function () {
+            toggleLegendWidth();
+        });
+
 
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legendBox);
+
+    legendSizeObserver = new ResizeObserver(legendSizeChanged).observe(legendBox);
 }
+
+var legendSizeObserver;
 
 var showLegend;
 
@@ -74,5 +92,56 @@ function toggleLegend(force) {
     }
 
     var chk = document.getElementById("legendchk");
-    if (chk) chk.checked = showLegend != null;
+    if (chk) {
+        chk.checked = showLegend != null;
+        if (!chk.checked) {
+            legendInitialWidth = 0;
+        }
+    }
+}
+
+const condensedWidth = 90;
+var legendInitialWidth = 0;
+
+function legendSizeChanged() {
+    var legend = document.getElementById("legend");
+    var chk = document.getElementById("legendchk");
+    var legendCondense = document.getElementById("legendCondense");
+    
+    if (!!legend && !!chk && !!legendCondense) {
+        if (chk.checked) {
+            var width = legend.offsetWidth;
+            if (!legendCondensed) {
+                legendInitialWidth = width;
+                legendCondense.innerHTML = ">>";
+            }
+
+            if (legendInitialWidth > condensedWidth + 40) {
+                legendCondense.style.display = "block";
+            } else {
+                legendCondense.style.display = "none";
+            }
+        } else {
+            legendCondense.style.display = "none";
+        }
+    }
+}
+
+var legendCondensed = false;
+
+function toggleLegendWidth() {
+    var legend = document.getElementById("legend");
+    var legendCondense = document.getElementById("legendCondense");
+
+    if (!legend || !legendCondense) return;
+
+    if (legendCondensed) {
+        legend.style.width = legendInitialWidth + "px";
+        legendCondense.innerHTML = ">>";
+        legendCondensed = false;
+    } else {
+        legend.style.width = condensedWidth + "px";
+        legendCondense.innerHTML = "<<";
+        legendCondensed = true;
+    }
 }
