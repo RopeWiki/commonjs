@@ -99,15 +99,15 @@ function createDropdownControl(options) {
     container.className = dropdownCssBasename(basename);
     container.style.cssText = "z-index: " + options.zIndex;
 
-    var control = document.createElement("div");
-    control.className = dropdownCssBasename(basename) + " selection";
-    control.id = basename;
+    var selectedItem = document.createElement("div");
+    selectedItem.className = dropdownCssBasename(basename) + " selection";
+    selectedItem.id = basename;
 
-    var controlText = document.createElement("span");
-    controlText.className = dropdownCssBasename(basename) + " selection-text";
-    controlText.id = basename + "-current";
-    controlText.innerHTML = dropdown.firstChild.firstChild.innerHTML;
-    control.appendChild(controlText);
+    var selectedItemText = document.createElement("span");
+    selectedItemText.className = dropdownCssBasename(basename) + " selection-text";
+    selectedItemText.id = basename + "-current";
+    selectedItemText.innerHTML = dropdown.firstChild.firstChild.innerHTML;
+    selectedItem.appendChild(selectedItemText);
 
     var arrow = document.createElement("img");
     arrow.src = !options.bottomUp
@@ -115,14 +115,14 @@ function createDropdownControl(options) {
         : "http://maps.gstatic.com/mapfiles/arrow-up.png";
 
     arrow.className = dropdownCssBasename(basename) + " arrow";
-    control.appendChild(arrow);
+    selectedItem.appendChild(arrow);
 
     if (!options.bottomUp) {
-        container.appendChild(control);
+        container.appendChild(selectedItem);
         container.appendChild(dropdown);
     } else {
         container.appendChild(dropdown);
-        container.appendChild(control);
+        container.appendChild(selectedItem);
     }
 
     options.gmap.controls[options.position].push(container);
@@ -131,7 +131,7 @@ function createDropdownControl(options) {
         document.getElementById(id).style.display = "none";
     }
 
-    google.maps.event.addDomListener(control,
+    google.maps.event.addDomListener(selectedItem,
         "click",
         function () {
             if (document.getElementById(dropdown.id).style.display === "" ||

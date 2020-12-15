@@ -1,6 +1,6 @@
 var sites = [];
 
-// units of measure
+// cookies
 var metric = null;
 var french = null;
 var urlcheckbox = null;
@@ -11,10 +11,26 @@ var starrate = null;
 var labels = null;
 var slideshowchk = null;
 
-var sortby = "";
+function initializeGlobalVariables() {
+    metric = getCookie("metric");
+    french = getCookie("french");
+    urlcheckbox = getCookie("urlcheckbox");
+    weather = getCookie("weather");
+    watershed = getCookie("watershed");
 
-// google.maps.ElevationService
-var geoElevationService;
+    starrate = getCookie("starrate");
+    if (window.location.href.toString().indexOf('starratechk=') >= 0)
+        starrate = true;
+    labels = getCookie("labels");
+    slideshowchk = getCookie("slideshowchk", "undefined");
+    if (slideshowchk == "undefined")// && $(window).width()<1200)
+        slideshowchk = "on";
+    slideshowchk = slideshowchk != "";
+}
+
+// ===== other global variables:
+
+var sortby = "";
 
 var skinuser = "";
 
@@ -26,11 +42,10 @@ var lastfrom = "", lastto ="";
 
 // ===== Map global variables =====
 
-// google.maps.Map that shows geographic information on applicable pages.
+// the google.maps.Map mapbox
 var map;
 
-// GeoXML content to be displayed on the map (from MediaWiki:Geoxml.js).
-// TODO: verify this description
+// GeoXML content to be displayed on the map (from MediaWiki:Geoxml.js)
 var gxml;
 
 var zindex = 0;
@@ -63,13 +78,6 @@ var piciconlist = [];
 var picloadingmsg = "<img height=12 src='" + SITE_BASE_URL + "/extensions/SemanticForms/skins/loading.gif'/> Loading... ";
 var piclist, picloading, picloadingerr, picloadingn;
 
-// Variables for searchmap function
-var searchmapn = -1;
-var searchmappt = [];
-
-// Variables for searchmaprun function
-var searchmaprectangle;
-
 // Variables for toggleRoutes function
 var showRoutes, loadedRoutes;
 
@@ -82,20 +90,3 @@ var lastlinks = [];
 // Variables for addbutton function
 var oldid = '@';
 
-
-function initializeGlobalVariables() {
-    metric = getCookie("metric");
-    french = getCookie("french");
-    urlcheckbox = getCookie("urlcheckbox");
-    weather = getCookie("weather");
-    watershed = getCookie("watershed");
-
-    starrate = getCookie("starrate");
-    if (window.location.href.toString().indexOf('starratechk=') >= 0)
-        starrate = true;
-    labels = getCookie("labels");
-    slideshowchk = getCookie("slideshowchk", "undefined");
-    if (slideshowchk == "undefined")// && $(window).width()<1200)
-        slideshowchk = "on";
-    slideshowchk = slideshowchk != "";
-}

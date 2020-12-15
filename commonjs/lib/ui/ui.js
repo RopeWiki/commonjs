@@ -558,10 +558,6 @@ function loadFormInterface() {
         setinput('locname', '<input id="locnameval" class="submitoff" autocomplete="on" style="width:90%;', 'locsearch');
         setinput('locdist', '<input id="locdistval" class="submitoff" autocomplete="on" size="15" style="', 'locsearch');
         locfind.innerHTML = '<input class="submitoff" type="submit" onclick="locsearch()" value="' + locfind.innerHTML + '">';
-
-        var mapfind = document.getElementById('mapfind');
-        if (mapfind)
-            mapfind.innerHTML = '<input class="submitoff" type="submit" onclick="mapsearch()" value="' + mapfind.innerHTML + '">';
     }
 
     // region search

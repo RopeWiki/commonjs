@@ -12,7 +12,6 @@ function initLegendControl() {
     //        '<div id="legend" class="notranslate"></div>' +
     //    '</div>';
 
-
     var legendBox = document.createElement("div");
     legendBox.id = "legend-outer";
 

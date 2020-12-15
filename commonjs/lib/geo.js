@@ -2,6 +2,9 @@
 var km2mi = 0.621371;
 var m2ft = 3.28084;
 
+// google.maps.ElevationService
+var geoElevationService;
+
 /**
  * Compute the distance between two (lat,lng) points.
  *
