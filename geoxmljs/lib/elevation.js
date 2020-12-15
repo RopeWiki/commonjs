@@ -40,11 +40,11 @@ function plotelevation(results, ticks, conv) {
     data.addColumn('number', 'Elevation');
 
     for (var i = 0; i < results.length; i++) {
-        if (results[i].g != 0) {
+        //if (results[i].g != 0) {
             let slope = ftxmi(results[i].g / 100 * mi2ft);
             var slopeStr = "Slope: " + (slope >= 0 ? "+":"") + ftxmi(results[i].g / 100 * mi2ft) + " ft/mi";
             data.addRow([slopeStr, Math.round(conv * results[i].elevation)]);
-        }
+        //}
     }
 
     var elem = document.getElementById('elevationgraph');

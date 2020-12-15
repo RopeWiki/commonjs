@@ -360,6 +360,8 @@ GeoXml.getDescription = function (node) {
     u = u.replace(/\&quot;/g, '"');
     u = u.replace(/\&apos;/g, "'");
     u = u.replace(/\&gt;/g, ">");
+    u = u.replace(" (Data by", "<br>(Data by"); //put credits on its own line
+    if (u.startsWith("<br>")) u = u.substring(4);
     return u;
 };
 
