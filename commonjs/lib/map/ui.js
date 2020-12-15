@@ -237,12 +237,3 @@ function centermap() {
     //map.fitBounds(bounds);
     map.panTo(center);
 }
-
-function mapcover() {
-    var mw = $("#mapbox").width();
-    var dw = $(window).width() - mw;
-    if (!toggleFS && (dw < 50 || mw < 500))
-        $("#mapcover").css({display: "block"});
-    else
-        $("#mapcover").css({display: "none"});
-}

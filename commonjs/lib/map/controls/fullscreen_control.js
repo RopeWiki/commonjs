@@ -5,19 +5,26 @@ function initFullscreenControl() {
     fullscreenControl.className = 'controls fullscreen-control';
     fullscreenControl.id = 'fullscreenCustom';
     fullscreenControl.innerHTML =
-        '<button title = "Toggle Fullscreen">' +
-            '<div class="fullscreen-control-icon fullscreen-control-top-left"></div>' +
-            '<div class="fullscreen-control-icon fullscreen-control-top-right"></div>' +
-            '<div class="fullscreen-control-icon fullscreen-control-bottom-left"></div>' +
-            '<div class="fullscreen-control-icon fullscreen-control-bottom-right"></div>' +
-        '</button>';
+        '<div title = "Toggle Fullscreen">' +
+            '<div class="controls fullscreen-control icon top-left"></div>' +
+            '<div class="controls fullscreen-control icon top-right"></div>' +
+            '<div class="controls fullscreen-control icon bottom-left"></div>' +
+            '<div class="controls fullscreen-control icon bottom-right"></div>' +
+        '</div>';
 
     map.controls[google.maps.ControlPosition.TOP_LEFT].insertAt(0, fullscreenControl);
 
     var elementToSendFullscreen = map.getDiv().firstChild;
 
     fullscreenControl.onclick = function () {
-        if (iOS()) { //functionality is different in iOS. Needs to use our toggleFullScreen code. 
+        if (iOS()) { //functionality is different in iOS. Needs to use our toggleFullScreen code.
+            
+            if (!toggleFS) {
+                fullscreenControl.classList.add("is-fullscreen");
+            } else {
+                fullscreenControl.classList.remove("is-fullscreen");
+            }
+
             toggleFullScreen();
             return;
         }
@@ -83,10 +90,6 @@ var FULLSCREEN_HASH = '#fullscreen';
 //        });
 //}
 
-function backFullScreen() {
-    window.history.back();
-}
-
 function toggleFullScreen(force) {
     var ide = document.getElementById("mapbox");
     if (!ide) return;
@@ -139,10 +142,16 @@ function toggleFullScreen(force) {
         toggleFS = null;
     }
 
-    chk = document.getElementById("fullscreenchk");
-
-    chk.onclick = toggleFS == null ? toggleFullScreen : backFullScreen;
     mapcover();
     $(ide).show();
     centermap();
+}
+
+function mapcover() {
+    var mw = $("#mapbox").width();
+    var dw = $(window).width() - mw;
+    if (!toggleFS && (dw < 50 || mw < 500))
+        $("#mapcover").css({ display: "block" });
+    else
+        $("#mapcover").css({ display: "none" });
 }

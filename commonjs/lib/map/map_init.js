@@ -92,13 +92,6 @@ function loadInteractiveMap() {
 
     SetupMapLayers();
     
-    // Map out
-    google.maps.event.addListener(map,
-        'mouseout',
-        function() {
-            mapcover();
-        });
-
     // Tiles loaded
     loadingtiles = true;
     console.log("loadingtiles true");
@@ -436,8 +429,7 @@ function loadInteractiveMap() {
         var spstart = '<div class="gmnoprint maptopcontrols">', spend = '</div>';
         //var controls = '<div style="position:absolute;left:0;right:0;width:99%;height:99%;border-color:red;border-width:50px;border-style: solid;background-color:transparent"></div>';
 
-        // this is the fullscreen button, which used to have an image, but is removed. This code is still here or mobile 'click to maximize' doesn't work
-        var controls = spstart + '<img class="gmnoprint" id="fullscreenchk" style="display:none" onclick="toggleFullScreen()">' + spend;
+        var controls;
 
         if (kmllist) {
 
@@ -453,19 +445,13 @@ function loadInteractiveMap() {
                 controls += spstart + '<label><input class="gmnoprint" id="labelschk" type="checkbox" onclick="toggleLabels()" ' + (labels ? 'checked' : '') + '>TrkLabels&nbsp;</label>' + spend;
         }
 
-        var mapTopControlsDiv = document.createElement('DIV');
-        mapTopControlsDiv.style.cssText = "z-index:9999;";
-        mapTopControlsDiv.innerHTML = controls;
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(mapTopControlsDiv);
+        if (controls) {
+            var mapTopControlsDiv = document.createElement('DIV');
+            mapTopControlsDiv.style.cssText = "z-index:9999;";
+            mapTopControlsDiv.innerHTML = controls;
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(mapTopControlsDiv);
+        }
     }
-
-    // cover
-    //var coverDiv = document.createElement('DIV');
-    //coverDiv.id = "mapcover";
-    //coverDiv.className = "gmnoprint";
-    //coverDiv.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;background-color:transparent;border-color:yellow;border-style: inset;border-width:2px';
-    //$(coverDiv).on('click', function() { toggleFullScreen(true); });
-    //map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(coverDiv);
 
     // set kml (if any) from "kmlfile"
     var kmlfilep = document.getElementById("kmlfilep");
@@ -618,12 +604,7 @@ function loadInteractiveMap() {
     $('#mapbox').mouseover(function(event) {
         handlekeys = true;
     });
-
-    $('#mapbox').mouseout(function(event) {
-        handlekeys = false;
-        mapcover();
-    });
-
+    
     $('#mapbox').mousedown(function(event) {
         // prevent text selection on doubleclick
         event.preventDefault();
@@ -657,8 +638,6 @@ function loadInteractiveMap() {
                 return false;
             case 27: // Esc
             case 8: // Backspace
-                if (toggleFS != null)
-                    backFullScreen();
                 return false;
             default:
                 //alert("key:"+event.which);
@@ -669,13 +648,10 @@ function loadInteractiveMap() {
 
     // in case window gets resized
     $(window).resize(function() {
-        if (toggleFS != null)
-            toggleFullScreen(true);
-        else
-            centermap();
+
+        centermap();
 
         smallstyle();
-        mapcover();
 
         if (isFullscreen(null) && !iOS()) { //this is set to the inverse until after window is drawn, so use inverse logic
             map.set('gestureHandling', 'cooperative');
