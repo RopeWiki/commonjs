@@ -424,35 +424,31 @@ function loadInteractiveMap() {
         map.controls[google.maps.ControlPosition.TOP_CENTER].push(titleControlsDiv);
     }
 
-    // add additional controls (i.e. fullscreen, Show track data, Search Map, TrkLabels (for Books) )
-    {
-        var spstart = '<div class="gmnoprint maptopcontrols">', spend = '</div>';
-        //var controls = '<div style="position:absolute;left:0;right:0;width:99%;height:99%;border-color:red;border-width:50px;border-style: solid;background-color:transparent"></div>';
+    // add additional controls (i.e. Show track data, Search Map, TrkLabels (for Books) )
+    var spstart = '<div class="gmnoprint">', spend = '</div>';
+        
+    var controls = "";
 
-        var controls;
+    if (kmllist) {
 
-        if (kmllist) {
+        controls += spstart + initShowTracksControl() + spend;
 
-            controls += spstart + initShowTracksControl() + spend;
-
-            // map search
-            if (document.getElementById('locsearch')) {
-                initSearchMapControl();
-            }
-        }
-        else {
-            if (kmltitle)
-                controls += spstart + '<label><input class="gmnoprint" id="labelschk" type="checkbox" onclick="toggleLabels()" ' + (labels ? 'checked' : '') + '>TrkLabels&nbsp;</label>' + spend;
-        }
-
-        if (controls) {
-            var mapTopControlsDiv = document.createElement('DIV');
-            mapTopControlsDiv.style.cssText = "z-index:9999;";
-            mapTopControlsDiv.innerHTML = controls;
-            map.controls[google.maps.ControlPosition.TOP_LEFT].push(mapTopControlsDiv);
+        // map search
+        if (document.getElementById('locsearch')) {
+            initSearchMapControl();
         }
     }
+    else if (kmltitle) {
+        controls += spstart + '<label><input class="gmnoprint" id="labelschk" type="checkbox" onclick="toggleLabels()" ' + (labels ? 'checked' : '') + '>TrkLabels&nbsp;</label>' + spend;
+    }
 
+    if (controls !== "") {
+        var mapTopControlsDiv = document.createElement('DIV');
+        mapTopControlsDiv.style.cssText = "z-index:9999;";
+        mapTopControlsDiv.innerHTML = controls;
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(mapTopControlsDiv);
+    }
+    
     // set kml (if any) from "kmlfile"
     var kmlfilep = document.getElementById("kmlfilep");
     if (kmlfilep != null) {

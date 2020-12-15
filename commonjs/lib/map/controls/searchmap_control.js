@@ -30,6 +30,8 @@ function searchmapBegin() {
 
     if (searchmapn < 0) {
 
+        //events that the shapes send: https://developers.google.com/maps/documentation/javascript/shapes#editable_events
+
         searchmaprectangle = new google.maps.Rectangle({
             bounds: boundslist,
             editable: true
