@@ -86,6 +86,9 @@ function validateIconUrl(href) {
 
         if (href.includes("waterfall.png"))
             href = 'http://maps.google.com/mapfiles/ms/icons/waterfalls.png';
+
+        if (href.includes("drinkingwater.png"))
+            href = 'http://maps.google.com/mapfiles/ms/icons/drinking_water.png';
     }
 
     // add others as needed

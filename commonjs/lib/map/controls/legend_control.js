@@ -87,7 +87,12 @@ function toggleLegend(force) {
         if (label && showLegend == null)
             showLegend = label.innerHTML;
     } else {
-        if (legend) legend.style.display = "none";
+        if (legend) {
+            legend.style.display = "none";
+            legend.style.width = "auto";
+        }
+        legendInitialWidth = 0;
+        legendCondensed = false;
         showLegend = null;
     }
 
