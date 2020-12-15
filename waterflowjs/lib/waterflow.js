@@ -998,7 +998,7 @@ function addsite(id, name, lat, lng, mode, conf, urls, datecounter)
             break;
           case 2:
             newcol = document.createElement("TD");
-            newcol.innerHTML = mi(site.dist);
+            newcol.innerHTML = miStr(site.dist);
             break;
           default:
             newcol = document.createElement("TD");
