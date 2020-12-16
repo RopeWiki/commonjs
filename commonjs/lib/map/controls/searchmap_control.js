@@ -54,7 +54,6 @@ function searchmapRun() {
     var element = document.getElementById('searchinfo');
     if (element) element.innerHTML = 'Searching...';
 
-    var zoom = -1;
     var bounds = searchmaprectangle.bounds;
 
     var locsearchchk = document.getElementById('locsearchchk');
@@ -63,7 +62,6 @@ function searchmapRun() {
         var ne = bounds.getNorthEast();
         locsearchchk.checked = true;
         var v = "Coord:" + sw.lat().toFixed(3) + "," + sw.lng().toFixed(3) + "," + ne.lat().toFixed(3) + "," + ne.lng().toFixed(3);
-        if (zoom >= 0) v += ',' + zoom;
         document.getElementById('locnameval').value = v;
     }
     filtersearch();

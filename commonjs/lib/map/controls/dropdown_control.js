@@ -89,6 +89,7 @@ function createDropdownControl(options) {
     var dropdown = document.createElement("div");
     dropdown.className = dropdownCssBasename(basename) + " items-list";
     dropdown.id = basename + "-items-list";
+    dropdown.bottomUp = options.bottomUp;
 
     for (var i = 0; i < options.items.length; i++) {
         dropdown.appendChild(options.items[i]);
@@ -110,13 +111,11 @@ function createDropdownControl(options) {
     selectedItem.appendChild(selectedItemText);
 
     var arrow = document.createElement("img");
-    arrow.src = !options.bottomUp
-        ? "http://maps.gstatic.com/mapfiles/arrow-down.png"
-        : "http://maps.gstatic.com/mapfiles/arrow-up.png";
-
     arrow.className = dropdownCssBasename(basename) + " arrow";
+    dropdown.arrowElement = arrow;
+    setArrow(dropdown);
     selectedItem.appendChild(arrow);
-
+    
     if (!options.bottomUp) {
         container.appendChild(selectedItem);
         container.appendChild(dropdown);
@@ -127,19 +126,21 @@ function createDropdownControl(options) {
 
     options.gmap.controls[options.position].push(container);
 
-    function hideDropdownList(id) {
-        document.getElementById(id).style.display = "none";
+    function hideDropdownList(dropdown) {
+        dropdown.style.display = "none";
+        setArrow(dropdown);
     }
 
     google.maps.event.addDomListener(selectedItem,
         "click",
         function () {
-            if (document.getElementById(dropdown.id).style.display === "" ||
-                document.getElementById(dropdown.id).style.display === "none") {
-                document.getElementById(dropdown.id).style.display = "block";
+            if (dropdown.style.display === "" ||
+                dropdown.style.display === "none") {
+                dropdown.style.display = "block";
+                setArrow(dropdown);
             }
             else
-                hideDropdownList(dropdown.id);
+                hideDropdownList(dropdown);
         });
 
     document.addEventListener("click",
@@ -150,9 +151,8 @@ function createDropdownControl(options) {
                 targetElement.id !== basename &&
                 targetElement.parentElement && targetElement.parentElement.id !== basename + "-items-list" &&
                 targetElement.parentElement.parentElement && targetElement.parentElement.parentElement.id !== basename + "-items-list") {
-                var dropdownList = document.getElementById(dropdown.id);
-                if (dropdownList && dropdownList.style.display === "block")
-                    hideDropdownList(dropdown.id);
+                if (dropdown.style.display === "block")
+                    hideDropdownList(dropdown);
             }
         });
 
@@ -161,7 +161,7 @@ function createDropdownControl(options) {
             "mouseleave",
             function () {
                 options.dropdownHideTimer = setTimeout(function () {
-                    hideDropdownList(dropdown.id);
+                    hideDropdownList(dropdown);
                 },
                     1000);
             });
@@ -201,6 +201,13 @@ function setDropdownSelection(basename, selected) {
     }
 
     element.classList.add("selected");
+}
+
+function setArrow(dropdown) {
+    var expanded = dropdown.style.display === "block";
+    dropdown.arrowElement.src = !!(dropdown.bottomUp) === expanded
+        ? "http://maps.gstatic.com/mapfiles/arrow-down.png"
+        : "http://maps.gstatic.com/mapfiles/arrow-up.png";
 }
 
 function dropdownCssBasename(basename) {
