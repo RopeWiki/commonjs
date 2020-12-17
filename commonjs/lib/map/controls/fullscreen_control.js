@@ -19,7 +19,7 @@ function initFullscreenControl() {
     fullscreenControl.onclick = function () {
         if (iOS()) { //functionality is different in iOS. Needs to use our toggleFullScreen code.
 
-            addFullscreenStyleClass(!toggleFS);
+            addFullscreenStyleClass(fullscreenControl, !toggleFS);
             toggleFullScreen();
             return;
         }
@@ -32,7 +32,7 @@ function initFullscreenControl() {
     };
 
     document.onwebkitfullscreenchange = document.onmsfullscreenchange = document.onmozfullscreenchange = document.onfullscreenchange = function () {
-        addFullscreenStyleClass(isFullscreen(elementToSendFullscreen));
+        addFullscreenStyleClass(fullscreenControl, isFullscreen(elementToSendFullscreen));
     };
 }
 
@@ -70,7 +70,7 @@ function exitFullscreen() {
     }
 }
 
-function addFullscreenStyleClass(isFullscreen) {
+function addFullscreenStyleClass(fullscreenControl, isFullscreen) {
     if (isFullscreen)
         fullscreenControl.classList.add("is-fullscreen");
     else
