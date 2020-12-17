@@ -1,6 +1,7 @@
 [
   {
     "outputFileName": "../out/waterflow.min.js",
+    "includeInProject": false,
     "inputFiles": [
       "lib/waterflow.js"
     ],
