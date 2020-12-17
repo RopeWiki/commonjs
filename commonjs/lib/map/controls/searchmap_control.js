@@ -15,7 +15,7 @@ function initSearchMapControl() {
     google.maps.event.addDomListener(searchMapControl,
         "click",
         function() {
-            searchmapBegin();
+            searchmapClicked();
         });
 
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(searchMapControl);
@@ -24,7 +24,7 @@ function initSearchMapControl() {
 var searchmapn = -1;
 var searchmaprectangle;
 
-function searchmapBegin() {
+function searchmapClicked() {
 
     var element = document.getElementById('searchinfo');
 
@@ -37,15 +37,18 @@ function searchmapBegin() {
             editable: true
         });
         searchmaprectangle.setMap(map);
-        searchmaprectangle.addListener("click", searchmapRun);
+        searchmaprectangle.addListener("click", function () {
+            searchmaprectangle.setMap(null);
+            element.innerHTML = "Search Map";
+            searchmapn = -1;
+        });
 
-        element.innerHTML = 'Cancel<br><p style="font-size:10px;line-height:0px">Click the rect to search</p>';
+        element.innerHTML = 'Run Search<br><p style="font-size:10px;line-height:0px">Click the rect to cancel</p>';
 
         searchmapn = 0;
     } else {
-        searchmaprectangle.setMap(null);
-        element.innerHTML = "Search Map";
-        searchmapn = -1;
+        element.innerHTML = 'Searching...';
+        searchmapRun();
     }
 }
 
