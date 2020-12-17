@@ -11,13 +11,10 @@ function initLegendControl() {
     //        '</label><br>' +
     //        '<div id="legend" class="notranslate"></div>' +
     //    '</div>';
-
+    
     var legendBox = document.createElement("div");
-    legendBox.id = "legend-outer";
-
-    var legendBoxInner = document.createElement("div");
-    legendBoxInner.id = "legendbar";
-    legendBoxInner.className = "controls legend";
+    legendBox.id = "legendbar";
+    legendBox.className = "controls legend";
 
     var span = document.createElement("span");
     span.role = "checkbox";
@@ -43,13 +40,11 @@ function initLegendControl() {
     legendContent.id = "legend";
     legendContent.className = "notranslate";
 
-    legendBoxInner.appendChild(chk);
-    legendBoxInner.appendChild(controlText);
-    legendBoxInner.appendChild(condenseButton);
-    legendBoxInner.appendChild(legendContent);
-
-    legendBox.appendChild(legendBoxInner);
-
+    legendBox.appendChild(chk);
+    legendBox.appendChild(controlText);
+    legendBox.appendChild(condenseButton);
+    legendBox.appendChild(legendContent);
+    
     google.maps.event.addDomListener(chk,
         "change",
         function () {

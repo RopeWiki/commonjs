@@ -173,6 +173,8 @@ function createDropdownControl(options) {
             }
         );
     }
+
+    return container;
 }
 
 function setDropdownSelection(basename, selected) {

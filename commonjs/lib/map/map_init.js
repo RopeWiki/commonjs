@@ -632,9 +632,6 @@ function loadInteractiveMap() {
             case 187: // =
                 map.setZoom(z = map.getZoom() + 1);
                 return false;
-            case 27: // Esc
-            case 8: // Backspace
-                return false;
             default:
                 //alert("key:"+event.which);
                 break;

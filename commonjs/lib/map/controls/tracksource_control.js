@@ -69,7 +69,11 @@ function initTrackSourceControl(selection) {
         dropdownHideTimer: trackSourceDropdownHideTimer,
         bottomUp: true
     }
-    createDropdownControl(dropdownOptions);
+    var trackSourceControl = createDropdownControl(dropdownOptions);
+
+    var dropdown = trackSourceControl.getElementsByClassName("items-list")[0];
+    var mapbox = document.getElementById("mapbox");
+    dropdown.style.maxHeight = (mapbox.offsetHeight - 66) + "px"; //need to set this here rather than in css because css doesn't know the mapbox height
 }
 
 function loadSource(link, domain) {
@@ -163,10 +167,15 @@ function prettyPrint(url) {
     if (url.includes("descente-canyon"))  name = "Descente Canyon";
     if (url.includes("carto.net"))        name = "Canyon Carto";
 
-    var multiple = url.indexOf("#");
+    var maxLength = 17;
+    name = name.substring(0, maxLength);
 
-    if (multiple > 0)
-        name += " " + url.substring(multiple);
+    var multiple = url.indexOf("#");
+    
+    if (multiple > 0) {
+        var count = url.substring(multiple);
+        name = name.substring(0, maxLength - (count.length + 1)) + " " + count;
+    }
 
     return name;
 }
