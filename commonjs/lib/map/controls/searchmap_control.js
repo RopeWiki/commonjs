@@ -43,7 +43,7 @@ function searchmapClicked() {
             searchmapn = -1;
         });
 
-        element.innerHTML = 'Run Search<br><p style="font-size:10px;line-height:0px">Click the rect to cancel</p>';
+        element.innerHTML = 'Run Search<br><p style="font-size:10px;line-height:0px">Click inside rect to cancel</p>';
 
         searchmapn = 0;
     } else {

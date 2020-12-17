@@ -719,7 +719,7 @@ function loadFormInterface() {
     // propagate jform
     var elems = document.getElementsByClassName('optionform');
     var urllink = window.location.href;
-    var urllink = urllink.split('#')[0].split('?');
+    urllink = urllink.split('#')[0].split('?');
     if (urllink.length > 1) {
         var ulink = urllink[1].replace('&locname=', '&noloc=').replace('&locsearchchk=on', '')
         for (var i = 0; i < elems.length; i++) {
