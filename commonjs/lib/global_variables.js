@@ -62,9 +62,6 @@ var kmllistn = 0;
 var kmllisturl, tablelisturl;
 var kmlsummary;
 
-var morestep = 100;
-var moremapc = 0, morelistc = 0;
-
 // keep bounds for autozoom and center
 var boundslist;
 

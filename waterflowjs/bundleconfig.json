@@ -1,6 +1,6 @@
 [
   {
-    "outputFileName": "out/waterflow.min.js",
+    "outputFileName": "../out/waterflow.min.js",
     "inputFiles": [
       "lib/waterflow.js"
     ],

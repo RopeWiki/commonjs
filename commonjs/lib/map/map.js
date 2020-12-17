@@ -364,6 +364,9 @@ function getkmllist( data ) {
     loadlist(list, true);
 }
 
+var morestep = 100;
+var moremapc = 0, morelistc = 0;
+
 function morekmllist(loccontinue, loctotal) {
     loadingquery = true;
     console.log("loadingquery true");

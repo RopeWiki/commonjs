@@ -1,6 +1,6 @@
 [
   {
-    "outputFileName": "out/Common.min.js",
+    "outputFileName": "../out/Common.min.js",
     "inputFiles": [
       "lib/android.js",
       "lib/collapsible_lists.js",
