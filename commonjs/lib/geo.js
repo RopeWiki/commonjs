@@ -64,9 +64,11 @@ function miStr(miles, space) {
 
 // called by uconv below.
 function rap(raps, space) {
-    if (isNaN(raps)) return "";
+    if (!raps || !raps.trim()) return ""; //empty or whitespace
 
-    return raps + (space ? "&nbsp;" : "") + "r";
+    if (isNaN(raps)) return raps; //already formatted
+    
+    return raps + (space ? "&nbsp;" : "") + "r"; //it's a number, add the 'r' at the end
 }
 
 /**
