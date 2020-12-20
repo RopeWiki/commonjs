@@ -652,40 +652,7 @@ function loadFormInterface() {
 
         toggleDisabledChk(mid);
     }
-
-    //// starshowhide
-    //var starsh = document.getElementById('starshowhide');
-    //if (starsh && filters) {
-    //    // clickable filters
-    //    var links = starsh.getElementsByTagName('A');
-    //    for (var i = 0; i < links.length; ++i)
-    //        links[i].removeAttribute('href');
-    //    var border = "border:2px solid #0070B0";
-    //    var children = starsh.getElementsByTagName('IMG');
-    //    for (var i = 0; i < children.length; ++i) {
-    //        children[i].style.cssText = border;
-    //        children[i].removeAttribute('href');
-    //        children[i].active = true;
-    //        children[i].q = 0;
-    //        if (children[i].alt)
-    //            children[i].q = Number(children[i].alt);
-    //        children[i].onclick = function showhide(event) {
-    //            this.active = !this.active
-    //            this.style.cssText = this.active ? border : "";
-
-    //            // show/hide map markers
-    //            var qmap = qmaps[this.q] = this.active ? map : null;
-    //            for (var j = 0; j < markers.length; ++j) {
-    //                if (markers[j].q == this.q) {
-    //                    markers[j].setMap(qmap);
-    //                    if (markers[j].highlight)
-    //                        markers[j].highlight.setMap(qmap);
-    //                }
-    //            }
-    //        };
-    //    }
-    //}
-
+    
     // location search
     var locdefault = document.getElementById('locdefault');
     if (locdefault) {

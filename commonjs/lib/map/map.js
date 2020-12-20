@@ -45,10 +45,7 @@ function pinmap(id) {
 
 function loadlist(list, fitbounds) {
     var i;
-    //if (qmaps.length === 0)  //qmaps is an array of layers for each star rating, 0 to 5
-    //    for (i = 0; i < 6; ++i)
-    //        qmaps.push(map);
-    
+
     // calc nearby (only 1 shot of 100 or less)
     var calcnearby = document.getElementById('kmlnearby');
     if (calcnearby) {
@@ -197,16 +194,14 @@ function loadlist(list, fitbounds) {
         }
 
         // build and add marker with infowindow callback
-        var stars = -1, qmap = map;
-        if (item.stars != null)
-            //qmap = qmaps[q = item.q];
-            qmap = map; stars = item.stars;
+        var stars = -1;
+        if (item.stars != null) stars = item.stars;
 
         var positionm = new google.maps.LatLng(item.location.lat, item.location.lng);
 
         var marker = new google.maps.Marker({
             position: positionm,
-            map: qmap,
+            map: map,
             icon: iconm,
             name: nonamespace(item.id), /*title:item.id/*+":"+line[4],*/
             description: descriptionString,
@@ -247,7 +242,7 @@ function loadlist(list, fitbounds) {
 
             closedMarker = new google.maps.Marker({
                 position: positionm,
-                map: qmap,
+                map: map,
                 icon: closedImage,
                 clickable: false,
                 zIndex: zindexm + 1,

@@ -53,7 +53,6 @@ var handlekeys = false;
 
 // bounds
 var nlist = 10000;
-var qmaps = [];
 
 var kmllistn = 0;
 var kmllisturl, tablelisturl;

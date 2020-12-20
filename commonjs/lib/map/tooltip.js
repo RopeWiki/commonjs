@@ -159,9 +159,7 @@ function addhighlight(idlist) {
                 zIndex: m.zIndex - 1
             });
 
-            var map2 = qmaps[m.stars];
-            map2 = map;
-            highlight.setMap(map2);
+            highlight.setMap(map);
             m.highlight = highlight;
 
             if (m.infowindow && m.infowindow.content)
