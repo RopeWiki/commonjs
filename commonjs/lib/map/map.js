@@ -398,7 +398,7 @@ function morekmllist(loccontinue, loctotal) {
     $.getJSON(geturl(kmllisturl + "|offset=" + loccontinue), getkmllist)
         .always(function() {
             if (--moremapc <= 0)
-                map.setOptions({ draggableCursor: '' });
+                map.setOptions({ draggableCursor: '' }); //clear the wait cursor
         });
 
     if (loccontinue > 0) {
@@ -592,7 +592,6 @@ function filterMarkers() {
                 display = false;
 
             //best season
-            //example: Season=Spring to Fall, BEST Apr,May,Oct,Nov  returns ...,xXX,xxx,xXX where the months are Dec(12) through Nov
             var bestSeason = filters["best_month"];
             if (!!bestSeason && bestSeason.length > 0) {
                 if (!!(p.bestMonths)) {
@@ -649,7 +648,8 @@ function filterMarkers() {
 
 function parseBestMonths(bestSeasonRaw) {
     var parsed = bestSeasonRaw.replace(/,/g, '');
-    //format of 'parsed' is dec to nov. move dec to the end of the string so that the months line up 1 to 12 (-1)
+    //example: "Season=Spring to Fall, BEST Apr,May,Oct,Nov"  returns "...,xXX,xxx,xXX" where the months are Dec(12) through Nov
+    //because format of 'parsed' is dec to nov, move dec to the end of the string so that the months line up 1 to 12 (-1)
     parsed = parsed.substr(1) + parsed.substr(0, 1);
     var locationBestMonths = [];
     for (var month = 0; month < 12; ++month) {
