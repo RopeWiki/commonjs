@@ -65,12 +65,6 @@ var kmlsummary;
 // keep bounds for autozoom and center
 var boundslist;
 
-// map still loading callback
-var loadingmap = true, loadingtiles = false, loadingtiles2 = false, loadingkml = false, loadingquery = false, loadingquery2 = false;
-function isloadingmap() {
-    return loadingmap || loadingtiles || loadingtiles2 || loadingkml || loadingquery || loadingquery2;
-}
-
 var piciconlist = [];
 var picloadingmsg = "<img height=12 src='" + SITE_BASE_URL + "/extensions/SemanticForms/skins/loading.gif'/> Loading... ";
 var piclist, picloading, picloadingerr, picloadingn;

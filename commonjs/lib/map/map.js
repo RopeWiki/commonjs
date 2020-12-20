@@ -1,6 +1,5 @@
 
 var zindex = 0;
-
 var lastinfowindow = null;
 
 function displayinfowindow(marker) {
@@ -29,7 +28,7 @@ function pinicon(id, icon) {
 
 function pinmap(id) {
     for (var i = 0; i < markers.length; ++i)
-        if (markers[i].name == id) {
+        if (markers[i].name === id) {
             var mapboxoffset = $("#mapbox").offset().top;
             if (mapboxoffset < $(window).scrollTop())
                 window.scrollTo(0, mapboxoffset);
@@ -349,7 +348,7 @@ function getrwlist(data) {
 
                 // numeric icons
                 if (kmlsummary)
-                    if (obj.id[0] == '#') {
+                    if (obj.id[0] === '#') {
                         var num = obj.id.slice(1).split(' ')[0];
                         obj.icon = 'https://sites.google.com/site/rwicons/bg' + obj.stars + '_' + num + '.png';
                     }
@@ -393,17 +392,11 @@ var morestep = 100;
 var moremapc = 0, morelistc = 0;
 
 function morekmllist(loccontinue, loctotal) {
-    loadingquery = true;
-    console.log("loadingquery true");
     ++moremapc;
     map.setOptions({ draggableCursor: 'wait' });
+
     $.getJSON(geturl(kmllisturl + "|offset=" + loccontinue), getkmllist)
         .always(function() {
-            setTimeout(function() {
-                    loadingquery = false;
-                    console.log("loadingquery false");
-                },
-                5000);
             if (--moremapc <= 0)
                 map.setOptions({ draggableCursor: '' });
         });
@@ -411,14 +404,14 @@ function morekmllist(loccontinue, loctotal) {
     if (loccontinue > 0) {
         var tablelist = $(".loctable .loctabledata");
 
-        if (tablelist.length == 1)
+        if (tablelist.length === 1)
         {
             ++morelistc;
             document.body.style.cursor = 'wait';
             $.get(geturl(tablelisturl + '&offset=' + loccontinue),
                 function(data) {
                     var newtablelist = $('#morekmllist').html($(data).find('.loctable').html());
-                    if (newtablelist.length == 1) {
+                    if (newtablelist.length === 1) {
                         var newdocument = newtablelist[0];
                         newdocument.getElementsByName = function(name) {
                             var list = [];
@@ -457,7 +450,7 @@ function morekmllist(loccontinue, loctotal) {
         loccount.innerHTML = loccontinue + " of ";
 
     var morelist = $(".loctable .smw-template-furtherresults a");
-    if (morelist.length == 1) {
+    if (morelist.length === 1) {
         morelist[0].href = 'javascript:morekmllist(' + loccontinue + ',' + loctotal + ');';
     }
 }
@@ -514,10 +507,12 @@ function centermap() {
 }
 
 function addToList(id) {
+    var oldid;
+
     function reattribute(elem) {
         var elems = elem.childNodes;
         for (var e = 0; e < elems.length; ++e) {
-            var elem = elems[e];
+            elem = elems[e];
             if (elem.attributes)
                 for (var a = 0; a < elem.attributes.length; ++a) {
                     if (elem.attributes[a].value.indexOf(oldid) >= 0)
@@ -553,11 +548,12 @@ function filterMarkers() {
     if (filterschk != null && filterschk.checked) {
         var chk = document.getElementsByClassName('filterchk');
         for (i = 0; i < chk.length; i++) {
-            mid = chk[i].id;
-            list = document.getElementsByClassName(mid + '_chk');
-            var isDisabled = list[0].disabled;
             var attr = [];
 
+            mid = chk[i].id;
+            list = document.getElementsByClassName(mid + '_chk');
+            
+            var isDisabled = list[0].disabled;
             if (!isDisabled) {
                 for (l = 0; l < list.length; l++)
                     if (list[l].checked) {
@@ -575,9 +571,9 @@ function filterMarkers() {
         var p = marker.params;
         if (!p) continue;
 
-        runFilter: {
-            var display = true;
+        var display = true;
 
+        runFilter: {
             if (!filters || Object.keys(filters).length === 0) break runFilter; //no filters set, enable all
 
             //stars

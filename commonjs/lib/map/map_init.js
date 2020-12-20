@@ -92,36 +92,6 @@ function loadInteractiveMap() {
 
     SetupMapLayers();
     
-    // Tiles loaded
-    loadingtiles = true;
-    console.log("loadingtiles true");
-    google.maps.event.addListener(map,
-        'tilesloaded',
-        function(evt) {
-            setTimeout(function() {
-                    loadingtiles = false;
-                    console.log("loadingtiles false");
-                },
-                5000);
-        });
-
-    google.maps.event.addListener(map,
-        'bounds_changed',
-        function(evt) {
-            loadingtiles2 = true;
-            console.log('loadingtiles2 true');
-        });
-
-    google.maps.event.addListener(map,
-        'idle',
-        function(evt) {
-            setTimeout(function() {
-                    loadingtiles2 = false;
-                    console.log("loadingtiles2 false");
-                },
-                5000);
-        });
-
     boundslist = new google.maps.LatLngBounds();
 
     var kmlmap;
@@ -285,9 +255,7 @@ function loadInteractiveMap() {
     if (kmlsummary != null) {
 
         function spiderfy(srepeat) {
-            loadingquery2 = true;
-            console.log("loadingquery2 true");
-
+            
             var step = 1; // pixel step
             var isize2 = 26 / 2; // icon size
             var osize = 16; // no overlapping size
@@ -380,12 +348,6 @@ function loadInteractiveMap() {
                 else
                     console.log("error " + m.name + ":" + m.p + " -> " + ll.lat + "," + ll.lng);
             }
-
-            setTimeout(function() {
-                    loadingquery2 = false;
-                    console.log("loadingquery2 false");
-                },
-                5000);
         }
 
         google.maps.event.addListener(map, "zoom_changed", spiderfy);
@@ -452,9 +414,7 @@ function loadInteractiveMap() {
     // set kml (if any) from "kmlfile"
     var kmlfilep = document.getElementById("kmlfilep");
     if (kmlfilep != null) {
-        loadingkml = true;
-        console.log('loadingkml true');
-
+        
         var file = kmlfilep.innerHTML;
         var filelink = "";
         if (file != null && file.length > 0) {
@@ -508,12 +468,7 @@ function loadInteractiveMap() {
                 google.maps.event.addListener(gxml,
                     "loaded",
                     function() {
-                        setTimeout(function() {
-                                loadingkml = false;
-                                console.log("loadingkml false");
-                            },
-                            5000);
-
+                        
                         if (document.getElementById("hidelegend") == null || showLegend) {
                             var interval = setInterval(function() {
                                     if (document.getElementById("legend") != null) {
@@ -590,13 +545,7 @@ function loadInteractiveMap() {
                 setTimeout(geoxmlinitw, 100);
         }
     }
-
-    setTimeout(function() {
-            loadingmap = false;
-            console.log("loadingmap false");
-        },
-        5000);
-
+    
     $('#mapbox').mouseover(function(event) {
         handlekeys = true;
     });
@@ -662,9 +611,7 @@ function waterflowinit() {
 function loadMapInterface() {
     var elem = document.getElementById("mapbox");
     if (elem == null) {
-        loadingmap = false;
         $('.locateicon').hide();
-        console.log("loadingmap none");
         return;
     }
 
