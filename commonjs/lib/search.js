@@ -19,6 +19,15 @@ function regsearch() {
     window.location.href = url;
 }
 
+function locsearch() {
+    //console.log("locsearch");
+    var locnameval = document.getElementById('locnameval');
+    if (locnameval != null && deftext(locnameval.value))
+        return;
+
+    filtersearch();
+}
+
 function filtersearch() {
     var url = window.location.href;
 
@@ -78,7 +87,6 @@ function filtersearch() {
                     param = addparam(param, 'locdist', urlencode(locdistval));
             }
         }
-    //console.log(url);
 
     // append hidden parameters
     var optionsurl = document.getElementsByClassName('optionsurl');
@@ -101,13 +109,4 @@ function filtersearch() {
 
     document.body.style.cursor = 'wait';
     window.location.href = url;
-}
-
-function locsearch() {
-    //console.log("locsearch");
-    var locnameval = document.getElementById('locnameval');
-    if (locnameval != null && deftext(locnameval.value))
-        return;
-
-    filtersearch();
 }

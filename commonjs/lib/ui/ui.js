@@ -621,49 +621,36 @@ function loadFormInterface() {
             }
         }
     }
-
-    var chks = document.getElementsByClassName('filtersel');
-    for (var i = 0; i < chks.length; i++) {
-        var mid = chks[i].id + 'flt';
-        var list = chks[i].innerHTML.split(',');
-        var str = "";
-        // get value from url
-        var param = urlget(url, chks[i].id + '=', '').split(',');
-        var cookie = getCookie(mid).split(',');
-        for (var l = 0; l < list.length; ++l) {
-            // set checked if cookie or url said so
-            var checked = cookie.indexOf(list[l]) >= 0;
-            if (param.length > 0 && param[0] != "") checked = param.indexOf(list[l]) >= 0;
-            str += '<option ' + (checked ? 'selected="selected"' : '') + 'value="' + list[l] + '">' + list[l] + '</option>';
-            if (checked) {
-                var subopt = document.getElementsByClassName(mid + list[l]);
-                for (var c = 0; c < subopt.length; c++)
-                    subopt[c].style.display = "";
-            }
-        }
-        chks[i].innerHTML = '<select id="' + mid + '" class="' + mid + '" onclick="toggleFilterSel(this)">' + str + '</select>'; //'+"'"+mid+"'"+'
-    }
-
+    
     var chks = document.getElementsByClassName('filterchk');
     for (var i = 0; i < chks.length; i++) {
-        var mid = chks[i].id + 'flt';
+        var mid = chks[i].id + '_chk';
         var list = chks[i].innerHTML.split(',');
         var icons = document.getElementById(chks[i].id + 'icons');
         var str = "";
         // get value from url
         var param = urlget(url, chks[i].id + '=', '').split(',');
         for (var l = 0; l < list.length; ++l) {
-            var id = mid + '_' + list[l];
+            var id = mid + '-' + list[l];
             //console.log("id:"+id);
             // set checked if cookie or url said so
-            var checked = getCookie(id) != "";
-            if (param.length > 0 && param[0] != "") checked = param.indexOf(list[l]) >= 0;
-            if (icons)
-                str += ' ' + '<label title="' + icons.childNodes[l].title + '"><input id="' + id + '" class="' + mid + '" style="margin:0;padding=0" type="checkbox" onclick="toggleFilter(' + "'" + id + "'" + ')" ' + (checked ? 'checked' : '') + '>' + icons.childNodes[l].innerHTML + '</label>';
-            else
-                str += ' ' + '<label title="' + list[l] + '"><input id="' + id + '" class="' + mid + '" style="" type="checkbox" onclick="toggleFilter(' + "'" + id + "'" + ')" ' + (checked ? 'checked' : '') + '>' + list[l] + '</label>';
+            var checked = getCookie(id) !== "";
+            if (param.length > 0 && param[0] !== "") checked = param.indexOf(list[l]) >= 0;
+
+            var title, text;
+            if (icons) {
+                title = icons.childNodes[l].title;
+                text = icons.childNodes[l].innerHTML;
+            } else {
+                title = list[l];
+                text = list[l];
+            }
+
+            str += ' ' + '<label title="' + title + '" onclick="toggleDisabledChk(' + "'" + id + "'" + ')"><input id="' + id + '" class="' + mid + '" style="" type="checkbox" ' + (checked ? 'checked' : '') + ' onclick="stopBubble(this)"/>' + text + '</label>';
         }
         chks[i].innerHTML = str;
+
+        toggleDisabledChk(mid);
     }
 
     var filter = document.getElementById('filterbutton');

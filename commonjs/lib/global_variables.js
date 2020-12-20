@@ -48,7 +48,6 @@ var map;
 // GeoXML content to be displayed on the map (from MediaWiki:Geoxml.js)
 var gxml;
 
-var zindex = 0;
 var markers = [];
 var handlekeys = false;
 
@@ -83,7 +82,3 @@ var toggleFS;
 
 // Variables for loadSource function
 var lastlinks = [];
-
-// Variables for addbutton function
-var oldid = '@';
-

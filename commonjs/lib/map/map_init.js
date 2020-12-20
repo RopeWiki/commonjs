@@ -134,7 +134,7 @@ function loadInteractiveMap() {
         if (coords != null && coords.length > 1) {
             kmlmap = "kmlmarker";
             var pageName = mw.config.get("wgPageName");
-            setmarker(pageName, coords[0], coords[1], 0);
+            setPrimaryMarker(pageName, coords[0], coords[1], 0);
             map.setZoom(13);
             var latlng = new google.maps.LatLng(coords[0], coords[1]);
             map.panTo(latlng);

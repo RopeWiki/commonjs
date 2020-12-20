@@ -1,51 +1,3 @@
-function toggleFilterSel(elem, checked) {
-    /*
-    var elem = document.getElementById(id);
-    if (!elem)
-      return null;
-    */
-
-    var x = elem.selectedIndex;
-    var y = elem.options;
-    if (checked == null)
-        checked = y[x].text;
-
-    elem.value = checked;
-
-    for (var l = 0; l < y.length; ++l)
-        if (y[l].text != "") {
-            var text = y[l].text;
-            var chks = document.getElementsByClassName(elem.id + text);
-            for (var i = 0; i < chks.length; i++)
-                chks[i].style.display = text == checked ? "" : "none";
-        }
-
-    setCookie(elem.id, checked);
-    return checked;
-}
-
-function toggleFilter(id, checked) {
-    if (checked == null)
-        checked = document.getElementById(id).checked;
-    document.getElementById(id).checked = checked;
-    if (checked)
-        setCookie(id, "on");
-    else
-        setCookie(id, "");
-    return checked;
-}
-
-function toggleOption(id, forcechecked) {
-    checked = toggleFilter(id, forcechecked);
-    //console.log("id:"+id+" checked:"+checked);
-    elems = document.getElementsByClassName(id.split('chk').join('on'));
-    for (var i = 0; i < elems.length; i++)
-        elems[i].style.display = checked ? "" : "none";
-    elems = document.getElementsByClassName(id.split('chk').join('off'));
-    for (var i = 0; i < elems.length; i++)
-        elems[i].style.display = checked ? "none" : "";
-    return checked;
-}
 
 function togglelocsearchchk(id) {
     toggleOption(id);
@@ -54,42 +6,76 @@ function togglelocsearchchk(id) {
 function togglefilterschk(id) {
     if (!toggleOption(id)) {
         // refresh page
-        filtersearch();
+        //filtersearch();
     }
 }
 
-function toggledisplayschk(id) {
-    if (!toggleOption(id)) {
-        // disable all options
-        elems = document.getElementsByClassName(id.split('chk').join('on'));
-        for (var i = 0; i < elems.length; i++)
-            toggleFilter(elems[i].id + 'chk', false);
-        // refresh page
-        filtersearch();
+function toggleOption(id, forcechecked) {
+    var elems, i;
+    var checked = toggleFilter(id, forcechecked);
+
+    elems = document.getElementsByClassName(id.split('chk').join('on'));
+    for (i = 0; i < elems.length; i++)
+        elems[i].style.display = checked ? "" : "none";
+
+    elems = document.getElementsByClassName(id.split('chk').join('off'));
+    for (i = 0; i < elems.length; i++)
+        elems[i].style.display = !checked ? "" : "none";
+
+    return checked;
+}
+
+function stopBubble(e) {
+    if (e && e.stopPropagation)
+        e.stopPropagation();
+    else
+        window.event.cancelBubble = true;
+
+    toggleFilter(e.id);
+}
+
+function toggleFilter(id, checked) {
+    var checkbox = document.getElementById(id);
+
+    if (checked == null)
+        checked = checkbox.checked;
+    else
+        checkbox.checked = checked;
+
+    setCookie(id, (checked ? "on" : ""));
+
+    toggleDisabledChk(id);
+    
+    return checked;
+}
+
+function toggleDisabledChk(id) {
+    var i;
+    var elem = document.getElementById(id);
+    var elems = document.getElementsByClassName(id.split('-')[0]);
+
+    var isDisabled = !!elem && elem.disabled;
+    if (isDisabled
+    ) { //they were all disabled and now one was checked, which will set that to 'unchecked', but set it back to checked, enable and uncheck the others
+        for (i = 0; i < elems.length; i++) {
+            elems[i].disabled = false;
+            elems[i].checked = false;
+        }
+        //elem.checked = true;
+    } else {
+        //see if any are checked
+        var anyIsChecked = false;
+        for (i = 0; i < elems.length; i++)
+            if (elems[i].checked) {
+                anyIsChecked = true;
+                break;
+            }
+
+        if (!anyIsChecked) { //disable them
+            for (i = 0; i < elems.length; i++) {
+                elems[i].checked = true;
+                elems[i].disabled = true;
+            }
+        }
     }
 }
-
-function togglenomapchk(id) {
-    // refresh page
-    filtersearch();
-}
-
-function togglefulltablechk(id) {
-    // refresh page
-    filtersearch();
-}
-
-/*
-function togglestarratechk(id)
-{
-     // refresh page
-    //filtersearch();
-    LoadStars();
-}
-
-function togglefrenchchk(id)
-{
-     // refresh page
-    filtersearch();
-}
-*/

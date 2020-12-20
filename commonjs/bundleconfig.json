@@ -19,7 +19,7 @@
       "lib/map/layers_weather.js",
       "lib/map/map.js",
       "lib/map/map_init.js",
-      "lib/map/ui.js",
+      "lib/map/tooltip.js",
       "lib/map/utils.js",
       "lib/map/controls/dropdown_control.js",
       "lib/map/controls/fullscreen_control.js",

@@ -1,3 +1,6 @@
+
+var zindex = 0;
+
 function displayinfowindow(marker) {
     tooltip.hide();
 
@@ -39,8 +42,9 @@ function pinmap(id) {
 }
 
 function loadlist(list, fitbounds) {
-    if (qmaps.length == 0)
-        for (var i = 0; i < 6; ++i)
+    var i;
+    if (qmaps.length === 0)  //qmaps is an array of layers for each star rating, 0 to 5
+        for (i = 0; i < 6; ++i)
             qmaps.push(map);
     
     // calc nearby (only 1 shot of 100 or less)
@@ -51,6 +55,7 @@ function loadlist(list, fitbounds) {
             var o = list[i];
             var sortlist = [];
             // compute distance
+            var ic;
             for (ic = 0; ic < list.length; ++ic)
                 sortlist.push({ id: list[ic].id.split(" ")[0], distance: distance(o.location, list[ic].location) });
             sortlist.sort(function(a, b) {
@@ -61,22 +66,33 @@ function loadlist(list, fitbounds) {
             for (ic = 1; ic < sortlist.length && ic <= 5 && sortlist[ic].distance < 20; ++ic)
                 distlist.push(sortlist[ic].id);
 
-            id = o.id.substr(1).split(" ")[0];
-            if (!id || id == "")
+            var id = o.id.substr(1).split(" ")[0];
+            if (!id || id === "")
                 continue;
-            elems = document.getElementsByClassName("nearby");
-            for (var e = 0; e < elems.length && elems[e].id != id; ++e);
+            var elems = document.getElementsByClassName("nearby");
+            var e;
+            for (e = 0; e < elems.length && elems[e].id !== id; ++e);
             if (e < elems.length)
                 elems[e].innerHTML = "~" + distlist.join();
         }
     }
 
-    var i, n = list.length;
+    var n = list.length;
     for (i = 0; i < list.length; ++i) {
         var item = list[i];
 
-        if (!item.id || item.id == "")
+        if (!item.id || item.id === "")
             continue;
+
+        //var result = markers.find(entry => { return entry.location === item.location });
+        var alreadyExists = false;
+        for (var j = 0; j < markers.length; ++j) {
+            if (markers[j].position.lat() === item.location.lat && markers[j].position.lng() === item.location.lng) {
+                alreadyExists = true;
+                break;
+            }
+        }
+        if (alreadyExists) continue;
 
         ++n;
         --nlist;
@@ -93,7 +109,7 @@ function loadlist(list, fitbounds) {
         var descm = "", sdescm = "";
         if (item.description) {
             // convert unist
-            str = item.description;
+            var str = item.description;
             if (metric) {
                 var pk = str.split(' ');
                 for (var p = 0; p < pk.length; ++p) {
@@ -106,9 +122,9 @@ function loadlist(list, fitbounds) {
                     }
                     if (ps[0] >= '0' && ps[0] <= '9') {
                         var unit = ps.slice(-2);
-                        if (unit == 'mi')
+                        if (unit === 'mi')
                             pk[p] = pre + uconv(ps, miStr);
-                        else if (unit == 'ft')
+                        else if (unit === 'ft')
                             pk[p] = pre + uconv(ps, ftStr);
                     }
                 }
@@ -130,16 +146,14 @@ function loadlist(list, fitbounds) {
         }
 
         // set up extras
-        {
-            if (item.kmlfile && item.kmlfile != "") {
-                sdescm += '<div><i>';
-                sdescm += '<a href="javascript:toggleRoutes(\'' + urlencode(item.kmlfile) + '\',\'' + urlencode(item.id) + '\');">Show track data on map</a>';
-                sdescm += '</i></div>';
-            }
-            var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=Coord:' + item.location.lat.toFixed(4) + ',' + item.location.lng.toFixed(4) + '">Search nearby</a>';
-            sdescm += displaydirections(item.location.lat, item.location.lng, extra);
+        if (item.kmlfile && item.kmlfile !== "") {
+            sdescm += '<div><i>';
+            sdescm += '<a href="javascript:toggleRoutes(\'' + urlencode(item.kmlfile) + '\',\'' + urlencode(item.id) + '\');">Show track data on map</a>';
+            sdescm += '</i></div>';
         }
-
+        var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=Coord:' + item.location.lat.toFixed(4) + ',' + item.location.lng.toFixed(4) + '">Search nearby</a>';
+        sdescm += displaydirections(item.location.lat, item.location.lng, extra);
+        
         var permitStatus = "No";
         if (item.permits && item.permits !== 'No') {
             permitStatus = item.permits;
@@ -154,7 +168,7 @@ function loadlist(list, fitbounds) {
         // load addbutton
         var kmladdbutton = document.getElementById("kmladdbutton");
         if (kmladdbutton)
-            contentString += '<input class="submitoff addbutton" title="Add to List" type="submit" onclick="addbutton(\'' + item.id.split("'").join("%27") + '\')" value="+">';
+            contentString += '<input class="submitoff addbutton" title="Add to List" type="submit" onclick="addToList(\'' + item.id.split("'").join("%27") + '\')" value="+">';
 
         // add elevation
         //contentString += '<br><span id="infoelevation"></span>';
@@ -247,7 +261,6 @@ function loadlist(list, fitbounds) {
         google.maps.event.addListener(marker,
             "mouseover",
             function(e) {
-                //marker.setZIndex(++zI);
                 this.highlight = new google.maps.Marker({
                     position: this.getPosition(),
                     icon: SITE_BASE_URL + "/images/3/39/Starn_b.png",
@@ -392,7 +405,6 @@ function morekmllist(loccontinue, loctotal) {
             document.body.style.cursor = 'wait';
             $.get(geturl(tablelisturl + '&offset=' + loccontinue),
                 function(data) {
-                    //alert( "Load was performed." );
                     var newtablelist = $('#morekmllist').html($(data).find('.loctable').html());
                     if (newtablelist.length == 1) {
                         var newdocument = newtablelist[0];
@@ -441,16 +453,81 @@ function morekmllist(loccontinue, loctotal) {
 function morestop() {
     // finished loading
     var loccount = document.getElementById("loccount");
-    if (loccount)
-        loccount.parentNode.removeChild(loccount);
+    if (loccount) loccount.parentNode.removeChild(loccount);
+
     var loadmore = document.getElementById("loadmore");
-    if (loadmore)
-        loadmore.parentNode.removeChild(loadmore);
+    if (loadmore) loadmore.parentNode.removeChild(loadmore);
+
     var morelist = $(".loctable .smw-template-furtherresults a");
-    if (morelist.length == 1)
-        morelist[0].parentNode.removeChild(morelist[0]);
+    if (morelist.length === 1) morelist[0].parentNode.removeChild(morelist[0]);
 }
 
 function nonamespace(label) {
     return label.replace("Events:", "");
 }
+
+function setPrimaryMarker(name, lat, lng, zIndex) {
+    var titleStyle = 'style = "font-family: arial, sans-serif;font-size: medium;font-weight:bold;"';
+    var html = "<div " + titleStyle + ">" + name.replaceAll("_", " ") + "</div>";
+    html += "<br/>";
+    html += '<div id="elevation" style="font-size: small;">' + displaylocation(lat, lng, '<br>Elevation: ~') + '</div>';
+
+    var latLng = new google.maps.LatLng(lat, lng);
+
+    var marker = new google.maps.Marker({
+        position: latLng,
+        map: map,
+        infowindow: new google.maps.InfoWindow({ content: html }),
+        optimized: false,
+        zIndex: zIndex
+    });
+
+    google.maps.event.addListener(marker,
+        'click',
+        function () {
+            this.infowindow.open(map, this);
+            getGeoElevation(this.getPosition(), "elevation", "~");
+        });
+
+    boundslist.extend(latLng);
+}
+
+function centermap() {
+    if (!map) return;
+
+    var center = map.getCenter();
+    google.maps.event.trigger(map, 'resize');
+
+    map.panTo(center);
+}
+
+function addToList(id) {
+    function reattribute(elem) {
+        var elems = elem.childNodes;
+        for (var e = 0; e < elems.length; ++e) {
+            var elem = elems[e];
+            if (elem.attributes)
+                for (var a = 0; a < elem.attributes.length; ++a) {
+                    if (elem.attributes[a].value.indexOf(oldid) >= 0)
+                        elem.attributes[a].value = elem.attributes[a].value.split(oldid).join(id);
+                }
+            reattribute(elem);
+        }
+    }
+
+    var kmladdbutton = document.getElementById("kmladdbutton");
+    if (kmladdbutton) {
+        reattribute(kmladdbutton);
+        var kmlform = kmladdbutton.getElementsByTagName('BUTTON');
+        if (kmlform.length > 0)
+            kmlform[0].click();
+
+        if (lastinfowindow)
+            lastinfowindow.close();
+
+        var idlist = [id];
+        addhighlight(idlist);
+        oldid = id;
+    }
+}
+
