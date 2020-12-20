@@ -284,9 +284,8 @@ function loadlist(list, fitbounds) {
         params.stars = (item.stars != null ? item.stars : -1);
         params.activity = item.activity;
         params.permits = permitStatus;
-        params.bestSeason = item.bestSeason;
-        params.description = item.description;
-
+        params.bestMonths = item.bestMonths;
+        params.technicalRating = item.technicalRating;
 
         marker.params = params;
         marker.oposition = positionm;
@@ -356,8 +355,10 @@ function getrwlist(data) {
                     }
 
                 v = item.printouts["Has summary"];
-                if (v && v.length > 0)
+                if (v && v.length > 0) {
                     obj.description = v[0];
+                }
+                obj.technicalRating = parseTechnicalRating(obj.description);
                 v = item.printouts["Has banner image file"];
                 if (v && v.length > 0)
                     obj.thumbnail = v[0];
@@ -372,7 +373,7 @@ function getrwlist(data) {
                     obj.permits = v[0];
                 v = item.printouts["Has best season parsed"];
                 if (v && v.length > 0)
-                    obj.bestSeason = v[0].fulltext;
+                    obj.bestMonths = parseBestMonths(v[0].fulltext);
                 list.push(obj);
             }
         });
@@ -594,17 +595,10 @@ function filterMarkers() {
         //example: Season=Spring to Fall, BEST Apr,May,Oct,Nov  returns ...,xXX,xxx,xXX where the months are Dec(12) through Nov
         var bestSeason = filters["best_month"];
         if (bestSeason.length > 0) {
-            if (p.bestSeason) {
-                var parsed = p.bestSeason.replace(/,/g, '');
-                parsed = parsed.substr(1) + parsed.substr(0, 1); //move dec to the end of the string so that the months line up 0 - 11
-                var locationBestMonths = [];
-                for (var month = 0; month < 12; ++month) {
-                    var test = parsed.substr(month, 1);
-                    if (test === "X") locationBestMonths.push(months[month]);
-                }
+            if (!!(p.bestMonths)) {
                 var monthMatched = false;
                 for (var j = 0; j < bestSeason.length; ++j) {
-                    if (locationBestMonths.includes(bestSeason[j])) {
+                    if (p.bestMonths.includes(bestSeason[j])) {
                         monthMatched = true;
                         break;
                     }
@@ -615,22 +609,141 @@ function filterMarkers() {
             }
         }
 
-        //technical rating -- need to parse the ratings out of the description
-
         //technical rating ACA
         var technical = filters["technical"];
+        if (technical.length > 0 && !(technical.includes(p.technicalRating.technical)))
+            display = false;
+
         var water = filters["water"];
+        if (water.length > 0 && !(water.includes(p.technicalRating.water)))
+            display = false;
+
         var time = filters["time"];
+        if (time.length > 0 && !(time.includes(p.technicalRating.time)))
+            display = false;
+
         var extraRisk = filters["extra_risk"];
+        if (extraRisk.length > 0 && !(extraRisk.includes(p.technicalRating.risk)))
+            display = false;
 
         //technical rating French
         var vertical = filters["vertical"];
+        if (vertical.length > 0 && !(vertical.includes(p.technicalRating.vertical)))
+            display = false;
+
         var aquatic = filters["aquatic"];
+        if (aquatic.length > 0 && !(aquatic.includes(p.technicalRating.aquatic)))
+            display = false;
+
         var commitment = filters["commitment"];
+        if (commitment.length > 0 && !(commitment.includes(p.technicalRating.commitment)))
+            display = false;
 
         marker.setMap(display ? map : null);
 
         if (marker.closedMarker)
             marker.closedMarker.setMap(display ? map : null);
     }
+}
+
+function parseBestMonths(bestSeasonRaw) {
+    var parsed = bestSeasonRaw.replace(/,/g, '');
+    //format of 'parsed' is dec to nov. move dec to the end of the string so that the months line up 1 to 12 (-1)
+    parsed = parsed.substr(1) + parsed.substr(0, 1);
+    var locationBestMonths = [];
+    for (var month = 0; month < 12; ++month) {
+        var test = parsed.substr(month, 1);
+        if (test === "X" || test === "x") locationBestMonths.push(months[month]);
+    }
+
+    return locationBestMonths;
+}
+
+function parseTechnicalRating(description) {
+    //example (Tanner Creek):  "4.6*  4C4 III R (<i>v5a7&nbsp;III</i>) 5h-8h 5.5mi 5r 90ft"
+
+    //ACA
+    const technical = ["1", "2", "3", "4"];
+    const water = ["A", "B", "C", "C1", "C2", "C3", "C4"];
+    const time = ["I", "II", "III", "IV", "V", "VI"];
+    const risk = ["PG", "R", "R-", "X", "XX"];
+
+    //French
+    const vertical = ["v1", "v2", "v3", "v4", "v5", "v6", "v7"];
+    const aquatic = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
+    const commitment = ["III", "II", "IV", "I", "VI", "V"]; //order this way because using 'startsWith' to test
+
+    var technicalRating = {};
+
+    if (!description) description = "";
+    description = description.replace(/&nbsp;/g, ' ');
+    var entries = description.split(/ +/); //regex for multiple spaces combine to single space
+    for (var i = 0; i < entries.length; ++i) {
+        testEntry: {
+            var test = entries[i];
+            if (test.includes("*")) break testEntry; //star rating
+
+            var j;
+            if (technicalRating["technical"] == null)
+                for (j = 0; j < technical.length; ++j) {
+                    if (test.startsWith(technical[j])) {
+                        technicalRating["technical"] = technical[j];
+                        test = test.substr(technical[j].length);
+                        break; //just break the 'for j' loop, need to test 'water' using same entry
+                    }
+                }
+
+            if (technicalRating["water"] == null)
+                for (j = 0; j < water.length; ++j) {
+                    if (test === water[j]) {
+                        technicalRating["water"] = water[j];
+                        break testEntry;
+                    }
+                }
+
+            if (technicalRating["time"] == null)
+                for (j = 0; j < time.length; ++j) {
+                    if (test === time[j]) {
+                        technicalRating["time"] = time[j];
+                        break testEntry;
+                    }
+                }
+
+            if (technicalRating["risk"] == null)
+                for (j = 0; j < risk.length; ++j) {
+                    if (test === risk[j]) {
+                        technicalRating["risk"] = risk[j];
+                        break testEntry;
+                    }
+                }
+
+            if (technicalRating["vertical"] == null)
+                for (j = 0; j < vertical.length; ++j) {
+                    var index = test.indexOf(vertical[j]);
+                    if (index >= 0) {
+                        technicalRating["vertical"] = vertical[j];
+                        test = test.substr(index + vertical[j].length);
+                        break; //just break the 'for j' loop, need to test 'aquatic' using same entry
+                    }
+                }
+
+            if (technicalRating["aquatic"] == null)
+                for (j = 0; j < aquatic.length; ++j) {
+                    if (test.includes(aquatic[j])) {
+                        technicalRating["aquatic"] = aquatic[j];
+                        break testEntry;
+                    }
+                }
+
+            if (technicalRating["commitment"] == null)
+                for (j = 0; j < commitment.length; ++j) {
+                    if (test.startsWith(commitment[j])) {
+                        technicalRating["commitment"] = commitment[j];
+                        break testEntry;
+                    }
+                }
+        }
+    }
+
+    return technicalRating;
 }
