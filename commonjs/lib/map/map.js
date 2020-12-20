@@ -152,7 +152,7 @@ function loadlist(list, fitbounds) {
         var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=Coord:' + item.location.lat.toFixed(4) + ',' + item.location.lng.toFixed(4) + '">Search nearby</a>';
         sdescm += displaydirections(item.location.lat, item.location.lng, extra);
         
-        var permitStatus = "No";
+        var permitStatus = "None";
         if (item.permits && item.permits !== 'No') {
             permitStatus = item.permits;
         }
@@ -179,7 +179,7 @@ function loadlist(list, fitbounds) {
             ? item.infodescription
             : '<b class="nostranslate">' + nonamespace(item.id) + '</b><br>' + descm.split('*').join('&#9733;');
 
-        if (permitStatus !== 'No') {
+        if (permitStatus !== 'None') {
             switch (permitStatus) {
             case "Yes":
                 descriptionString += "<br>*permit required*";
@@ -194,9 +194,6 @@ function loadlist(list, fitbounds) {
         }
 
         // build and add marker with infowindow callback
-        var stars = -1;
-        if (item.stars != null) stars = item.stars;
-
         var positionm = new google.maps.LatLng(item.location.lat, item.location.lng);
 
         var marker = new google.maps.Marker({
@@ -211,8 +208,8 @@ function loadlist(list, fitbounds) {
         });
 
         // add permit status by overlaying the 'closed' image on the marker
-        var closedMarker;
-        if (permitStatus !== 'No') {
+        var closedMarker = null;
+        if (permitStatus !== 'None') {
             var iconUrl = "";
             var iconSize, iconAnchor;
 
@@ -282,10 +279,18 @@ function loadlist(list, fitbounds) {
                 displayinfowindow(this);
             });
 
-        marker.stars = stars;
+        var params = {};
+        
+        params.stars = (item.stars != null ? item.stars : -1);
+        params.activity = item.activity;
+        params.permits = permitStatus;
+        params.bestSeason = item.bestSeason;
+        params.description = item.description;
+
+
+        marker.params = params;
         marker.oposition = positionm;
-
-
+        
         markers.push(marker);
         if (!!closedMarker) {
             marker.closedMarker = closedMarker;
@@ -331,13 +336,16 @@ function getrwlist(data) {
             v = item.printouts["Has coordinates"];
             if (v && v.length > 0) {
                 obj.location = { lat: v[0].lat, lng: v[0].lon };
+
                 // icon
                 v = item.printouts["Has star rating"];
                 if (v && v.length > 0) {
                     obj.stars = Number(v[0]);
                     v = item.printouts["Has location class"];
-                    if (v && v.length > 0)
+                    if (v && v.length > 0) {
                         obj.icon = KML_ICON_LIST[obj.stars + Number(v[0]) * 6];
+                        obj.activity = v[0];
+                    }
                 }
 
                 // numeric icons
@@ -362,6 +370,9 @@ function getrwlist(data) {
                 v = item.printouts["Requires permits"];
                 if (v && v.length > 0)
                     obj.permits = v[0];
+                v = item.printouts["Has best season parsed"];
+                if (v && v.length > 0)
+                    obj.bestSeason = v[0].fulltext;
                 list.push(obj);
             }
         });
@@ -533,7 +544,7 @@ function addToList(id) {
 
 function filterMarkers() {
 
-    var param = {};
+    var filters = {};
 
     // append filters (if any)
     var mid, list, l, i;
@@ -543,25 +554,79 @@ function filterMarkers() {
         for (i = 0; i < chk.length; i++) {
             mid = chk[i].id;
             list = document.getElementsByClassName(mid + '_chk');
+            var isDisabled = list[0].disabled;
             var attr = [];
-            for (l = 0; l < list.length; l++)
-                if (list[l].checked) {
-                    var value = list[l].id.substring(list[l].id.lastIndexOf('-') + 1);
-                    attr.push(value);
-                }
-            param[mid] = attr;
+
+            if (!isDisabled) {
+                for (l = 0; l < list.length; l++)
+                    if (list[l].checked) {
+                        var value = list[l].id.substring(list[l].id.lastIndexOf('-') + 1);
+                        attr.push(value);
+                    }
+            }
+            filters[mid] = attr;
         }
     }
 
     for (i = 0; i < markers.length; ++i) {
         var marker = markers[i];
+        var p = marker.params;
+        if (!p) continue;
 
         var display = true;
 
         //stars
-        var star = param["star"];
-        if (star.length > 0 && !(star.includes(marker.stars.toString())))
+        var stars = filters["star"];
+        if (stars.length > 0 && !(stars.includes(p.stars.toString())))
             display = false;
+
+        //activity type
+        var activityTypes = filters["loctype"];
+        if (activityTypes.length > 0 && !(activityTypes.includes(p.activity)))
+            display = false;
+
+        //permits
+        var permits = filters["permits"];
+        if (permits.length > 0 && !(permits.includes(p.permits)))
+            display = false;
+
+        //best season
+        //example: Season=Spring to Fall, BEST Apr,May,Oct,Nov  returns ...,xXX,xxx,xXX where the months are Dec(12) through Nov
+        var bestSeason = filters["best_month"];
+        if (bestSeason.length > 0) {
+            if (p.bestSeason) {
+                var parsed = p.bestSeason.replace(/,/g, '');
+                parsed = parsed.substr(1) + parsed.substr(0, 1); //move dec to the end of the string so that the months line up 0 - 11
+                var locationBestMonths = [];
+                for (var month = 0; month < 12; ++month) {
+                    var test = parsed.substr(month, 1);
+                    if (test === "X") locationBestMonths.push(months[month]);
+                }
+                var monthMatched = false;
+                for (var j = 0; j < bestSeason.length; ++j) {
+                    if (locationBestMonths.includes(bestSeason[j])) {
+                        monthMatched = true;
+                        break;
+                    }
+                }
+                if (!monthMatched) display = false;
+            } else {
+                display = false;
+            }
+        }
+
+        //technical rating -- need to parse the ratings out of the description
+
+        //technical rating ACA
+        var technical = filters["technical"];
+        var water = filters["water"];
+        var time = filters["time"];
+        var extraRisk = filters["extra_risk"];
+
+        //technical rating French
+        var vertical = filters["vertical"];
+        var aquatic = filters["aquatic"];
+        var commitment = filters["commitment"];
 
         marker.setMap(display ? map : null);
 

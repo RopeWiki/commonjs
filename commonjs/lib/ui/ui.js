@@ -725,10 +725,7 @@ function loadInlineWeather() {
                     var w = '<div class="wstheader noprint">';
 
                     w += '<span class="notranslate">';
-
-                    var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
+                    
                     var e = periods.length - 1;
                     var startDate = new Date(periods[0].dt * 1000);
                     var endDate = new Date(periods[e].dt * 1000);
