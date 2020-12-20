@@ -229,16 +229,16 @@ function loadInteractiveMap() {
 
             var obj = { id: urldecode(line[0]), location: { lat: lat, lng: lng } };
             if (line.length > 3) {
-                obj.q = Number(line[3]);
+                obj.stars = Number(line[3]);
                 if (line.length > 6)
-                    obj.icon = KML_ICON_LIST[Number(line[6]) * 6 + obj.q];
+                    obj.icon = KML_ICON_LIST[Number(line[6]) * 6 + obj.stars];
             }
             // numeric icons
             if (kmlsummary)
                 if (obj.id[0] == '#') {
                     //var colors = [ "666666", "7b6434", "b2882c", "f6b114", "f78931", "f74c24" ];
                     var num = obj.id.slice(1).split(' ')[0];
-                    obj.icon = 'https://sites.google.com/site/rwicons/bg' + obj.q + '_' + num + '.png';
+                    obj.icon = 'https://sites.google.com/site/rwicons/bg' + obj.stars + '_' + num + '.png';
                     //iconm = 'https://chart.apis.google.com/chart?chst=d_text_outline&chld='+colors[Number(line[3])]+'|12|h|000000|b|'+parseInt(num);
                 }
             if (line.length > 4)

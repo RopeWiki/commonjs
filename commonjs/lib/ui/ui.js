@@ -1,6 +1,6 @@
 
 function toggleUrlcheckbox(elem) {
-    urlcheckbox = setparam(urlcheckbox, elem.id, elem.checked ? "on" : "off");
+    urlcheckbox = setUrlParam(urlcheckbox, elem.id, elem.checked ? "on" : "off");
     setCookie("urlcheckbox", urlcheckbox, 360*10); // 10 years
     gtrans2 = 'x';
     loadTranslation();
@@ -243,7 +243,7 @@ function loadUserInterface(document) {
 
     elem = document.getElementsByClassName('urlcheckbox');
     for (var i = 0; i < elem.length; i++) {
-        var on = getparam(urlcheckbox, elem[i].id, elem[i].innerHTML);
+        var on = getUrlParam(urlcheckbox, elem[i].id, elem[i].innerHTML);
         elem[i].className += " notranslate";
         elem[i].innerHTML = '<input id="' +
             elem[i].id +
@@ -541,7 +541,7 @@ function loadFormInterface() {
         elem = document.getElementById(id);
         if (!elem) return;
 
-        var str = getparam(url, id, elem.innerHTML);
+        var str = getUrlParam(url, id, elem.innerHTML);
 
         var color;
         color = 'black';
@@ -646,49 +646,45 @@ function loadFormInterface() {
                 text = list[l];
             }
 
-            str += ' ' + '<label title="' + title + '" onclick="toggleDisabledChk(' + "'" + id + "'" + ')"><input id="' + id + '" class="' + mid + '" style="" type="checkbox" ' + (checked ? 'checked' : '') + ' onclick="stopBubble(this)"/>' + text + '</label>';
+            str += ' ' + '<label title="' + title + '" onclick="toggleDisabledChk(' + "'" + id + "'" + ')"><input id="' + id + '" class="' + mid + '" style="" type="checkbox" ' + (checked ? 'checked' : '') + ' onclick="filterClicked(this)"/>' + text + '</label>';
         }
         chks[i].innerHTML = str;
 
         toggleDisabledChk(mid);
     }
 
-    var filter = document.getElementById('filterbutton');
-    if (filter)
-        filter.innerHTML = '<input class="submitoff" type="submit" onclick="filtersearch()" value="' + filter.innerHTML + '">';
+    //// starshowhide
+    //var starsh = document.getElementById('starshowhide');
+    //if (starsh && filters) {
+    //    // clickable filters
+    //    var links = starsh.getElementsByTagName('A');
+    //    for (var i = 0; i < links.length; ++i)
+    //        links[i].removeAttribute('href');
+    //    var border = "border:2px solid #0070B0";
+    //    var children = starsh.getElementsByTagName('IMG');
+    //    for (var i = 0; i < children.length; ++i) {
+    //        children[i].style.cssText = border;
+    //        children[i].removeAttribute('href');
+    //        children[i].active = true;
+    //        children[i].q = 0;
+    //        if (children[i].alt)
+    //            children[i].q = Number(children[i].alt);
+    //        children[i].onclick = function showhide(event) {
+    //            this.active = !this.active
+    //            this.style.cssText = this.active ? border : "";
 
-    // starshowhide
-    var starsh = document.getElementById('starshowhide');
-    if (starsh && filters) {
-        // clickable filters
-        var links = starsh.getElementsByTagName('A');
-        for (var i = 0; i < links.length; ++i)
-            links[i].removeAttribute('href');
-        var border = "border:2px solid #0070B0";
-        var children = starsh.getElementsByTagName('IMG');
-        for (var i = 0; i < children.length; ++i) {
-            children[i].style.cssText = border;
-            children[i].removeAttribute('href');
-            children[i].active = true;
-            children[i].q = 0;
-            if (children[i].alt)
-                children[i].q = Number(children[i].alt);
-            children[i].onclick = function showhide(event) {
-                this.active = !this.active
-                this.style.cssText = this.active ? border : "";
-
-                // show/hide map markers
-                var qmap = qmaps[this.q] = this.active ? map : null;
-                for (var j = 0; j < markers.length; ++j) {
-                    if (markers[j].q == this.q) {
-                        markers[j].setMap(qmap);
-                        if (markers[j].highlight)
-                            markers[j].highlight.setMap(qmap);
-                    }
-                }
-            };
-        }
-    }
+    //            // show/hide map markers
+    //            var qmap = qmaps[this.q] = this.active ? map : null;
+    //            for (var j = 0; j < markers.length; ++j) {
+    //                if (markers[j].q == this.q) {
+    //                    markers[j].setMap(qmap);
+    //                    if (markers[j].highlight)
+    //                        markers[j].highlight.setMap(qmap);
+    //                }
+    //            }
+    //        };
+    //    }
+    //}
 
     // location search
     var locdefault = document.getElementById('locdefault');

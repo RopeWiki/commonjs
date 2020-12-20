@@ -133,7 +133,7 @@ function rwlink(url, opts) {
     for (var i = 0; i < olist.length; ++i) {
         var idval = olist[i].split("=");
         if (idval.length != 2) continue;
-        urlopts = setparam(urlopts, idval[0], idval[1]);
+        urlopts = setUrlParam(urlopts, idval[0], idval[1]);
     }
 
     if (metric)

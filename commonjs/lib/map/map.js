@@ -1,6 +1,8 @@
 
 var zindex = 0;
 
+var lastinfowindow = null;
+
 function displayinfowindow(marker) {
     tooltip.hide();
 
@@ -43,9 +45,9 @@ function pinmap(id) {
 
 function loadlist(list, fitbounds) {
     var i;
-    if (qmaps.length === 0)  //qmaps is an array of layers for each star rating, 0 to 5
-        for (i = 0; i < 6; ++i)
-            qmaps.push(map);
+    //if (qmaps.length === 0)  //qmaps is an array of layers for each star rating, 0 to 5
+    //    for (i = 0; i < 6; ++i)
+    //        qmaps.push(map);
     
     // calc nearby (only 1 shot of 100 or less)
     var calcnearby = document.getElementById('kmlnearby');
@@ -84,7 +86,6 @@ function loadlist(list, fitbounds) {
         if (!item.id || item.id === "")
             continue;
 
-        //var result = markers.find(entry => { return entry.location === item.location });
         var alreadyExists = false;
         for (var j = 0; j < markers.length; ++j) {
             if (markers[j].position.lat() === item.location.lat && markers[j].position.lng() === item.location.lng) {
@@ -98,8 +99,8 @@ function loadlist(list, fitbounds) {
         --nlist;
         // set up icon
         var zindexm = 5000 + nlist;
-        if (item.q)
-            zindexm += item.q * 1000;
+        if (item.stars)
+            zindexm += item.stars * 1000;
 
         var iconm = "";
         if (item.icon)
@@ -196,9 +197,10 @@ function loadlist(list, fitbounds) {
         }
 
         // build and add marker with infowindow callback
-        var q = -1, qmap = map;
-        if (item.q != null)
-            qmap = qmaps[q = item.q];
+        var stars = -1, qmap = map;
+        if (item.stars != null)
+            //qmap = qmaps[q = item.q];
+            qmap = map; stars = item.stars;
 
         var positionm = new google.maps.LatLng(item.location.lat, item.location.lng);
 
@@ -213,10 +215,8 @@ function loadlist(list, fitbounds) {
             optimized: false
         });
 
-        marker.q = q; //quality (star) rating
-        marker.oposition = positionm;
-
         // add permit status by overlaying the 'closed' image on the marker
+        var closedMarker;
         if (permitStatus !== 'No') {
             var iconUrl = "";
             var iconSize, iconAnchor;
@@ -245,7 +245,7 @@ function loadlist(list, fitbounds) {
                 anchor: iconAnchor
             };
 
-            var closedMarker = new google.maps.Marker({
+            closedMarker = new google.maps.Marker({
                 position: positionm,
                 map: qmap,
                 icon: closedImage,
@@ -253,9 +253,6 @@ function loadlist(list, fitbounds) {
                 zIndex: zindexm + 1,
                 optimized: false
             });
-
-            closedMarker.q = q; //quality (star) rating
-            markers.push(closedMarker);
         }
 
         google.maps.event.addListener(marker,
@@ -284,13 +281,21 @@ function loadlist(list, fitbounds) {
                 }
             });
 
-        markers.push(marker);
-
         google.maps.event.addListener(marker,
             'click',
             function() {
                 displayinfowindow(this);
             });
+
+        marker.stars = stars;
+        marker.oposition = positionm;
+
+
+        markers.push(marker);
+        if (!!closedMarker) {
+            marker.closedMarker = closedMarker;
+            markers.push(closedMarker);
+        }
 
         boundslist.extend(positionm);
     }
@@ -334,17 +339,17 @@ function getrwlist(data) {
                 // icon
                 v = item.printouts["Has star rating"];
                 if (v && v.length > 0) {
-                    obj.q = Number(v[0]);
+                    obj.stars = Number(v[0]);
                     v = item.printouts["Has location class"];
                     if (v && v.length > 0)
-                        obj.icon = KML_ICON_LIST[obj.q + Number(v[0]) * 6];
+                        obj.icon = KML_ICON_LIST[obj.stars + Number(v[0]) * 6];
                 }
 
                 // numeric icons
                 if (kmlsummary)
                     if (obj.id[0] == '#') {
                         var num = obj.id.slice(1).split(' ')[0];
-                        obj.icon = 'https://sites.google.com/site/rwicons/bg' + obj.q + '_' + num + '.png';
+                        obj.icon = 'https://sites.google.com/site/rwicons/bg' + obj.stars + '_' + num + '.png';
                     }
 
                 v = item.printouts["Has summary"];
@@ -531,3 +536,41 @@ function addToList(id) {
     }
 }
 
+function filterMarkers() {
+
+    var param = {};
+
+    // append filters (if any)
+    var mid, list, l, i;
+    var filterschk = document.getElementById('filterschk');
+    if (filterschk != null && filterschk.checked) {
+        var chk = document.getElementsByClassName('filterchk');
+        for (i = 0; i < chk.length; i++) {
+            mid = chk[i].id;
+            list = document.getElementsByClassName(mid + '_chk');
+            var attr = [];
+            for (l = 0; l < list.length; l++)
+                if (list[l].checked) {
+                    var value = list[l].id.substring(list[l].id.lastIndexOf('-') + 1);
+                    attr.push(value);
+                }
+            param[mid] = attr;
+        }
+    }
+
+    for (i = 0; i < markers.length; ++i) {
+        var marker = markers[i];
+
+        var display = true;
+
+        //stars
+        var star = param["star"];
+        if (star.length > 0 && !(star.includes(marker.stars.toString())))
+            display = false;
+
+        marker.setMap(display ? map : null);
+
+        if (marker.closedMarker)
+            marker.closedMarker.setMap(display ? map : null);
+    }
+}

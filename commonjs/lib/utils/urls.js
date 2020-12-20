@@ -23,7 +23,7 @@ function urlget(url, idstr, defstr) {
     return str;
 }
 
-function addparam(param, id, val) {
+function addUrlParam(param, id, val) {
 
     var pid = '&' + id + '=';
     var i = param.indexOf(pid);
@@ -43,12 +43,12 @@ function addparam(param, id, val) {
     return param;
 }
 
-function getparam(param, id, def) {
+function getUrlParam(param, id, def) {
     var idstr = '&' + id + '=';
     return urlget(param, idstr, def);
 }
 
-function setparam(param, id, val) {
+function setUrlParam(param, id, val) {
 
     var pid = '&' + id + '=';
     var i = param.indexOf(pid);

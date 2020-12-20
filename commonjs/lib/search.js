@@ -36,38 +36,26 @@ function filtersearch() {
     // clean url first
     var param = "", i;
 
-    // append options
+    // append options (this is 'Search' location and 'Filters' parent checkmark)
     var optionschks = document.getElementsByClassName('optionschk');
     if (optionschks != null)
         for (i = 0; i < optionschks.length; i++)
             if (optionschks[i].checked)
-                param = addparam(param, optionschks[i].id, 'on');
+                param = addUrlParam(param, optionschks[i].id, 'on');
 
     // append filters (if any)
     var mid, list, l;
     var filterschk = document.getElementById('filterschk');
     if (filterschk != null && filterschk.checked) {
-        var sel = document.getElementsByClassName('filtersel');
-        for (i = 0; i < sel.length; i++)
-            if (sel[i].style.display !== "none") {
-                mid = sel[i].id + 'flt';
-                list = sel[i].getElementsByClassName(mid);
-                for (l = 0; l < list.length; ++l) {
-                    var x = list[l].selectedIndex;
-                    var y = list[l].options;
-                    param = addparam(param, sel[i].id, y[x].text);
-                }
-            }
-
         var chk = document.getElementsByClassName('filterchk');
         for (i = 0; i < chk.length; i++) {
-            mid = chk[i].id + 'flt';
+            mid = chk[i].id + '_chk';
             list = document.getElementsByClassName(mid);
             var attr = [];
             for (l = 0; l < list.length; l++)
                 if (list[l].checked)
                     attr.push(list[l].id.substring(list[l].id.lastIndexOf('_') + 1));
-            param = addparam(param, chk[i].id, attr.join());
+            param = addUrlParam(param, chk[i].id, attr.join());
         }
     }
 
@@ -82,9 +70,9 @@ function filtersearch() {
                     if (locnameval.substr(0, 6) !== 'Coord:')
                         locdistval = "50mi"; // default
                 url = SITE_BASE_URL + '/Location';
-                param = addparam(param, 'locname', urlencode(locnameval));
+                param = addUrlParam(param, 'locname', urlencode(locnameval));
                 if (!deftext(locdistval))
-                    param = addparam(param, 'locdist', urlencode(locdistval));
+                    param = addUrlParam(param, 'locdist', urlencode(locdistval));
             }
         }
 
@@ -94,11 +82,11 @@ function filtersearch() {
         for (i = 0; i < optionsurl.length; i++) {
             var val = optionsurl[i].innerHTML;
             if (val.length > 0)
-                param = addparam(param, optionsurl[i].id, val);
+                param = addUrlParam(param, optionsurl[i].id, val);
         }
 
     // append sorting if any
-    if (sortby) param = addparam(param, 'sortby', sortby);
+    if (sortby) param = addUrlParam(param, 'sortby', sortby);
 
     if (param !== "") url += "?jform" + param;
     

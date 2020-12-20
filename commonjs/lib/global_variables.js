@@ -51,8 +51,6 @@ var gxml;
 var markers = [];
 var handlekeys = false;
 
-var lastinfowindow = null;
-
 // bounds
 var nlist = 10000;
 var qmaps = [];
