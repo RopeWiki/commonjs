@@ -4,10 +4,8 @@ function togglelocsearchchk(id) {
 }
 
 function togglefilterschk(id) {
-    if (!toggleOption(id)) {
-        // refresh page
-        //filtersearch();
-    }
+    toggleOption(id);
+    filterMarkers();
 }
 
 function toggleOption(id, forcechecked) {

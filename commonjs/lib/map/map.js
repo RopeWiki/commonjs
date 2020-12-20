@@ -570,74 +570,79 @@ function filterMarkers() {
     }
 
     for (i = 0; i < markers.length; ++i) {
+        
         var marker = markers[i];
         var p = marker.params;
         if (!p) continue;
 
-        var display = true;
+        runFilter: {
+            var display = true;
 
-        //stars
-        var stars = filters["star"];
-        if (stars.length > 0 && !(stars.includes(p.stars.toString())))
-            display = false;
+            if (!filters || Object.keys(filters).length === 0) break runFilter; //no filters set, enable all
 
-        //activity type
-        var activityTypes = filters["loctype"];
-        if (activityTypes.length > 0 && !(activityTypes.includes(p.activity)))
-            display = false;
-
-        //permits
-        var permits = filters["permits"];
-        if (permits.length > 0 && !(permits.includes(p.permits)))
-            display = false;
-
-        //best season
-        //example: Season=Spring to Fall, BEST Apr,May,Oct,Nov  returns ...,xXX,xxx,xXX where the months are Dec(12) through Nov
-        var bestSeason = filters["best_month"];
-        if (bestSeason.length > 0) {
-            if (!!(p.bestMonths)) {
-                var monthMatched = false;
-                for (var j = 0; j < bestSeason.length; ++j) {
-                    if (p.bestMonths.includes(bestSeason[j])) {
-                        monthMatched = true;
-                        break;
-                    }
-                }
-                if (!monthMatched) display = false;
-            } else {
+            //stars
+            var stars = filters["star"];
+            if (!!stars && stars.length > 0 && !(stars.includes(p.stars.toString())))
                 display = false;
+
+            //activity type
+            var activityTypes = filters["loctype"];
+            if (!!activityTypes && activityTypes.length > 0 && !(activityTypes.includes(p.activity)))
+                display = false;
+
+            //permits
+            var permits = filters["permits"];
+            if (!!permits && permits.length > 0 && !(permits.includes(p.permits)))
+                display = false;
+
+            //best season
+            //example: Season=Spring to Fall, BEST Apr,May,Oct,Nov  returns ...,xXX,xxx,xXX where the months are Dec(12) through Nov
+            var bestSeason = filters["best_month"];
+            if (!!bestSeason && bestSeason.length > 0) {
+                if (!!(p.bestMonths)) {
+                    var monthMatched = false;
+                    for (var j = 0; j < bestSeason.length; ++j) {
+                        if (p.bestMonths.includes(bestSeason[j])) {
+                            monthMatched = true;
+                            break;
+                        }
+                    }
+                    if (!monthMatched) display = false;
+                } else {
+                    display = false;
+                }
             }
+
+            //technical rating ACA
+            var technical = filters["technical"];
+            if (!!technical && technical.length > 0 && !(technical.includes(p.technicalRating.technical)))
+                display = false;
+
+            var water = filters["water"];
+            if (!!water && water.length > 0 && !(water.includes(p.technicalRating.water)))
+                display = false;
+
+            var time = filters["time"];
+            if (!!time && time.length > 0 && !(time.includes(p.technicalRating.time)))
+                display = false;
+
+            var extraRisk = filters["extra_risk"];
+            if (!!extraRisk && extraRisk.length > 0 && !(extraRisk.includes(p.technicalRating.risk)))
+                display = false;
+
+            //technical rating French
+            var vertical = filters["vertical"];
+            if (!!vertical && vertical.length > 0 && !(vertical.includes(p.technicalRating.vertical)))
+                display = false;
+
+            var aquatic = filters["aquatic"];
+            if (!!aquatic && aquatic.length > 0 && !(aquatic.includes(p.technicalRating.aquatic)))
+                display = false;
+
+            var commitment = filters["commitment"];
+            if (!!commitment && commitment.length > 0 && !(commitment.includes(p.technicalRating.commitment)))
+                display = false;
         }
-
-        //technical rating ACA
-        var technical = filters["technical"];
-        if (technical.length > 0 && !(technical.includes(p.technicalRating.technical)))
-            display = false;
-
-        var water = filters["water"];
-        if (water.length > 0 && !(water.includes(p.technicalRating.water)))
-            display = false;
-
-        var time = filters["time"];
-        if (time.length > 0 && !(time.includes(p.technicalRating.time)))
-            display = false;
-
-        var extraRisk = filters["extra_risk"];
-        if (extraRisk.length > 0 && !(extraRisk.includes(p.technicalRating.risk)))
-            display = false;
-
-        //technical rating French
-        var vertical = filters["vertical"];
-        if (vertical.length > 0 && !(vertical.includes(p.technicalRating.vertical)))
-            display = false;
-
-        var aquatic = filters["aquatic"];
-        if (aquatic.length > 0 && !(aquatic.includes(p.technicalRating.aquatic)))
-            display = false;
-
-        var commitment = filters["commitment"];
-        if (commitment.length > 0 && !(commitment.includes(p.technicalRating.commitment)))
-            display = false;
 
         marker.setMap(display ? map : null);
 
