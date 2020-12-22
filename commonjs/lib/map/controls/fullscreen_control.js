@@ -59,6 +59,7 @@ function requestFullscreen(element) {
 }
 
 function exitFullscreen() {
+    map.set('gestureHandling', 'cooperative');
     if (document.exitFullscreen) {
         document.exitFullscreen();
     } else if (document.webkitExitFullscreen) {
