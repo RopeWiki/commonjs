@@ -19,7 +19,7 @@ function initFullscreenControl() {
     fullscreenControl.onclick = function () {
         if (iOS()) { //functionality is different in iOS. Needs to use our toggleFullScreen code.
 
-            addFullscreenStyleClass(fullscreenControl, !toggleFS);
+            adjustControlsForFullscreen(fullscreenControl, !toggleFS);
             toggleFullScreen();
             return;
         }
@@ -32,7 +32,7 @@ function initFullscreenControl() {
     };
 
     document.onwebkitfullscreenchange = document.onmsfullscreenchange = document.onmozfullscreenchange = document.onfullscreenchange = function () {
-        addFullscreenStyleClass(fullscreenControl, isFullscreen(elementToSendFullscreen));
+        adjustControlsForFullscreen(fullscreenControl, isFullscreen(elementToSendFullscreen));
     };
 }
 
@@ -46,7 +46,6 @@ function isFullscreen(element) {
 }
 
 function requestFullscreen(element) {
-    map.set('gestureHandling', 'greedy');
     if (element.requestFullscreen) {
         element.requestFullscreen();
     } else if (element.webkitRequestFullScreen) {
@@ -59,7 +58,6 @@ function requestFullscreen(element) {
 }
 
 function exitFullscreen() {
-    map.set('gestureHandling', 'cooperative');
     if (document.exitFullscreen) {
         document.exitFullscreen();
     } else if (document.webkitExitFullscreen) {
@@ -71,11 +69,16 @@ function exitFullscreen() {
     }
 }
 
-function addFullscreenStyleClass(fullscreenControl, isFullscreen) {
+function adjustControlsForFullscreen(fullscreenControl, isFullscreen) {
     if (isFullscreen)
         fullscreenControl.classList.add("is-fullscreen");
     else
         fullscreenControl.classList.remove("is-fullscreen");
+
+    var dragbar = document.getElementById("dragbar");
+    if (!!dragbar) dragbar.style.display = isFullscreen ? 'none' : 'block';
+
+    map.set('gestureHandling', isFullscreen ? 'greedy' : 'cooperative');
 }
 
 var FULLSCREEN_HASH = '#fullscreen';
