@@ -1,7 +1,7 @@
 ﻿//google maps custom control to toggle fullscreen
 
 function initFullscreenControl() {
-    var fullscreenControl = document.createElement('DIV');
+    var fullscreenControl = document.createElement('div');
     fullscreenControl.className = 'controls fullscreen-control';
     fullscreenControl.id = 'fullscreenCustom';
     fullscreenControl.innerHTML =
@@ -41,7 +41,7 @@ function isFullscreen(element) {
         (document.fullscreenElement ||
             document.webkitFullscreenElement ||
             document.mozFullScreenElement ||
-            document.msFullscreenElement) == element
+            document.msFullscreenElement) === element
     );
 }
 
@@ -92,6 +92,7 @@ function toggleFullScreen(force) {
     var ide = document.getElementById("mapbox");
     if (!ide) return;
 
+    var list, i;
     if (toggleFS == null || force) {
         if (toggleFS == null) {
             toggleFS = {
@@ -106,9 +107,9 @@ function toggleFullScreen(force) {
             if (window.location.href.toString().indexOf(FULLSCREEN_HASH) < 0)
                 window.location.href += FULLSCREEN_HASH;
 
-            var list = document.body.childNodes;
-            for (var i = 0; i < list.length; ++i)
-                if (list[i].tagName == 'DIV') {
+            list = document.body.childNodes;
+            for (i = 0; i < list.length; ++i)
+                if (list[i].tagName === 'DIV') {
                     list[i].normal_display = list[i].style.display;
                     list[i].style.display = "none";
                 }
@@ -132,8 +133,8 @@ function toggleFullScreen(force) {
         ide.className = fs.className;
         fs.parent.insertBefore(ide, fs.next);
 
-        var list = document.body.childNodes;
-        for (var i = 0; i < list.length; ++i)
+        list = document.body.childNodes;
+        for (i = 0; i < list.length; ++i)
             if (typeof list[i].normal_display != "undefined")
                 list[i].style.display = list[i].normal_display;
         window.scrollTo(fs.sx, fs.sy);

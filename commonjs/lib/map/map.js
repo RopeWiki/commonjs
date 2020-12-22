@@ -170,27 +170,34 @@ function loadlist(list, fitbounds) {
         // add elevation
         //contentString += '<br><span id="infoelevation"></span>';
 
-        contentString += '<hr/>' + sdescm + '</div>';
-        if (item.infocontent) contentString = item.infocontent;
-        var infowindowm = new google.maps.InfoWindow({ content: contentString });
-
-        var descriptionString = item.infodescription
-            ? item.infodescription
-            : '<b class="nostranslate">' + nonamespace(item.id) + '</b><br>' + descm.split('*').join('&#9733;');
-
+        // add permit status
+        var permitStatusString = "";
         if (permitStatus !== 'None') {
             switch (permitStatus) {
             case "Yes":
-                descriptionString += "<br>*permit required*";
+                permitStatusString += "<br>*permit required*";
                 break;
             case "Restricted":
-                descriptionString += "<br>*access restricted*";
+                permitStatusString += "<br>*access restricted*";
                 break;
             case "Closed":
-                descriptionString += "<br>*closed to access*";
+                permitStatusString += "<br>*closed to access*";
                 break;
             }
         }
+        contentString += permitStatusString;
+
+        // add separator and mini-description
+        contentString += '<hr/>' + sdescm + '</div>';
+
+        if (item.infocontent) contentString = item.infocontent;
+        var infowindowm = new google.maps.InfoWindow({ content: contentString });
+
+        var tooltipString = item.infodescription
+            ? item.infodescription
+            : '<b class="nostranslate">' + nonamespace(item.id) + '</b><br>' + descm.split('*').join('&#9733;');
+
+        tooltipString += permitStatusString;
 
         // build and add marker with infowindow callback
         var positionm = new google.maps.LatLng(item.location.lat, item.location.lng);
@@ -200,13 +207,13 @@ function loadlist(list, fitbounds) {
             map: map,
             icon: iconm,
             name: nonamespace(item.id), /*title:item.id/*+":"+line[4],*/
-            description: descriptionString,
+            description: tooltipString,
             infowindow: infowindowm,
             zIndex: zindexm,
             optimized: false
         });
 
-        // add permit status by overlaying the 'closed' image on the marker
+        // add permit status icon by overlaying the corresponding 'closed' image on the marker
         var closedMarker = null;
         if (permitStatus !== 'None') {
             var iconUrl = "";
@@ -278,6 +285,7 @@ function loadlist(list, fitbounds) {
                 displayinfowindow(this);
             });
 
+        // set parameters used for filtering
         var params = {};
         
         params.stars = (item.stars != null ? item.stars : -1);
@@ -288,7 +296,8 @@ function loadlist(list, fitbounds) {
 
         marker.params = params;
         marker.oposition = positionm;
-        
+
+        // add marker to map
         markers.push(marker);
         if (!!closedMarker) {
             marker.closedMarker = closedMarker;
@@ -321,7 +330,7 @@ function loadlist(list, fitbounds) {
         zindex = 6000;
     }
 
-    return n;
+    return n; //'n' is not used anywhere
 }
 
 function getrwlist(data) {
