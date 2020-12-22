@@ -26,14 +26,14 @@ function getStarFraction(num) {
     //if (i!=4) line+='&zwj;';
 }
 
-function getStars(num, ratings, size) {
+function getStars(num, numRatings, size) {
     var line = '<span style="white-space: nowrap;">';
     for (var i = 0; i < 5; ++i) {
         line += '<img width="' + size + 'px" height="' + size + 'px" src="' + STARLIST[getStarFraction(num)] + '"/>';
         num -= 1;
     }
-    if (ratings > 0)
-        line += '<span class="starsub">' + ratings + '</span>';
+    if (numRatings > 0)
+        line += '<span class="starsub">' + numRatings + '</span>';
     line += '</span>'
     return line;
 }
@@ -156,8 +156,9 @@ function loadStars() {
                     starsv[i].className = 'starv votedrow';
             } else {
                 // display star rates
-                starsv[i].innerHTML = '<a href="' + SITE_BASE_URL + '/List_ratings?location=' + id + '">' + getStars(stars, ratings, 16) + '</a>';
-                starsv[i].title = stars + '*' + (ratings <= 0 ? '' : ' (' + ratings + ' ratings)');
+                var starDisplay = getStarDisplay(id, stars, ratings, 16);
+                starsv[i].innerHTML = starDisplay.innerHTML;
+                starsv[i].title = starDisplay.title;
                 if (ustars > 0)
                     starsv[i].className = 'starv votedsub';
             }
@@ -166,6 +167,19 @@ function loadStars() {
             starsv[i].innerHTML = getStars(stars, 0, 16);
         }
     }
+}
+
+function getStarDisplay(location, stars, numRatings, size) {
+    if (!stars) stars = 0;
+    if (!numRatings) numRatings = 0;
+    if (!size) size = 16;
+
+    var starDisplay = {};
+
+    starDisplay.innerHTML = '<a href="' + SITE_BASE_URL + '/List_ratings?location=' + location + '">' + getStars(stars, numRatings, size) + '</a>';
+    starDisplay.title = stars.toFixed(1) + '*' + (numRatings <= 0 ? '' : ' (' + numRatings + ' ratings)');
+
+    return starDisplay;
 }
 
 /*

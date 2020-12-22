@@ -8,12 +8,18 @@ function urlencode(str)
     return encodeURIComponent(str);
 }
 
+function linkify(str) {
+    return !!str
+        ? str.split(" ").join("_")
+        : str;
+}
+
 function urlget(url, idstr, defstr) {
     var str = defstr;
     var pos = url.indexOf(idstr);
     if (pos >= 0) {
         pos += idstr.length;
-        var posend = url.indexOf('&', pos);
+        var posend = url.indexOf("&", pos);
         if (posend > 0)
             str = url.substring(pos, posend);
         else
@@ -25,7 +31,7 @@ function urlget(url, idstr, defstr) {
 
 function addUrlParam(param, id, val) {
 
-    var pid = '&' + id + '=';
+    var pid = "&" + id + "=";
     var i = param.indexOf(pid);
     if (i < 0)
         param += pid + val;
@@ -33,9 +39,9 @@ function addUrlParam(param, id, val) {
         var a = param.substr(0, i);
         var b = param.substr(i + pid.length);
         param = a + pid + val;
-        if (b != val) {
-            if (b.length > 0 && b[0] != '&')
-                param += ',';
+        if (b !== val) {
+            if (b.length > 0 && b[0] !== "&")
+                param += ",";
             param += b;
         }
     }
@@ -44,18 +50,18 @@ function addUrlParam(param, id, val) {
 }
 
 function getUrlParam(param, id, def) {
-    var idstr = '&' + id + '=';
+    var idstr = "&" + id + "=";
     return urlget(param, idstr, def);
 }
 
 function setUrlParam(param, id, val) {
 
-    var pid = '&' + id + '=';
+    var pid = "&" + id + "=";
     var i = param.indexOf(pid);
     if (i >= 0) {
         var b = "";
         var a = param.substr(0, i);
-        var l = param.indexOf('&', i + 1);
+        var l = param.indexOf("&", i + 1);
         if (l >= 0)
             b = param.substr(l);
         param = a + b;

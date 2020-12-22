@@ -330,6 +330,8 @@ function loadlist(list, fitbounds) {
         zindex = 6000;
     }
 
+    addNewItemsToTable(list);
+
     return n; //'n' is not used anywhere
 }
 
@@ -346,13 +348,11 @@ function getrwlist(data) {
 
                 // icon
                 v = item.printouts["Has star rating"];
+                obj.stars = (v && v.length > 0) ? v[0] : 0;
+                v = item.printouts["Has location class"];
                 if (v && v.length > 0) {
-                    obj.stars = Number(v[0]);
-                    v = item.printouts["Has location class"];
-                    if (v && v.length > 0) {
-                        obj.icon = KML_ICON_LIST[obj.stars + Number(v[0]) * 6];
-                        obj.activity = v[0];
-                    }
+                    obj.activity = v[0];
+                    obj.icon = KML_ICON_LIST[Number(obj.stars) + Number(obj.activity) * 6];
                 }
 
                 // numeric icons
@@ -382,6 +382,44 @@ function getrwlist(data) {
                 v = item.printouts["Has best season parsed"];
                 if (v && v.length > 0)
                     obj.bestMonths = parseBestMonths(v[0].fulltext);
+
+                //******* NEW STUFF //
+                v = item.printouts["Has info major region"];
+                if (v && v.length > 0) {
+                    obj.parentRegions = parseMajorRegion(v[0]);
+                }
+                v = item.printouts["Has rank rating"];
+                if (v && v.length > 0)
+                    obj.rankRating = v[0];
+                v = item.printouts["Has total counter"];
+                if (v && v.length > 0)
+                    obj.totalCounter = v[0];
+                v = item.printouts["Has info typical time"];
+                if (v && v.length > 0)
+                    obj.typicalTime = v[0];
+                v = item.printouts["Has length of hike"];
+                if (v && v.length > 0)
+                    obj.hikeLength = v[0];
+                v = item.printouts["Has length"];
+                if (v && v.length > 0)
+                    obj.descentLength = v[0];
+                v = item.printouts["Has depth"];
+                if (v && v.length > 0)
+                    obj.descentDepth = v[0];
+                v = item.printouts["Has info rappels"];
+                if (v && v.length > 0)
+                    obj.rappels = v[0];
+                v = item.printouts["Has longest rappel"];
+                if (v && v.length > 0)
+                    obj.longestRappel = v[0];
+                v = item.printouts["Has info"];
+                if (v && v.length > 0)
+                    obj.infoSummary = v[0];
+                v = item.printouts["Has condition summary"];
+                if (v && v.length > 0)
+                    obj.conditionSummary = v[0];
+
+
                 list.push(obj);
             }
         });
@@ -467,7 +505,8 @@ function morekmllist(loccontinue, loctotal) {
 function morestop() {
     // finished loading
     var loccount = document.getElementById("loccount");
-    if (loccount) loccount.parentNode.removeChild(loccount);
+    //if (loccount) loccount.parentNode.removeChild(loccount);
+    if (loccount) loccount.innerHTML = "";
 
     var loadmore = document.getElementById("loadmore");
     if (loadmore) loadmore.parentNode.removeChild(loadmore);
@@ -756,4 +795,17 @@ function parseTechnicalRating(description) {
     }
 
     return technicalRating;
+}
+
+function parseMajorRegion(majorRegion) {
+    const regex = /\|(.*?)\]\]]*/g; //matches the pattern: | match ]]
+    
+    var regions = [];
+    var match = regex.exec(majorRegion);
+    while (match != null) {
+        regions.push(match[1]);
+        match = regex.exec(majorRegion);
+    }
+
+    return regions;
 }
