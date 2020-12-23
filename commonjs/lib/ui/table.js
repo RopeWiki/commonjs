@@ -29,17 +29,16 @@ function assembleTableRow(item) {
         '<td class="umi">[Hike]</td>';
     
     const Descent =
-        '<td class="umi">[Descent length][Descent depth]</td>';
+        '<td class="umi">[Descent display]</td>';
     
     const Raps =
-        '<td class="urap">[Rap count] [Rap highest]</td>';
+        '<td class="urap">[Rap display]</td>';
     
     const Info =
-        '<td class="itable">[Info list of 4 icons][Best Season table]</td>';
+        '<td class="itable">[InfoSummary]</td>';
     
     const Conditions =
-        '<td class="ctable"><span class="notranslate"><a href="/\[Condition link]" title="[Condition link]"><b>[Condition date]</b></a> ' +
-        '<span class="cicons">[Conditions icons array]</span></span><br><span class="conditionsnippet"></span></td>';
+        '<td class="ctable">[ConditionsSummary]</td>';
 
     var location = Location
         .replace(/\[LocationName]/g, item.id)
@@ -47,50 +46,45 @@ function assembleTableRow(item) {
         .replace(/\[Star Icon png]/, item.icon)
         .replace(/\[Region]/g, item.region)
         .replace(/\[RegionLink]/, linkify(item.region))
-        .replace(/\[ParentRegionLinks]/, getParentRegionLinks(item.parentRegions));
+        .replace(/\[ParentRegionLinks]/, getTableParentRegionLinks(item.parentRegions));
 
-    var starDisplay = getStarDisplay(item.id, item.rankRating, item.totalCounter, 16);
+    var starDisplay = getStarDisplay(item.id, item.totalRating, item.totalCounter, 16);
     var quality = Stars
         .replace(/\[StarsTitle]/, starDisplay.title)
         .replace(/\[StarsIcons]/, starDisplay.innerHTML);
 
     var technicalRating = TechnicalRating
-        .replace(/\[Technical Rating]/, item.technicalRating);
+        .replace(/\[Technical Rating]/, getTableTechnicalRating(item.technicalRating));
 
     var time = Time
-        .replace(/\[Time]/, item.typicalTime);
+        .replace(/\[Time]/, !!item.typicalTime ? item.typicalTime : "");
 
     var hikeLength = HikeLength
-        .replace(/\[Hike]/, item.hikeLength);
+        .replace(/\[Hike]/, getTableValueUnit(item.hikeLength));
 
     var descent = Descent
-        .replace(/\[Descent length]/, item.descentLength)
-        .replace(/\[Descent depth]/, item.descentDepth);
+        .replace(/\[Descent display]/, getDescentDisplay(item.descentLength, item.descentDepth));
 
     var raps = Raps
-        .replace(/\[Rap count]/, item.rappels)
-        .replace(/\[Rap highest]/, item.longestRappel);
+        .replace(/\[Rap display]/, getTableRaps(item.rappels, item.longestRappel));
 
     var info = Info
-        .replace(/\[Info list of 4 icons]/, item.infoSummary)
-        .replace(/\[Best Season table]/, item.bestMonths);
+        .replace(/\[InfoSummary]/, getTableInfoSummaryDisplay(item.infoSummary));
 
     var conditions = Conditions
-        //.replace(/\[Condition link]/g, item.LocationName)
-        //.replace(/\[Condition date]/, item.LocationName)
-        .replace(/\[Conditions icons array]/, item.conditionSummary);
+        .replace(/\[ConditionsSummary]/, getTableConditionDisplay(item.conditionSummary));
 
     var html =
         '<tr class="trow notranslate">' +
         location +
         quality +
-        //technicalRating +
-        //time +
-        //hikeLength +
-        //descent +
-        //raps +
-        //info +
-        //conditions +
+        technicalRating +
+        time +
+        hikeLength +
+        descent +
+        raps +
+        info +
+        conditions +
         '</tr>';
 
     return html;
@@ -98,6 +92,7 @@ function assembleTableRow(item) {
 
 function addNewItemsToTable(list) {
 
+    //Luca's method of retrieving table:
     var tablelist = $(".loctable .loctabledata");
     if (tablelist.length !== 1) return;
     
@@ -120,7 +115,7 @@ function addNewItemsToTable(list) {
     //If you don't want to delete the header: $("#table_of_items tbody tr").remove();
 }
 
-function getParentRegionLinks(regions) {
+function getTableParentRegionLinks(regions) {
 
     if (!regions || regions.length === 0) return "";
 
@@ -136,4 +131,116 @@ function getParentRegionLinks(regions) {
     }
 
     return ("(" + parentRegionLinks.join("/") + ")");
+}
+
+function getTableTechnicalRating(rating) {
+    var ratingDisplay = "";
+
+    if (!!rating) {
+        if (!french) { //ACA
+            ratingDisplay =
+                (!!rating.technical ? rating.technical : "") + (!!rating.water ? rating.water : "") +
+                " " + (!!rating.time ? rating.time : "");
+            if (!!rating.extra_risk) ratingDisplay += " " + rating.extra_risk;
+        } else { //french
+            ratingDisplay =
+                (!!rating.vertical ? rating.vertical : "") + (!!rating.aquatic ? rating.aquatic : "") +
+                " " + (!!rating.commitment ? rating.commitment : "");
+        }
+    }
+
+    return ratingDisplay;
+}
+
+function getTableRaps(rapSummary, longestRap) {
+    var rapDisplay = "";
+
+    if (!!rapSummary) rapDisplay = rapSummary;
+
+    if (!!longestRap) {
+        if (rapDisplay.trim()) rapDisplay += ", ";
+        rapDisplay += "max " + getTableValueUnit(longestRap);
+    }
+
+    return rapDisplay;
+}
+
+function getDescentDisplay(length, depth) {
+    var descentDisplay = "";
+
+    if (!!length) descentDisplay = getTableValueUnit(length);
+
+    if (!!depth) {
+        if (descentDisplay.trim()) descentDisplay += ", ";
+        descentDisplay += getTableValueUnit(depth);
+    }
+
+    return descentDisplay;
+}
+
+function getTableInfoSummaryDisplay(summary) {
+    if (!summary) return "";
+
+    //need to parse out the best season and assemble the data into the visual table. then insert it back into the string
+    //example: <hr id="vxi"><hr id="vxe"><hr id="vxp"><hr id="vx2"><div class="monthv" title="Apr-Jun">..., .XX, X.., ...</div>
+
+    var endIndex = summary.lastIndexOf("</div");
+    if (endIndex < 0) return summary;
+
+    var startIndex = summary.lastIndexOf(">", endIndex - 1) + 1;
+    var bestSeason = summary.substring(startIndex, endIndex);
+
+    //convert to table
+    var bestSeasonTable = '<table class="wikitable bst mbst nostranslate"><tbody><tr>';
+
+    for (var i = 0; i < bestSeason.length; ++i) {
+        switch (bestSeason[i]) {
+            case " ":
+                break;
+            case ",":
+                bestSeasonTable += '<td class="bss"></td>';
+                break;
+            case ".":
+                bestSeasonTable += '<td></td>';
+                break;
+            case "x":
+                bestSeasonTable += '<td class="bsy"></td>';
+                break;
+            case "X":
+                bestSeasonTable += '<td class="bsg"></td>';
+                break;
+        }
+    }
+    bestSeasonTable += '</tr></tbody></table>';
+
+    summary = summary.substring(0, startIndex - 1) + ' style="display:block;">' + bestSeasonTable + summary.substr(endIndex);
+
+    return summary;
+}
+
+function getTableConditionDisplay(summary) {
+    if (!summary) return "";
+
+    //just need to linkify the most recent link. the rest of the html is already prepared
+    //example: [[Conditions:Cabin Creek-20190923143634|'''22 Sep 2019''']] 
+
+    const regex = /\[\[(.*?)\]\]/; //matches the pattern: [[ match ]]
+    var wikiLink = regex.exec(summary);
+
+    if (wikiLink != null) {
+        var conditions = wikiLink[1].split("|");
+        var conditionsStr = '<a href="/' + linkify(conditions[0]) + '" title="'+ conditions[0] +'"><b>'+ conditions[1].replace(/'/g, "") +'</b></a>';
+        summary = summary.replace(wikiLink[0], conditionsStr);
+    }
+    
+    return summary;
+}
+
+function getTableValueUnit(entry) {
+    if (!entry || !(entry.unit)) return "";
+
+    if (entry.unit === 'ft' || entry.unit === 'm') return ftStr(entry.value);
+    if (entry.unit === 'mi' || entry.unit === 'km') return miStr(entry.value);
+
+    return entry.value.toString() + entry.unit.toString();
 }

@@ -388,9 +388,9 @@ function getrwlist(data) {
                 if (v && v.length > 0) {
                     obj.parentRegions = parseMajorRegion(v[0]);
                 }
-                v = item.printouts["Has rank rating"];
+                v = item.printouts["Has total rating"];
                 if (v && v.length > 0)
-                    obj.rankRating = v[0];
+                    obj.totalRating = v[0];
                 v = item.printouts["Has total counter"];
                 if (v && v.length > 0)
                     obj.totalCounter = v[0];
@@ -418,7 +418,6 @@ function getrwlist(data) {
                 v = item.printouts["Has condition summary"];
                 if (v && v.length > 0)
                     obj.conditionSummary = v[0];
-
 
                 list.push(obj);
             }

@@ -23,6 +23,8 @@ function distance(p1, p2) {
 
 // See uconv below.
 function ftStr(feet, space) {
+    if (!feet || !feet.toString().trim()) return ""; //empty or whitespace
+
     feet = feet.toString().replace(",", "");
 
     var wasMetric = feet.includes("m");
@@ -45,6 +47,8 @@ function ftStr(feet, space) {
 
 // See uconv below.
 function miStr(miles, space) {
+    if (!miles || !miles.toString().trim()) return ""; //empty or whitespace
+
     miles = miles.toString().replace(",", "");
 
     var wasMetric = miles.includes("km");

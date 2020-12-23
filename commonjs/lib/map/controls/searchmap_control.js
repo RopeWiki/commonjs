@@ -85,7 +85,7 @@ function searchmaprectangleBoundschanged() {
         '|%3FLocated_in_region' + //remove this
 
         '|%3FHas_info_major_region' +
-        '|%3FHas_rank_rating' +
+        '|%3FHas_total_rating' +
         '|%3FHas_total_counter' +
         '|%3FHas_info_typical_time' +
         '|%3FHas_length_of_hike' +
