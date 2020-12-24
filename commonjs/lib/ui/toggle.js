@@ -31,7 +31,6 @@ function filterClicked(e) {
         window.event.cancelBubble = true;
 
     toggleFilter(e.id);
-
     filterMarkers();
 }
 

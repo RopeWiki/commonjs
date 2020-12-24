@@ -20,7 +20,6 @@ function regsearch() {
 }
 
 function locsearch() {
-    //console.log("locsearch");
     var locnameval = document.getElementById('locnameval');
     if (locnameval != null && deftext(locnameval.value))
         return;

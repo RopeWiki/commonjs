@@ -225,9 +225,7 @@ function loadInteractiveMap() {
     if (kmllistquery != null) {
         kmlmap = "kmllistquery";
         kmllist = kmllistquery;
-        const tableLoadLimit = 100;
-        const responseParameters = '|%3FHas_coordinates|%3FHas_star_rating|%3FHas_summary|%3FHas_banner_image_file|%3FHas_location_class|%3FHas_KML_file|%3FRequires_permits|%3FHas_best_season_parsed';
-        kmllisturl = SITE_BASE_URL + '/api.php?action=ask&format=json&query=' + kmllistquery.innerHTML + responseParameters + '|limit=' + tableLoadLimit;
+        kmllisturl = SITE_BASE_URL + '/api.php?action=ask&format=json&query=' + kmllistquery.innerHTML + getLocationParameters();
         tablelisturl = window.location.href.toString();
         tablelisturl = tablelisturl.split('#')[0];
         tablelisturl += (tablelisturl.indexOf('?') < 0 ? '?' : '&') + 'nomapchk=on';
@@ -236,8 +234,8 @@ function loadInteractiveMap() {
         var loctotaldiv = document.getElementById("loctotal");
         if (loctotaldiv) {
             var loctotal = loctotaldiv.innerHTML;
-            if (loctotal > 0);
-            morekmllist(0, loctotal);
+            if (loctotal > 0)
+                morekmllist(0, loctotal);
         }
     }
     

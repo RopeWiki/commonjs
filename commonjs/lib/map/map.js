@@ -84,7 +84,7 @@ function loadlist(list, fitbounds) {
 
         var alreadyExists = false;
         for (var j = 0; j < markers.length; ++j) {
-            if (markers[j].position.lat() === item.location.lat && markers[j].position.lng() === item.location.lng) {
+            if (markers[j].name === item.id) {
                 alreadyExists = true;
                 break;
             }
@@ -294,6 +294,7 @@ function loadlist(list, fitbounds) {
         params.bestMonths = item.bestMonths;
         params.technicalRating = item.technicalRating;
 
+        marker.kmlitem = item; //TODO: combine this and the next one. Restructure the data layout
         marker.params = params;
         marker.oposition = positionm;
 
@@ -301,7 +302,6 @@ function loadlist(list, fitbounds) {
         markers.push(marker);
         if (!!closedMarker) {
             marker.closedMarker = closedMarker;
-            markers.push(closedMarker);
         }
 
         boundslist.extend(positionm);
@@ -585,7 +585,8 @@ function addToList(id) {
     }
 }
 
-function filterMarkers() {
+function filterMarkers(refreshTable) {
+    if (typeof refreshTable === 'undefined') refreshTable = true;
 
     var filters = {};
 
@@ -691,6 +692,8 @@ function filterMarkers() {
         if (marker.closedMarker)
             marker.closedMarker.setMap(display ? map : null);
     }
+
+    if (refreshTable) updateTable();
 }
 
 function parseBestMonths(bestSeasonRaw) {

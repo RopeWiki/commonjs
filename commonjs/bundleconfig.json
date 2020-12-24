@@ -41,6 +41,7 @@
       "lib/table/filtering.js",
       "lib/translation.js",
       "lib/ui/fav.js",
+      "lib/ui/inlineweather.js",
       "lib/ui/style.js",
       "lib/ui/toggle.js",
       "lib/ui/ui.js",

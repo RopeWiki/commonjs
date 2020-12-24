@@ -65,7 +65,6 @@ function searchmapClicked() {
 }
 
 function searchmaprectangleBoundschanged() {
-    const loadLimit = 500;
     var bounds = searchmaprectangle.bounds;
     var sw = bounds.getSouthWest();
     var ne = bounds.getNorthEast();
@@ -75,28 +74,7 @@ function searchmaprectangleBoundschanged() {
         '[[Has latitude::<' + ne.lat().toFixed(3) + ']]' +
         '[[Has longitude::<' + ne.lng().toFixed(3) + ']]' +
 
-        '|%3FHas_coordinates' +
-        '|%3FHas_star_rating' + //this is raw rating rounded to integer
-        '|%3FHas_summary' +
-        '|%3FHas_banner_image_file' +
-        '|%3FHas_location_class' +
-        '|%3FHas_KML_file' +
-        '|%3FRequires_permits' +
-        '|%3FLocated_in_region' + //remove this
-
-        '|%3FHas_info_major_region' +
-        '|%3FHas_total_rating' +
-        '|%3FHas_total_counter' +
-        '|%3FHas_info_typical_time' +
-        '|%3FHas_length_of_hike' +
-        '|%3FHas_length' +
-        '|%3FHas_depth' +
-        '|%3FHas_info_rappels' +
-        '|%3FHas_longest_rappel' +
-        '|%3FHas_info' +
-        '|%3FHas_condition_summary' +
-
-        '|limit=' + loadLimit;
+        getLocationParameters();
 
     searchMapLoader.style.display = "block";
 
