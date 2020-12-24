@@ -13,44 +13,43 @@ function assembleTableHeaderRow() {
         '<tr>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100"><div class="gmnoprint toption locateicon" style="display: block;">↓ Click on icon to locate on map</div>Location</td>' +
+                '<td id="sort-id" title="Sort by name" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
                 '<td id="Located_in_region" title="Sort by region" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td id="Has_name" title="Sort by name" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
-                '<td id="Has_rank_rating" title="Sort by quality and popularity" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-region" title="Sort by quality and popularity" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
                 '<td class="rw100"><div id="starrate" class="schk gmnoprint toption notranslate" style="display: block;"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My stars</label></div><a href="/StarRank" title="StarRank">Quality</a></td>' +
-                '<td id="Has_user_rating" title="Sort by quality" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td id="Has_user_counter" title="Sort by popularity" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-totalRating" title="Sort by quality" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-totalCounter" title="Sort by popularity" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100"><div class="fchk gmnoprint toption notranslate" style="display: block;"><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div><a href="/Rating" title="Rating">Rating</a></td>' +
-                '<td id="Has_rating" title="Sort by rating" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-technicalRating" title="Sort by rating" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100 ctranslate">Time</td>' +
-                '<td id="Has_average_typical_time" title="Sort by average typical time" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-typicalTime" title="Sort by average typical time" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100"><div class="uchk gmnoprint toption notranslate" style="display: block;"><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></div>Hike</td>' +
-                '<td id="Has_length_of_hike" title="Sort by length of hike" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-hikeLength" title="Sort by length of hike" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100 ctranslate">Descent</td>' +
-                '<td id="Has_length" title="Sort by length" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td id="Has_depth" title="Sort by depth" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-descentLength" title="Sort by length" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-descentDepth" title="Sort by depth" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100 ctranslate">Raps</td>' +
-                '<td id="Has_number_of_rappels" title="Sort by number of rappels" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td id="Has_longest_rappel" title="Sort by longest rappel" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-rappels" title="Sort by number of rappels" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-longestRappel" title="Sort by longest rappel" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100"><a href="/Extra_info" title="Extra info">Info</a></td>' +
-                '<td id="Has_info_rating" title="Sort by information" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100"><a href="/Conditions_info" title="Conditions info">Conditions</a></td>' +
-                '<td id="Has_condition_date" title="Sort by condition report date" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-conditionDate" title="Sort by condition report date" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' + 
         '</tr>';
 

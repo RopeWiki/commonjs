@@ -434,7 +434,7 @@ function getkmllist( data ) {
     loadlist(list, true);
 }
 
-var morestep = 100;
+const loadLimit = 100;
 var moremapc = 0, morelistc = 0;
 
 function morekmllist(loccontinue, loctotal) {
@@ -480,7 +480,7 @@ function morekmllist(loccontinue, loctotal) {
         }
     }
 
-    loccontinue += morestep;
+    loccontinue += loadLimit;
     if (loccontinue >= loctotal) {
         morestop();
         return;

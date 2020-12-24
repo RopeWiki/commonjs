@@ -83,17 +83,6 @@ function searchmaprectangleBoundschanged() {
             getkmllist(data);
             searchMapLoader.style.display = "none";
         });
-
-    //update total
-    var urlCount = SITE_BASE_URL +
-        '/index.php?action=raw&templates=expand&ctype=text/x-wiki' +
-        '&title=Template:RegionCountArea' +
-        '&bounds=' + urlencode(sw.lat().toFixed(3) + "," + sw.lng().toFixed(3) + "," + ne.lat().toFixed(3) + "," + ne.lng().toFixed(3));
-
-    $.get(geturl(urlCount), function (data) {
-        var loctotal = document.getElementById("loctotal");
-        if (loctotal) loctotal.innerHTML = data;
-    });
 }
 
 function searchmapRun() {

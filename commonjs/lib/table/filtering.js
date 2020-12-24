@@ -1,7 +1,21 @@
 ﻿
-function getLocationParameters() {
+function getTotalLocations() {
+    var bounds = searchmaprectangle.bounds;
+    var sw = bounds.getSouthWest();
+    var ne = bounds.getNorthEast();
 
-    const loadLimit = 100;
+    var urlCount = SITE_BASE_URL +
+        '/index.php?action=raw&templates=expand&ctype=text/x-wiki' +
+        '&title=Template:RegionCountArea' +
+        '&bounds=' + urlencode(sw.lat().toFixed(3) + "," + sw.lng().toFixed(3) + "," + ne.lat().toFixed(3) + "," + ne.lng().toFixed(3));
+
+    $.get(geturl(urlCount), function (data) {
+        var loctotal = document.getElementById("loctotal");
+        if (loctotal) loctotal.innerHTML = data;
+    });
+}
+
+function getLocationParameters() {
     
     const locationParamters =
         '|%3FHas_coordinates' +
@@ -32,37 +46,8 @@ function getLocationParameters() {
 }
 
 function updateTable() {
-    var i;
-
-    var sortStarRankDesc = function (a, b) {
-        if (!a.kmlitem) return 1;
-        if (!b.kmlitem) return -1; //push null values to bottom
-
-        var aStarRank = a.kmlitem.totalRating;
-        if (!aStarRank) aStarRank = 0;
-        var bStarRank = b.kmlitem.totalRating;
-        if (!bStarRank) bStarRank = 0;
-
-        if (aStarRank > bStarRank) return -1;
-        if (aStarRank < bStarRank) return 1;
-        return 0;
-    }
-
-    var sortStarRankAsc = function (a, b) {
-        if (!a.kmlitem) return 1;
-        if (!b.kmlitem) return -1; //push null values to bottom
-
-        var aStarRank = a.kmlitem.totalRating;
-        if (!aStarRank) aStarRank = 0;
-        var bStarRank = b.kmlitem.totalRating;
-        if (!bStarRank) bStarRank = 0;
-
-        if (aStarRank > bStarRank) return 1;
-        if (aStarRank < bStarRank) return -1;
-        return 0;
-    }
-
-    markers.sort(sortStarRankDesc);
+    
+    markers.sort(predicateBy(sortProp, sortDirection));
 
     const maxTableRows = 100;
     var numDisplayed = 0;
@@ -73,7 +58,7 @@ function updateTable() {
     var tableNewBody = document.createElement('tbody');
     tableNewBody.id = 'loctablebody';
     
-    for (i = 0; i < markers.length; ++i) {
+    for (var i = 0; i < markers.length; ++i) {
         var marker = markers[i];
 
         if (marker.getMap() === null) continue;
@@ -92,6 +77,7 @@ function updateTable() {
     tableCurrentBody.parentNode.replaceChild(tableNewBody, tableCurrentBody);
 }
 
+var sortby = "";
 function setTableSortLinks() {
 
     var tableRef = document.getElementById("loctabledata");
@@ -122,20 +108,27 @@ function setTableSortLinks() {
         chks[i].style.cssText += 'cursor: pointer; background-repeat: no-repeat; background-position: center right; padding-right:9px; padding-left:0px; background-image: url(https://sites.google.com/site/rwicons/' + img + ');';
 
         chks[i].onclick = function rwsort(event) {
-            var offset = $(this).offset();
-            var height = $(this).height();
-            var top = offset.top;
-            var center = top + height / 2;
-            if (event.pageY < center) {
-                psortby = '-' + this.id;
-                nsortby = this.id;
-            } else {
-                psortby = this.id;
-                nsortby = '-' + this.id;
-            }
-            // if select twice the same, invert sorting
-            sortby = (sortby == psortby) ? nsortby : psortby;
-            filtersearch();
+            //var offset = $(this).offset();
+            //var height = $(this).height();
+            //var top = offset.top;
+            //var center = top + height / 2;
+
+            //var psortby, nsortby;
+            //if (event.pageY < center) {
+            //    psortby = '-' + this.id;
+            //    nsortby = this.id;
+            //} else {
+            //    psortby = this.id;
+            //    nsortby = '-' + this.id;
+            //}
+            //// if select twice the same, invert sorting
+            //sortby = (sortby === psortby) ? nsortby : psortby;
+            ////filtersearch();
+
+            var newSortProp = this.id.substr(5); //remove the 'sort-' at start of id
+            if (newSortProp === sortProp) sortDirection *= -1;
+            sortProp = newSortProp;
+            updateTable();
         }
     }
 }
@@ -186,3 +179,52 @@ function setFilterCheckboxes() {
         toggleDisabledChk(mid);
     }
 }
+
+// **** table sorting functions
+var sortProp = "";
+var sortDirection = 1;
+
+function predicateBy(prop, direction) {
+    return function (a, b) {
+        if (!a.kmlitem) return 1 * direction;
+        if (!b.kmlitem) return -1 * direction; //push null values to bottom
+
+        var aEntry = a.kmlitem[prop];
+        if (!aEntry) aEntry = 0;
+        var bEntry = b.kmlitem[prop];
+        if (!bEntry) bEntry = 0;
+
+        if (aEntry > bEntry) {
+            return 1 * direction;
+        } else if (aEntry < bEntry) {
+            return -1 * direction;
+        }
+        return 0;
+    }
+}
+
+//name
+
+//region
+
+//star rating and popularity
+
+//star rating
+
+//popularity
+
+//technical rating
+
+//average time
+
+//hike length
+
+//descent length
+
+//descent depth
+
+//raps count
+
+//raps max height
+
+//condition date

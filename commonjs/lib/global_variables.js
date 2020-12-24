@@ -30,8 +30,6 @@ function initializeGlobalVariables() {
 
 // ===== other global variables:
 
-var sortby = "";
-
 var skinuser = "";
 
 var gtrans = null;
