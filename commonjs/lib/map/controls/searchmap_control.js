@@ -40,8 +40,30 @@ function searchmapClicked() {
 
         //events that the shapes send: https://developers.google.com/maps/documentation/javascript/shapes#editable_events
 
+        //set bounds, if map is zoomed in, make the rectangle show within the displayed area so user doesn't have to zoom out to adjust it
+        var mapBounds = map.getBounds();
+        var mapLatTop = mapBounds.getNorthEast().lat();
+        var mapLatBtm = mapBounds.getSouthWest().lat();
+        var mapLngLft = mapBounds.getSouthWest().lng();
+        var mapLngRgt = mapBounds.getNorthEast().lng();
+        var mapHeight = mapLatTop - mapLatBtm;
+        var mapWidth = mapLngRgt - mapLngLft;
+        var markersLatTop = boundslist.getNorthEast().lat();
+        var markersLatBtm = boundslist.getSouthWest().lat();
+        var markersLngLft = boundslist.getSouthWest().lng();
+        var markersLngRgt = boundslist.getNorthEast().lng();
+        var padding = 0.1;
+        var searchRectLatTop = (markersLatTop < mapLatTop && markersLatTop > mapLatBtm) ? markersLatTop : mapLatTop - mapHeight * padding;
+        var searchRectLatBtm = (markersLatBtm > mapLatBtm && markersLatBtm < mapLatTop) ? markersLatBtm : mapLatBtm + mapHeight * padding;
+        var searchRectLatLft = (markersLngLft > mapLngLft && markersLngLft < mapLngRgt) ? markersLngLft : mapLngLft + mapWidth * padding;
+        var searchRectLatRgt = (markersLngRgt < mapLngRgt && markersLngRgt > mapLngLft) ? markersLngRgt : mapLngRgt - mapWidth * padding;
+
+        var searchRectBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(searchRectLatBtm, searchRectLatLft),
+            new google.maps.LatLng(searchRectLatTop, searchRectLatRgt));
+
         searchmaprectangle = new google.maps.Rectangle({
-            bounds: boundslist,
+            bounds: searchRectBounds,
             editable: true
         });
         searchmaprectangle.setMap(map);
