@@ -23,9 +23,12 @@ function distance(p1, p2) {
 
 // See uconv below.
 function ftStr(feet, space) {
-    if (!feet || !feet.toString().trim()) return ""; //empty or whitespace
+    if ((typeof feet == "undefined")) return ""; //empty
 
-    feet = feet.toString().replace(",", "");
+    feet = feet.toString().trim();
+    if (!feet) return ""; //whitespace
+
+    feet = feet.replace(",", "");
 
     var wasMetric = feet.includes("m");
 
@@ -42,14 +45,19 @@ function ftStr(feet, space) {
     if (!metric) //round to nearest 5 feet
         feet = Math.round(feet / 5) * 5;
     
-    return Math.round(feet).toLocaleString() + (space ? "&nbsp;" : "") + (metric ? "m" : "ft");
+    return Number(feet.toPrecision(2)) + (space ? "&nbsp;" : "") + (metric ? "m" : "ft");
 }
 
 // See uconv below.
 function miStr(miles, space) {
-    if (!miles || !miles.toString().trim()) return ""; //empty or whitespace
+    if ((typeof miles == "undefined")) return ""; //empty 
 
-    miles = miles.toString().replace(",", "");
+    miles = miles.toString().trim();
+    if (!miles) return ""; //whitespace
+
+    if (miles.includes("ft") || miles.includes("m")) return ftStr(miles, space); //already converted to ft or m
+
+    miles = miles.replace(",", "");
 
     var wasMetric = miles.includes("km");
 
@@ -63,7 +71,12 @@ function miStr(miles, space) {
     if (!metric && wasMetric) //convert to imperial
         miles *= km2mi;
 
-    return miles.toFixed(1).toLocaleString() + (space ? "&nbsp;" : "") + (metric ? "km" : "mi");
+    if (miles < 0.2) // very short distance, display feet or m instead
+        return ftStr(metric ? miles * 1000 + "m" : miles * 5280 + "ft", space);
+
+    var decimalPos = (miles >= 1) ? 2 : (miles > 0) ? 1 : 0;
+
+    return Number(miles.toPrecision(decimalPos)) + (space ? "&nbsp;" : "") + (metric ? "km" : "mi");
 }
 
 // called by uconv below.

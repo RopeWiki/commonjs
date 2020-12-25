@@ -14,21 +14,21 @@ function assembleTableHeaderRow() {
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100"><div class="gmnoprint toption locateicon" style="display: block;">↓ Click on icon to locate on map</div>Location</td>' +
                 '<td id="sort-id" title="Sort by name" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td id="Located_in_region" title="Sort by region" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-region" title="Sort by region" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
-                '<td id="sort-region" title="Sort by quality and popularity" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-rankRating" title="Sort by quality and popularity" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
                 '<td class="rw100"><div id="starrate" class="schk gmnoprint toption notranslate" style="display: block;"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My stars</label></div><a href="/StarRank" title="StarRank">Quality</a></td>' +
                 '<td id="sort-totalRating" title="Sort by quality" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
                 '<td id="sort-totalCounter" title="Sort by popularity" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100"><div class="fchk gmnoprint toption notranslate" style="display: block;"><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div><a href="/Rating" title="Rating">Rating</a></td>' +
-                '<td id="sort-technicalRating" title="Sort by rating" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-technicalRating.combinedACA" title="Sort by rating" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100 ctranslate">Time</td>' +
-                '<td id="sort-typicalTime" title="Sort by average typical time" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-averageTime" title="Sort by average typical time" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100"><div class="uchk gmnoprint toption notranslate" style="display: block;"><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></div>Hike</td>' +
@@ -41,7 +41,7 @@ function assembleTableHeaderRow() {
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
                 '<td class="rw100 ctranslate">Raps</td>' +
-                '<td id="sort-rappels" title="Sort by number of rappels" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
+                '<td id="sort-rappelsNum" title="Sort by number of rappels" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
                 '<td id="sort-longestRappel" title="Sort by longest rappel" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
             '</tr></tbody></table></th>' +
             '<th><table class="rwHdr"><tbody><tr>' +
@@ -175,22 +175,9 @@ function getTableParentRegionLinks(regions) {
 }
 
 function getTableTechnicalRating(rating) {
-    var ratingDisplay = "";
-
-    if (!!rating) {
-        if (!french) { //ACA
-            ratingDisplay =
-                (!!rating.technical ? rating.technical : "") + (!!rating.water ? rating.water : "") +
-                " " + (!!rating.time ? rating.time : "");
-            if (!!rating.extra_risk) ratingDisplay += " " + rating.extra_risk;
-        } else { //french
-            ratingDisplay =
-                (!!rating.vertical ? rating.vertical : "") + (!!rating.aquatic ? rating.aquatic : "") +
-                " " + (!!rating.commitment ? rating.commitment : "");
-        }
-    }
-
-    return ratingDisplay;
+    return !french
+        ? rating.combinedACA
+        : rating.combinedFrench;
 }
 
 function getTableRaps(rapSummary, longestRap) {
@@ -198,9 +185,9 @@ function getTableRaps(rapSummary, longestRap) {
 
     if (!!rapSummary) rapDisplay = rapSummary;
 
-    if (!!longestRap) {
+    if (!!longestRap && longestRap.value > 0) {
         if (rapDisplay.trim()) rapDisplay += ", ";
-        rapDisplay += "max " + getTableValueUnit(longestRap);
+        rapDisplay += '\u21A8' + getTableValueUnit(longestRap);
     }
 
     return rapDisplay;
@@ -209,11 +196,11 @@ function getTableRaps(rapSummary, longestRap) {
 function getDescentDisplay(length, depth) {
     var descentDisplay = "";
 
-    if (!!length) descentDisplay = getTableValueUnit(length);
+    if (!!length) descentDisplay = '\u27F7' + getTableValueUnit(length);
 
     if (!!depth) {
         if (descentDisplay.trim()) descentDisplay += ", ";
-        descentDisplay += getTableValueUnit(depth);
+        descentDisplay += '\u2193' + getTableValueUnit(depth);
     }
 
     return descentDisplay;

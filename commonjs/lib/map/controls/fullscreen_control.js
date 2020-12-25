@@ -139,7 +139,7 @@ function toggleFullScreen(force) {
 
         list = document.body.childNodes;
         for (i = 0; i < list.length; ++i)
-            if (typeof list[i].normal_display != "undefined")
+            if (list[i].normal_display !== undefined)
                 list[i].style.display = list[i].normal_display;
         window.scrollTo(fs.sx, fs.sy);
         toggleFS = null;

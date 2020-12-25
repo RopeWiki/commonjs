@@ -394,9 +394,14 @@ function getrwlist(data) {
                 v = item.printouts["Has total counter"];
                 if (v && v.length > 0)
                     obj.totalCounter = v[0];
-                v = item.printouts["Has info typical time"];
+                v = item.printouts["Has rank rating"];
                 if (v && v.length > 0)
+                    obj.rankRating = v[0];
+                v = item.printouts["Has info typical time"];
+                if (v && v.length > 0) {
                     obj.typicalTime = v[0];
+                    obj.averageTime = parseTypicalTime(obj.typicalTime);
+                }
                 v = item.printouts["Has length of hike"];
                 if (v && v.length > 0)
                     obj.hikeLength = v[0];
@@ -407,17 +412,26 @@ function getrwlist(data) {
                 if (v && v.length > 0)
                     obj.descentDepth = v[0];
                 v = item.printouts["Has info rappels"];
-                if (v && v.length > 0)
+                if (v && v.length > 0) {
                     obj.rappels = v[0];
+                    if (obj.rappels === "r") obj.rappels = "?r"; //ropewiki doesn't handle 'unknown' values for rappels correctly
+                }
                 v = item.printouts["Has longest rappel"];
-                if (v && v.length > 0)
+                if (v && v.length > 0) {
                     obj.longestRappel = v[0];
+                    if (obj.rappels === undefined) { //ropewiki sets 0 rap height if it's non-technical canyon
+                        obj.rappels = "0r";
+                    }
+                }
+                obj.rappelsNum = parseRappels(obj.rappels);
                 v = item.printouts["Has info"];
                 if (v && v.length > 0)
                     obj.infoSummary = v[0];
                 v = item.printouts["Has condition summary"];
-                if (v && v.length > 0)
+                if (v && v.length > 0) {
                     obj.conditionSummary = v[0];
+                    obj.conditionDate = parseConditionDate(obj.conditionSummary);
+                }
 
                 list.push(obj);
             }
@@ -428,7 +442,7 @@ function getrwlist(data) {
 function getkmllist( data ) {
     var list = getrwlist(data);
 
-    if (typeof data['query-continue-offset'] == "undefined")
+    if (data['query-continue-offset'] === undefined)
         morestop();
 
     loadlist(list, true);
@@ -796,6 +810,15 @@ function parseTechnicalRating(description) {
         }
     }
 
+    technicalRating.combinedACA =
+        (!!technicalRating.technical ? technicalRating.technical : "") + (!!technicalRating.water ? technicalRating.water : "") +
+        " " + (!!technicalRating.time ? technicalRating.time : "") +
+        ((!!technicalRating.extra_risk) ? " " + technicalRating.extra_risk : "");
+
+    technicalRating.combinedFrench =
+        (!!technicalRating.vertical ? technicalRating.vertical : "") + (!!technicalRating.aquatic ? technicalRating.aquatic : "") +
+        " " + (!!technicalRating.commitment ? technicalRating.commitment : "");
+    
     return technicalRating;
 }
 
@@ -810,4 +833,83 @@ function parseMajorRegion(majorRegion) {
     }
 
     return regions;
+}
+
+function parseRappels(rappels) {
+    //example: 8-15r + 2j
+    if (!rappels) return rappels;
+
+    var index = rappels.indexOf("r");
+    var index2 = rappels.indexOf("-");
+    if (index2 > 0 && index2 < index) index = index2;
+
+    if (index < 0) return 999; //unknown, could be anything
+    var rapNumRaw = rappels.substring(0, index);
+    var rapNum = Number(rapNumRaw);
+
+    if (rapNum === "NaN") return 999;
+
+    return rapNum;
+}
+
+function parseTypicalTime(typicalTime) {
+    //examples: 1h, 2-4h, 4 days, 14h - 2 days, 1-2 days
+    if (typicalTime === undefined || typicalTime == null) return typicalTime;
+
+    function getHours(time) {
+        var hours, units = undefined;
+        var hIndex = time.indexOf("h");
+        var dIndex = time.indexOf("d");
+        if (hIndex > 0) {
+            hours = Number(time.substr(0, hIndex));
+            units = "h";
+        }
+        else if (dIndex > 0) {
+            hours = Number(time.substr(0, dIndex));
+            units = "d";
+        } else
+            hours = Number(time);
+
+        return { hours: hours, units: units };
+    }
+
+    var times = typicalTime.split("-");
+    var shortestTime = getHours(times[0]);
+
+    if (times.length === 1) {
+        if (shortestTime.units === undefined) return undefined;
+        if (shortestTime.units === "d") {
+            shortestTime.hours *= 24;
+            shortestTime.units = "h";
+        }
+        return shortestTime.hours;
+    } else {
+        var longestTime = getHours(times[1]);
+        if (shortestTime.units === undefined) shortestTime.units = longestTime.units;
+        if (shortestTime.units === undefined || longestTime.units === undefined) return undefined;
+
+        if (shortestTime.units === "d") {
+            shortestTime.hours *= 24;
+            shortestTime.units = "h";
+        }
+        if (longestTime.units === "d") {
+            longestTime.hours *= 24;
+            longestTime.units = "h";
+        }
+
+        var avgTime = (shortestTime.hours + longestTime.hours) / 2;
+
+        return avgTime;
+    }
+}
+
+function parseConditionDate(conditionsSummary) {
+    if (conditionsSummary == undefined) return undefined;
+
+    const regex = /'''(.*?)'''/g; //matches the pattern: ''' match '''
+
+    var date = regex.exec(conditionsSummary);
+    return date.length > 1
+        ? new Date(date[1]).getTime() / 1000
+        : undefined;
 }

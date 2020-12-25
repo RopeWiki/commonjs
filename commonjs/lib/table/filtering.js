@@ -19,7 +19,7 @@ function getLocationParameters() {
     
     const locationParamters =
         '|%3FHas_coordinates' +
-        '|%3FHas_star_rating' + //remove this, it is raw rating rounded to integer
+        '|%3FHas_star_rating' + //this is raw rating rounded to integer, used for the icon selector. 4-5-5.0 = 5, 4.0-4.5 = 4, the rest rounded
         '|%3FHas_summary' +
         '|%3FHas_banner_image_file' +
         '|%3FHas_location_class' +
@@ -30,6 +30,7 @@ function getLocationParameters() {
         '|%3FHas_info_major_region' +
         '|%3FHas_total_rating' +
         '|%3FHas_total_counter' +
+        '|%3FHas_rank_rating' + //weighted rating taking into consideration the number of votes
         '|%3FHas_info_typical_time' +
         '|%3FHas_length_of_hike' +
         '|%3FHas_length' +
@@ -71,7 +72,6 @@ function updateTable() {
 
         numDisplayed++;
         if (numDisplayed >= maxTableRows) break;
-
     }
 
     tableCurrentBody.parentNode.replaceChild(tableNewBody, tableCurrentBody);
@@ -107,27 +107,19 @@ function setTableSortLinks() {
         chks[i].className += " notranslate";
         chks[i].style.cssText += 'cursor: pointer; background-repeat: no-repeat; background-position: center right; padding-right:9px; padding-left:0px; background-image: url(https://sites.google.com/site/rwicons/' + img + ');';
 
-        chks[i].onclick = function rwsort(event) {
-            //var offset = $(this).offset();
-            //var height = $(this).height();
-            //var top = offset.top;
-            //var center = top + height / 2;
-
-            //var psortby, nsortby;
-            //if (event.pageY < center) {
-            //    psortby = '-' + this.id;
-            //    nsortby = this.id;
-            //} else {
-            //    psortby = this.id;
-            //    nsortby = '-' + this.id;
-            //}
-            //// if select twice the same, invert sorting
-            //sortby = (sortby === psortby) ? nsortby : psortby;
-            ////filtersearch();
-
+        chks[i].onclick = function rwsort() {
             var newSortProp = this.id.substr(5); //remove the 'sort-' at start of id
-            if (newSortProp === sortProp) sortDirection *= -1;
-            sortProp = newSortProp;
+            if (newSortProp === sortProp) {
+                sortDirection *= -1;
+            } else {
+                sortDirection = 1;
+                sortProp = newSortProp;
+
+                if (sortProp === 'rankRating' ||
+                    sortProp === 'totalRating' ||
+                    sortProp === 'totalCounter' ||
+                    sortProp === 'conditionDate') sortDirection = -1; //if it's any of these, first sort by descending
+            }
             updateTable();
         }
     }
@@ -180,19 +172,40 @@ function setFilterCheckboxes() {
     }
 }
 
-// **** table sorting functions
+// table sorting function
 var sortProp = "";
 var sortDirection = 1;
 
-function predicateBy(prop, direction) {
+function predicateBy(propString, direction) {
     return function (a, b) {
-        if (!a.kmlitem) return 1 * direction;
-        if (!b.kmlitem) return -1 * direction; //push null values to bottom
 
-        var aEntry = a.kmlitem[prop];
-        if (!aEntry) aEntry = 0;
-        var bEntry = b.kmlitem[prop];
-        if (!bEntry) bEntry = 0;
+        function getTestValue(item) {
+            if (!item.kmlitem) return undefined;
+            var entry = item.kmlitem;
+
+            var prop, props = propString.split('.'); //allow retrieving of nested properties
+
+            var i;
+            for (i = 0; i < props.length; i++) {
+                prop = props[i];
+
+                var candidate = entry[prop];
+                if (candidate !== undefined) {
+                    entry = candidate;
+                } else {
+                    break;
+                }
+            }
+            if (entry === undefined || entry == null) return undefined;
+            if (entry.value !== undefined) entry = entry.value; //if the item is a unit/value pair, use that value
+            return entry;
+        }
+
+        var aEntry = getTestValue(a, propString);
+        var bEntry = getTestValue(b, propString);
+
+        if (aEntry == undefined) return 1; //push undefined values to bottom;
+        if (bEntry == undefined) return -1; //push undefined values to bottom;
 
         if (aEntry > bEntry) {
             return 1 * direction;
@@ -202,29 +215,3 @@ function predicateBy(prop, direction) {
         return 0;
     }
 }
-
-//name
-
-//region
-
-//star rating and popularity
-
-//star rating
-
-//popularity
-
-//technical rating
-
-//average time
-
-//hike length
-
-//descent length
-
-//descent depth
-
-//raps count
-
-//raps max height
-
-//condition date
