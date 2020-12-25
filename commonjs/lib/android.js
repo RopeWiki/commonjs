@@ -33,7 +33,7 @@ function WebViewStyle() {
     if (!isAndroid())
         return;
 
-    var remove = " .noprint, .gmnoprint, .rwSort, #contentSub, #top, #mw-head-base, #mw-page-base, #mw-navigation, #footer, .popupformlink, .toc, .mw-editsection "; //, #firstHeading,
+    var remove = " .noprint, .gmnoprint, .rwSortIcon, #contentSub, #top, #mw-head-base, #mw-page-base, #mw-navigation, #footer, .popupformlink, .toc, .mw-editsection "; //, #firstHeading,
     var style = " .mw-body { margin:0px !important; padding:5px !important; } body { margin:0px !important; padding:0px !important; }";
     //style += " @media only screen and (max-width: 800px) { .staticmap { width:100% !important; height:auto !important; } }";
 

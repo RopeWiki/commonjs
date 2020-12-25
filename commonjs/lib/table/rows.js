@@ -11,46 +11,50 @@ function assembleTableHeaderRow() {
     
     const Header =
         '<tr>' +
-            '<th><table class="rwHdr"><tbody><tr>' +
-                '<td class="rw100"><div class="gmnoprint toption locateicon" style="display: block;">↓ Click on icon to locate on map</div>Location</td>' +
-                '<td id="sort-id" title="Sort by name" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td id="sort-region" title="Sort by region" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-            '</tr></tbody></table></th>' +
-            '<th><table class="rwHdr"><tbody><tr>' +
-                '<td id="sort-rankRating" title="Sort by quality and popularity" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td class="rw100"><div id="starrate" class="schk gmnoprint toption notranslate" style="display: block;"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My stars</label></div><a href="/StarRank" title="StarRank">Quality</a></td>' +
-                '<td id="sort-totalRating" title="Sort by quality" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td id="sort-totalCounter" title="Sort by popularity" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-            '</tr></tbody></table></th>' +
-            '<th><table class="rwHdr"><tbody><tr>' +
-                '<td class="rw100"><div class="fchk gmnoprint toption notranslate" style="display: block;"><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div><a href="/Rating" title="Rating">Rating</a></td>' +
-                '<td id="sort-technicalRating.combinedACA" title="Sort by rating" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-            '</tr></tbody></table></th>' +
-            '<th><table class="rwHdr"><tbody><tr>' +
-                '<td class="rw100 ctranslate">Time</td>' +
-                '<td id="sort-averageTime" title="Sort by average typical time" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-            '</tr></tbody></table></th>' +
-            '<th><table class="rwHdr"><tbody><tr>' +
-                '<td class="rw100"><div class="uchk gmnoprint toption notranslate" style="display: block;"><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></div>Hike</td>' +
-                '<td id="sort-hikeLength" title="Sort by length of hike" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-            '</tr></tbody></table></th>' +
-            '<th><table class="rwHdr"><tbody><tr>' +
-                '<td class="rw100 ctranslate">Descent</td>' +
-                '<td id="sort-descentLength" title="Sort by length" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td id="sort-descentDepth" title="Sort by depth" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-            '</tr></tbody></table></th>' +
-            '<th><table class="rwHdr"><tbody><tr>' +
-                '<td class="rw100 ctranslate">Raps</td>' +
-                '<td id="sort-rappelsNum" title="Sort by number of rappels" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-                '<td id="sort-longestRappel" title="Sort by longest rappel" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-            '</tr></tbody></table></th>' +
-            '<th><table class="rwHdr"><tbody><tr>' +
-                '<td class="rw100"><a href="/Extra_info" title="Extra info">Info</a></td>' +
-            '</tr></tbody></table></th>' +
-            '<th><table class="rwHdr"><tbody><tr>' +
-                '<td class="rw100"><a href="/Conditions_info" title="Conditions info">Conditions</a></td>' +
-                '<td id="sort-conditionDate" title="Sort by condition report date" class="rwSort gmnoprint notranslate" style="cursor: pointer; background-repeat: no-repeat; background-position: right center; padding-right: 9px; padding-left: 0px; background-image: url("https://sites.google.com/site/rwicons/rwsortud.gif");"></td>' +
-            '</tr></tbody></table></th>' + 
+            '<th class="rwHdr">' +
+                '<div class="gmnoprint toption locateicon"">↓ Click on icon to locate on map</div>' +
+                '<span class="rwText">Location</span>' +
+                '<span id="sort-id" title="Sort by name" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-region" title="Sort by region" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '</th>' +
+            '<th class="rwHdr">' +
+                '<div id="starrate" class="schk gmnoprint toption notranslate"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My stars</label></div>' +
+                '<span id="sort-rankRating" title="Sort by quality and popularity" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span class="rwText"><a href="/StarRank" title="StarRank">Quality</a></span>' +
+                '<span id="sort-totalRating" title="Sort by quality" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-totalCounter" title="Sort by popularity" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '</th>' +
+        '<th class="rwHdr">' +
+                '<div class="fchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div>' +
+                '<span class="rwText"><a href="/Rating" title="Rating">Rating</a></span>' +
+                '<span id="sort-technicalRating.combinedACA" title="Sort by rating" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '</th>' +
+            '<th class="rwHdr">' +
+                '<span class="rwText ctranslate">Time</span>' +
+                '<span id="sort-averageTime" title="Sort by average typical time" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '</th>' +
+            '<th class="rwHdr">' +
+                '<div class="uchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></div>' +
+                '<span class="rwText ctranslate">Hike</span>' +
+                '<span id="sort-hikeLength" title="Sort by length of hike" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '</th>' +
+            '<th class="rwHdr">' +
+                '<span class="rwText ctranslate">Descent</span>' +
+                '<span id="sort-descentLength" title="Sort by length" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-descentDepth" title="Sort by depth" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '</th>' +
+            '<th class="rwHdr">' +
+                '<span class="rwText ctranslate">Raps</span>' +
+                '<span id="sort-rappelsNum" title="Sort by number of rappels" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-longestRappel" title="Sort by longest rappel" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '</th>' +
+            '<th class="rwHdr">' +
+                '<span class="rwTextNoSort"><a href="/Extra_info" title="Extra info">Info</a></span>' +
+            '</th>' +
+            '<th class="rwHdr">' +
+                '<span class="rwText"><a href="/Conditions_info" title="Conditions info">Conditions</a></span>' +
+                '<span id="sort-conditionDate" title="Sort by condition report date" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '</th>' + 
         '</tr>';
 
     return Header;

@@ -93,21 +93,20 @@ function setTableSortLinks() {
     tableRef.appendChild(tableNewHeader);
     tableRef.appendChild(tableNewBody);
 
-    var chks = document.getElementsByClassName('rwSort');
-    var sortbydiv = document.getElementById('sortby');
-    if (sortbydiv)
-        sortby = sortbydiv.innerHTML;
-    for (var i = 0; i < chks.length; i++) {
-        var img = "rwsortud.gif";
-        if (chks[i].id == sortby)
-            img = "rwsortdn.gif";
-        if ('-' + chks[i].id == sortby)
-            img = "rwsortup.gif";
+    var sortIcons = document.getElementsByClassName('rwSortIcon');
 
-        chks[i].className += " notranslate";
-        chks[i].style.cssText += 'cursor: pointer; background-repeat: no-repeat; background-position: center right; padding-right:9px; padding-left:0px; background-image: url(https://sites.google.com/site/rwicons/' + img + ');';
+    for (var i = 0; i < sortIcons.length; i++) {
 
-        chks[i].onclick = function rwsort() {
+        sortIcons[i].className += " notranslate";
+        
+        sortIcons[i].onclick = function () {
+
+            var sortIcons = document.getElementsByClassName('rwSortIcon');
+            for (var i = 0; i < sortIcons.length; i++) {
+                sortIcons[i].style.backgroundImage = "url('" + SORT_ICON + "')";
+                sortIcons[i].style.opacity = "";
+            }
+
             var newSortProp = this.id.substr(5); //remove the 'sort-' at start of id
             if (newSortProp === sortProp) {
                 sortDirection *= -1;
@@ -120,6 +119,11 @@ function setTableSortLinks() {
                     sortProp === 'totalCounter' ||
                     sortProp === 'conditionDate') sortDirection = -1; //if it's any of these, first sort by descending
             }
+
+            var thisIcon = document.getElementById(this.id);
+            thisIcon.style.backgroundImage = "url('" + (sortDirection > 0 ? SORT_ICON_UP : SORT_ICON_DOWN) + "')";
+            thisIcon.style.opacity = "1.0";
+
             updateTable();
         }
     }
@@ -185,24 +189,24 @@ function predicateBy(propString, direction) {
 
             var prop, props = propString.split('.'); //allow retrieving of nested properties
 
-            var i;
+            var i, candidate;
             for (i = 0; i < props.length; i++) {
                 prop = props[i];
 
-                var candidate = entry[prop];
+                candidate = entry[prop];
                 if (candidate !== undefined) {
                     entry = candidate;
                 } else {
                     break;
                 }
             }
-            if (entry === undefined || entry == null) return undefined;
-            if (entry.value !== undefined) entry = entry.value; //if the item is a unit/value pair, use that value
-            return entry;
+            if (candidate === undefined || candidate == null) return undefined;
+            if (candidate.value !== undefined) candidate = candidate.value; //if the item is a unit/value pair, use that value
+            return candidate;
         }
 
-        var aEntry = getTestValue(a, propString);
-        var bEntry = getTestValue(b, propString);
+        var aEntry = getTestValue(a);
+        var bEntry = getTestValue(b);
 
         if (aEntry == undefined) return 1; //push undefined values to bottom;
         if (bEntry == undefined) return -1; //push undefined values to bottom;

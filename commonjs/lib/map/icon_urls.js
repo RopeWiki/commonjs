@@ -43,3 +43,7 @@ var KML_ICON_LIST = [
 var ICON_CLOSED = SITE_BASE_URL + "/images/f/f8/Permit-closed.png";
 var ICON_RESTRICTED = SITE_BASE_URL + "/images/1/11/Permit-restricted.png";
 var ICON_PERMIT_YES = SITE_BASE_URL + "/images/2/29/Permit-yes.png";
+
+var SORT_ICON = SITE_BASE_URL + "/images/2/2c/Sorticon.png";
+var SORT_ICON_UP = SITE_BASE_URL + "/images/4/4b/Sorticonup.png";
+var SORT_ICON_DOWN = SITE_BASE_URL + "/images/8/87/Sorticondown.png";
