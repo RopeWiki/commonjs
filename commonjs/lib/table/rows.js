@@ -18,7 +18,7 @@ function assembleTableHeaderRow() {
                 '<span id="sort-region" title="Sort by region" class="rwSortIcon gmnoprint notranslate"></span>' +
             '</th>' +
             '<th class="rwHdr">' +
-                '<div id="starrate" class="schk gmnoprint toption notranslate"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My stars</label></div>' +
+                '<div id="starrate" class="schk gmnoprint toption notranslate"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My ratings</label></div>' +
                 '<span id="sort-rankRating" title="Sort by quality and popularity" class="rwSortIcon gmnoprint notranslate"></span>' +
                 '<span class="rwText"><a href="/StarRank" title="StarRank">Quality</a></span>' +
                 '<span id="sort-totalRating" title="Sort by quality" class="rwSortIcon gmnoprint notranslate"></span>' +

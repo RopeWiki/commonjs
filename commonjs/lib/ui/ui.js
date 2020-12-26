@@ -20,8 +20,9 @@ function toggleStarrate() {
     if (starrate) {
         loadStars();
     } else {
-        document.body.style.cursor = 'wait';
-        window.location.reload();
+        //TODO: implement this
+        //document.body.style.cursor = 'wait';
+        //window.location.reload();
     }
 }
 

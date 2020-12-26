@@ -285,18 +285,12 @@ function loadlist(list, fitbounds) {
                 displayinfowindow(this);
             });
 
-        // set parameters used for filtering
-        var params = {};
         
-        params.stars = (item.stars != null ? item.stars : -1);
-        params.activity = item.activity;
-        params.permits = permitStatus;
-        params.bestMonths = item.bestMonths;
-        params.technicalRating = item.technicalRating;
-
-        marker.kmlitem = item; //TODO: combine this and the next one. Restructure the data layout
-        marker.params = params;
+        item.stars = (item.stars != null ? item.stars : -1);
+        
+        marker.locationData = item;
         marker.oposition = positionm;
+        marker.isVisible = true;
 
         // add marker to map
         markers.push(marker);
@@ -377,8 +371,10 @@ function getrwlist(data) {
                 if (v && v.length > 0)
                     obj.region = v[0].fulltext;
                 v = item.printouts["Requires permits"];
-                if (v && v.length > 0)
+                if (v && v.length > 0) {
                     obj.permits = v[0];
+                    if (obj.permits === "No") obj.permits = "None";
+                }
                 v = item.printouts["Has best season parsed"];
                 if (v && v.length > 0)
                     obj.bestMonths = parseBestMonths(v[0].fulltext);
@@ -630,7 +626,7 @@ function filterMarkers(refreshTable) {
     for (i = 0; i < markers.length; ++i) {
         
         var marker = markers[i];
-        var p = marker.params;
+        var p = marker.locationData;
         if (!p) continue;
 
         var display = true;
@@ -701,8 +697,9 @@ function filterMarkers(refreshTable) {
                 display = false;
         }
 
+        marker.isVisible = display;
         marker.setMap(display ? map : null);
-
+        
         if (marker.closedMarker)
             marker.closedMarker.setMap(display ? map : null);
     }

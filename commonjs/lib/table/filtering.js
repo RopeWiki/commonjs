@@ -62,9 +62,9 @@ function updateTable() {
     for (var i = 0; i < markers.length; ++i) {
         var marker = markers[i];
 
-        if (marker.getMap() === null) continue;
+        if (!marker.isVisible) continue;
 
-        var html = assembleTableRow(marker.kmlitem);
+        var html = assembleTableRow(marker.locationData);
 
         var newRow = tableNewBody.insertRow(tableNewBody.rows.length);
         newRow.className = "trow notranslate";
@@ -77,9 +77,12 @@ function updateTable() {
     tableCurrentBody.parentNode.replaceChild(tableNewBody, tableCurrentBody);
 
 
-    //set checkbox
+    //set checkboxes
     var metricCheckbox = document.getElementsByClassName('uchk');
     metricCheckbox[0].firstChild.firstChild.checked = metric;
+
+    var frenchCheckbox = document.getElementsByClassName('fchk');
+    frenchCheckbox[0].firstChild.firstChild.checked = french;
 }
 
 var sortby = "";
@@ -189,8 +192,8 @@ function predicateBy(propString, direction) {
     return function (a, b) {
 
         function getTestValue(item) {
-            if (!item.kmlitem) return undefined;
-            var entry = item.kmlitem;
+            if (!item.locationData) return undefined;
+            var entry = item.locationData;
 
             var prop, props = propString.split('.'); //allow retrieving of nested properties
 

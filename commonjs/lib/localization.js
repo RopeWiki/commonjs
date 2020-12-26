@@ -27,8 +27,8 @@ function setMetricFields() {
 function toggleFrench() {
     french = !french;
     setCookie("french", french ? "on" : "", 360*10); // 10 years
-    document.body.style.cursor = 'wait';
-    window.location.reload();
+
+    updateTable();
 }
 
 function getLinkLang(node) {
