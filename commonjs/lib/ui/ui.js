@@ -229,9 +229,6 @@ function loadUserInterface(document) {
         months[i].style.display = "block";
     }
 
-    // load metric system
-    setMetricFields();
-
     //if (french)
     {
         var texts = document.getElementsByClassName('uaca');
@@ -582,9 +579,12 @@ function loadFormInterface() {
         setOptionCheckboxes();
         setTableSortLinks();
     }
-
-    setFilterCheckboxes();
     
+    setFilterCheckboxes();
+
+    // load metric system
+    setMetricFields();
+
     // location search
     var locdefault = document.getElementById('locdefault');
     if (locdefault) {

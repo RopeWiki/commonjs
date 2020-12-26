@@ -19,13 +19,49 @@ function initSearchMapControl() {
         });
 
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(searchMapControl);
+}
 
-    searchMapLoader = document.createElement("div");
-    searchMapLoader.className = "loader";
+function displaySearchMapLoader() {
+    if (!searchMapLoader) {
+        searchMapLoader = document.createElement("div");
+        searchMapLoader.id = "loader";
+        searchMapLoader.className = "loader";
+        searchMapLoader.style.display = "none";
+        
+        var mapDiv = document.getElementById('mapbox').getElementsByTagName('div')[0];
+        mapDiv.appendChild(searchMapLoader);
+
+        //wait for the parent to change to the mapbox, otherwise it initially displays for a split second in the middle of the page
+        waitForElement(searchMapLoader.id).then(function () { searchMapLoader.style.display = "block"; });
+        return;
+    }
+
+    searchMapLoader.style.display = "block";
+}
+
+function waitForElement(elementId) {
+    return new Promise(function (resolve) {
+
+        var observer = new MutationObserver(function(mutationsList) {
+            for (var i = 0; i < mutationsList.length; i++) {
+                var mutation = mutationsList[i];
+
+                if (!!mutation.previousSibling && mutation.previousSibling.id === elementId) {
+                    observer.disconnect();
+                    resolve();
+                    return;
+                }
+            }
+        });
+
+        observer.observe(document.documentElement, { attributes: true, childList: true, subtree: true });
+    });
+}
+
+function hideSearchMapLoader() {
+    if (!searchMapLoader) return;
+
     searchMapLoader.style.display = "none";
-
-    var mapDiv = document.getElementById('mapbox').getElementsByTagName('div')[0];
-    mapDiv.appendChild(searchMapLoader);
 }
 
 var searchmapn = -1;
@@ -98,12 +134,12 @@ function searchmaprectangleBoundschanged() {
 
         getLocationParameters();
 
-    searchMapLoader.style.display = "block";
+    displaySearchMapLoader();
 
     $.getJSON(geturl(url),
         function (data) {
             getkmllist(data);
-            searchMapLoader.style.display = "none";
+            hideSearchMapLoader();
         });
 }
 

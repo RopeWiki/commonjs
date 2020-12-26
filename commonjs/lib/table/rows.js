@@ -146,6 +146,7 @@ function assembleTableRow(item) {
 function addNewItemsToTable(list) {
 
     var tableCurrentBody = document.getElementById("loctablebody");
+    if (!tableCurrentBody) return;
 
     for (var i = 0; i < list.length; ++i) {
         var item = list[i];

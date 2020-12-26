@@ -47,6 +47,7 @@ function getLocationParameters() {
 }
 
 function updateTable() {
+
     var tableCurrentBody = document.getElementById("loctablebody");
     if (!tableCurrentBody) return;
 
@@ -87,8 +88,17 @@ function updateTable() {
 
 var sortby = "";
 function setTableSortLinks() {
+    var tableDiv = document.getElementById("loctable");
+    if (!tableDiv) return; //no table in the document
 
     var tableRef = document.getElementById("loctabledata");
+    if (!tableRef) { //has table div but no table, create new
+        tableRef = document.createElement("table");
+        tableRef.id = "loctabledata";
+        tableRef.className = "wikitable loctabledata colgroup";
+        tableDiv.appendChild(tableRef);
+    }
+
     var tableNewHeader = document.createElement('thead');
     var headerRow = tableNewHeader.insertRow();
     headerRow.innerHTML = assembleTableHeaderRow();

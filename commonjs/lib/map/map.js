@@ -442,6 +442,8 @@ function getkmllist( data ) {
         morestop();
 
     loadlist(list, true);
+
+    hideSearchMapLoader();
 }
 
 const loadLimit = 100;
@@ -450,6 +452,7 @@ var moremapc = 0, morelistc = 0;
 function morekmllist(loccontinue, loctotal) {
     ++moremapc;
     map.setOptions({ draggableCursor: 'wait' });
+    displaySearchMapLoader();
 
     $.getJSON(geturl(kmllisturl + "|offset=" + loccontinue), getkmllist)
         .always(function() {
