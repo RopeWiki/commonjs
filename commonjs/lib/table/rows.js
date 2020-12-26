@@ -211,7 +211,21 @@ function getDescentDisplay(length, depth) {
 }
 
 function getTableInfoSummaryDisplay(summary) {
-    if (!summary) return "";
+    if (summary == undefined || !summary) return "";
+
+    //add tooltips to icons
+    summary = summary.replace('id="vxx"', 'id="vxx" title="Precise coordinates unknown"');
+    summary = summary.replace('id="vxi"', 'id="vxi" title="Detailed info on Ropewiki"');
+    summary = summary.replace('id="vxn"', 'id="vxn" title="Detailed info on other beta site"');
+    summary = summary.replace('id="vxm"', 'id="vxm" title="KML map on Ropewiki"');
+    summary = summary.replace('id="vxe"', 'id="vxe" title="KML map on other beta site"');
+    summary = summary.replace('id="vxs"', 'id="vxs" title="Has a sketch"');
+    summary = summary.replace('id="vxd"', 'id="vxd" title="Has a PDF"');
+    summary = summary.replace('id="vxp"', 'id="vxp" title="Has main photo"');
+    summary = summary.replace('id="vx2"', 'id="vx2" title="Passable with normal car"');
+    summary = summary.replace('id="vx4"', 'id="vx4" title="Requires 4wd vehicle"');
+    summary = summary.replace('id="vxc"', 'id="vxc" title="Requires a shuttle"');
+    summary = summary.replace('id="vxw"', 'id="vxw" title="Requires a watercraft"');
 
     //need to parse out the best season and assemble the data into the visual table. then insert it back into the string
     //example: <hr id="vxi"><hr id="vxe"><hr id="vxp"><hr id="vx2"><div class="monthv" title="Apr-Jun">..., .XX, X.., ...</div>
@@ -222,7 +236,7 @@ function getTableInfoSummaryDisplay(summary) {
     var startIndex = summary.lastIndexOf(">", endIndex - 1) + 1;
     var bestSeason = summary.substring(startIndex, endIndex);
 
-    //convert to table
+    //convert best season to table
     var bestSeasonTable = '<table class="wikitable bst mbst nostranslate"><tbody><tr>';
 
     for (var i = 0; i < bestSeason.length; ++i) {
@@ -251,9 +265,39 @@ function getTableInfoSummaryDisplay(summary) {
 }
 
 function getTableConditionDisplay(summary) {
-    if (!summary) return "";
+    if (summary == undefined || !summary) return "";
 
-    //just need to linkify the most recent link. the rest of the html is already prepared
+    //add tooltips to icons
+    summary = summary.replace('id="cs0"', 'id="cs0" title="The conditions are not from a descent of the canyon"');
+    summary = summary.replace('id="cs1"', 'id="cs1" title="Regretted doing the trip"');
+    summary = summary.replace('id="cs2"', 'id="cs2" title="The canyon was worth doing"');
+    summary = summary.replace('id="cs3"', 'id="cs3" title="The canyon was good"');
+    summary = summary.replace('id="cs4"', 'id="cs4" title="The canyon trip was great"');
+    summary = summary.replace('id="cs5"', 'id="cs5" title="The canyon trip was outstanding"');
+
+    summary = summary.replace('id="cwa1"', 'id="cwa1" title="Completely dry or all pools avoidable"');
+    summary = summary.replace('id="cwa2"', 'id="cwa2" title="No current or just a trickle, may require shallow wading"');
+    summary = summary.replace('id="cwa2p"', 'id="cwa2p" title="No current or just a trickle, may require swimming"');
+    summary = summary.replace('id="cwa3"', 'id="cwa3" title="Light current, more than just a trickle but still weak"');
+    summary = summary.replace('id="cwa4"', 'id="cwa4" title="Moderate current, challenging but easy water hazards"');
+    summary = summary.replace('id="cwa4p"', 'id="cwa4p" title="A bit high, quite challenging but not too dangerous"');
+    summary = summary.replace('id="cwa5"', 'id="cwa5" title="High water, only for experienced swift water canyoneers"');
+    summary = summary.replace('id="cwa6"', 'id="cwa6" title="Dangerously high water, only for expert swift water canyoneers"');
+    summary = summary.replace('id="cwa7"', 'id="cwa7" title="Extremely dangerous high water, may be unsafe even for experts"');
+
+    summary = summary.replace('id="ct0"', 'id="ct0" title="No thermal insulation needed"');
+    summary = summary.replace('id="ct1"', 'id="ct1" title="Rain jacket (1mm-2mm)"');
+    summary = summary.replace('id="ct2"', 'id="ct2" title="Thin wetsuit (3mm-4mm)"');
+    summary = summary.replace('id="ct3"', 'id="ct3" title="Full wetsuit (5mm-6mm)"');
+    summary = summary.replace('id="ct4"', 'id="ct4" title="Thick wetsuit (7mm-10mm)"');
+    summary = summary.replace('id="ct5"', 'id="ct5" title="Drysuit or equivalent extreme thermal protection"');
+
+    summary = summary.replace('id="cd3"', 'id="cd3" title="Requires special precautions and/or problem solving"');
+    summary = summary.replace('id="cd4"', 'id="cd4" title="Requires special technical skills and/or gear"');
+    summary = summary.replace('id="cd5"', 'id="cd5" title="May be too dangerous or impossible even for experts"');
+    
+
+    //linkify the most recent link. the rest of the html is already prepared
     //example: [[Conditions:Cabin Creek-20190923143634|'''22 Sep 2019''']] 
 
     const regex = /\[\[(.*?)\]\]/; //matches the pattern: [[ match ]]
