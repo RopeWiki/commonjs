@@ -52,7 +52,7 @@ function searchmapClicked() {
         var markersLatBtm = boundslist.getSouthWest().lat();
         var markersLngLft = boundslist.getSouthWest().lng();
         var markersLngRgt = boundslist.getNorthEast().lng();
-        var padding = 0.1;
+        var padding = 0.05;
         var searchRectLatTop = (markersLatTop < mapLatTop && markersLatTop > mapLatBtm) ? markersLatTop : mapLatTop - mapHeight * padding;
         var searchRectLatBtm = (markersLatBtm > mapLatBtm && markersLatBtm < mapLatTop) ? markersLatBtm : mapLatBtm + mapHeight * padding;
         var searchRectLatLft = (markersLngLft > mapLngLft && markersLngLft < mapLngRgt) ? markersLngLft : mapLngLft + mapWidth * padding;

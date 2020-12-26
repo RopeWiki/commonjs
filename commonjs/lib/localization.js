@@ -8,6 +8,8 @@ function toggleMetric() {
 }
 
 function setMetricFields() {
+
+    //update fields in sidebar
     var texts = document.getElementsByClassName('uft');
     for (var i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, ftStr);
@@ -17,6 +19,9 @@ function setMetricFields() {
     texts = document.getElementsByClassName('urap');
     for (var i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, rap);
+
+    //update table
+    updateTable();
 }
 
 function toggleFrench() {

@@ -47,14 +47,14 @@ function getLocationParameters() {
 }
 
 function updateTable() {
-    
+    var tableCurrentBody = document.getElementById("loctablebody");
+    if (!tableCurrentBody) return;
+
     markers.sort(predicateBy(sortProp, sortDirection));
 
     const maxTableRows = 100;
     var numDisplayed = 0;
-
-    var tableCurrentBody = document.getElementById("loctablebody");
-
+    
     //delete all rows, keep header, replace with new rows:
     var tableNewBody = document.createElement('tbody');
     tableNewBody.id = 'loctablebody';
@@ -75,6 +75,11 @@ function updateTable() {
     }
 
     tableCurrentBody.parentNode.replaceChild(tableNewBody, tableCurrentBody);
+
+
+    //set checkbox
+    var metricCheckbox = document.getElementsByClassName('uchk');
+    metricCheckbox[0].firstChild.firstChild.checked = metric;
 }
 
 var sortby = "";
