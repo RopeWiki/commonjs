@@ -21,7 +21,10 @@ function initSearchMapControl() {
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(searchMapControl);
 }
 
+var isLoading = false; //sometimes the element creation happens after the loading is finished, so make sure it's still loading before displaying it
+
 function displaySearchMapLoader() {
+    isLoading = true;
     if (!searchMapLoader) {
         searchMapLoader = document.createElement("div");
         searchMapLoader.id = "loader";
@@ -32,7 +35,7 @@ function displaySearchMapLoader() {
         mapDiv.appendChild(searchMapLoader);
 
         //wait for the parent to change to the mapbox, otherwise it initially displays for a split second in the middle of the page
-        waitForElement(searchMapLoader.id).then(function () { searchMapLoader.style.display = "block"; });
+        waitForElement(searchMapLoader.id).then(function () { searchMapLoader.style.display = isLoading ? "block" : "none"; });
         return;
     }
 
@@ -59,6 +62,7 @@ function waitForElement(elementId) {
 }
 
 function hideSearchMapLoader() {
+    isLoading = false;
     if (!searchMapLoader) return;
 
     searchMapLoader.style.display = "none";
@@ -70,7 +74,7 @@ var searchMapLoader;
 
 function searchmapClicked() {
 
-    var element = document.getElementById('searchinfo');
+    var searchButton = document.getElementById('searchinfo');
 
     if (searchmapn < 0) {
 
@@ -98,26 +102,29 @@ function searchmapClicked() {
             new google.maps.LatLng(searchRectLatBtm, searchRectLatLft),
             new google.maps.LatLng(searchRectLatTop, searchRectLatRgt));
 
+        //create and display rectangle
         searchmaprectangle = new google.maps.Rectangle({
             bounds: searchRectBounds,
             editable: true
         });
         searchmaprectangle.setMap(map);
+
         searchmaprectangle.addListener("click", function () {
             searchmaprectangle.setMap(null);
-            element.innerHTML = "Search Map";
+            searchButton.innerHTML = "Search Map";
             searchmapn = -1;
         });
+
         searchmaprectangle.addListener("bounds_changed", function () {
             searchmaprectangleBoundschanged();
         });
 
-        element.innerHTML = 'Cancel<br><p style="font-size:10px;line-height:0px;position: absolute;bottom: 0;left: 22px;">or click inside rect</p>';
+        searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;line-height:0px;position: absolute;bottom: 0;left: 22px;">or click inside rect</p>';
 
         searchmapn = 0;
     } else {
         searchmaprectangle.setMap(null);
-        element.innerHTML = "Search Map";
+        searchButton.innerHTML = "Search Map";
         searchmapn = -1;
     }
 }
@@ -126,38 +133,18 @@ function searchmaprectangleBoundschanged() {
     var bounds = searchmaprectangle.bounds;
     var sw = bounds.getSouthWest();
     var ne = bounds.getNorthEast();
-    var url = SITE_BASE_URL + '/api.php?action=ask&format=json&query=[[Category:Canyons]]' +
+    var query =
+        '[[Category:Canyons]]' +
         '[[Has latitude::>' + sw.lat().toFixed(3) + ']]' +
         '[[Has longitude::>' + sw.lng().toFixed(3) + ']]' +
         '[[Has latitude::<' + ne.lat().toFixed(3) + ']]' +
-        '[[Has longitude::<' + ne.lng().toFixed(3) + ']]' +
+        '[[Has longitude::<' + ne.lng().toFixed(3) + ']]';
 
-        getLocationParameters();
+    kmllisturl = query;
 
+    isLoading = true;
     displaySearchMapLoader();
 
-    $.getJSON(geturl(url),
-        function (data) {
-            getkmllist(data);
-            hideSearchMapLoader();
-        });
-}
-
-function searchmapRun() {
-    searchmapn = -1;
-    var element = document.getElementById('searchinfo');
-    if (element) element.innerHTML = 'Searching...';
-
-    var bounds = searchmaprectangle.bounds;
-
-    var locsearchchk = document.getElementById('locsearchchk');
-    if (map != null && locsearchchk != null) {
-        var sw = bounds.getSouthWest();
-        var ne = bounds.getNorthEast();
-        locsearchchk.checked = true;
-        var v = "Coord:" + sw.lat().toFixed(3) + "," + sw.lng().toFixed(3) + "," + ne.lat().toFixed(3) + "," + ne.lng().toFixed(3);
-        document.getElementById('locnameval').value = v;
-    }
-    filtersearch();
+    loadMoreLocations(0);
 }
 

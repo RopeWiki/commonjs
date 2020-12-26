@@ -223,17 +223,14 @@ function loadInteractiveMap() {
     if (kmllistquery != null) {
         kmlmap = "kmllistquery";
         kmllist = kmllistquery;
-        kmllisturl = SITE_BASE_URL + '/api.php?action=ask&format=json&query=' + kmllistquery.innerHTML + getLocationParameters();
-        tablelisturl = window.location.href.toString();
-        tablelisturl = tablelisturl.split('#')[0];
-        tablelisturl += (tablelisturl.indexOf('?') < 0 ? '?' : '&') + 'nomapchk=on';
-
+        kmllisturl = kmllistquery.innerHTML;
+        
         // load dynamic query
         var loctotaldiv = document.getElementById("loctotal");
         if (loctotaldiv) {
             var loctotal = loctotaldiv.innerHTML;
             if (loctotal > 0)
-                morekmllist(0, loctotal);
+                loadMoreLocations(0, loctotal);
         }
     }
     

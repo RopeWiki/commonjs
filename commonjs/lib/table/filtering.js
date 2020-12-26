@@ -15,7 +15,7 @@ function getTotalLocations() {
     });
 }
 
-function getLocationParameters() {
+function getLocationParameters(loadLimit) {
     
     const locationParamters =
         '|%3FHas_coordinates' +

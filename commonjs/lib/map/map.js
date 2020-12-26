@@ -75,7 +75,7 @@ function loadlist(list, fitbounds) {
         }
     }
 
-    var n = list.length;
+    var numberAdded = 0;
     for (i = 0; i < list.length; ++i) {
         var item = list[i];
 
@@ -91,7 +91,7 @@ function loadlist(list, fitbounds) {
         }
         if (alreadyExists) continue;
 
-        ++n;
+        ++numberAdded;
         --nlist;
         // set up icon
         var zindexm = 5000 + nlist;
@@ -309,7 +309,7 @@ function loadlist(list, fitbounds) {
             addhighlight(addlist);
     }
 
-    if (n > 0 && fitbounds) {
+    if (numberAdded > 0 && fitbounds) {
         // auto zoom & center map
         var ne = boundslist.getNorthEast();
         var sw = boundslist.getSouthWest();
@@ -325,8 +325,6 @@ function loadlist(list, fitbounds) {
     }
 
     addNewItemsToTable(list);
-
-    return n; //'n' is not used anywhere
 }
 
 function getrwlist(data) {
@@ -334,7 +332,6 @@ function getrwlist(data) {
     $.each(data.query.results,
         function(i, item) {
             var v;
-            ++kmllistn;
             var obj = { id: item.fulltext };
             v = item.printouts["Has coordinates"];
             if (v && v.length > 0) {
@@ -379,7 +376,6 @@ function getrwlist(data) {
                 if (v && v.length > 0)
                     obj.bestMonths = parseBestMonths(v[0].fulltext);
 
-                //******* NEW STUFF //
                 v = item.printouts["Has info major region"];
                 if (v && v.length > 0) {
                     obj.parentRegions = parseMajorRegion(v[0]);
@@ -410,12 +406,12 @@ function getrwlist(data) {
                 v = item.printouts["Has info rappels"];
                 if (v && v.length > 0) {
                     obj.rappels = v[0];
-                    if (obj.rappels === "r") obj.rappels = "?r"; //ropewiki doesn't handle 'unknown' values for rappels correctly
+                    if (obj.rappels === "r") obj.rappels = "?r"; //ropewiki doesn't handle 'unknown' values for rappels correctly and sends just 'r'
                 }
                 v = item.printouts["Has longest rappel"];
                 if (v && v.length > 0) {
                     obj.longestRappel = v[0];
-                    if (obj.rappels === undefined) { //ropewiki sets 0 rap height if it's non-technical canyon
+                    if (obj.rappels === undefined) { //ropewiki sets 0 rap height if it's non-technical canyon, so need to match with 0r
                         obj.rappels = "0r";
                     }
                 }
@@ -435,11 +431,11 @@ function getrwlist(data) {
     return list;
 }
 
-function getkmllist( data ) {
+function getkmllist(data) {
     var list = getrwlist(data);
 
-    if (data['query-continue-offset'] === undefined)
-        morestop();
+    if (data['query-continue-offset'] === undefined) //mediawiki returns 'query-continue-offset' if there are more results available, but doesn't say the actual total
+        loadingFinished();
 
     loadlist(list, true);
 
@@ -449,76 +445,65 @@ function getkmllist( data ) {
 const loadLimit = 100;
 var moremapc = 0, morelistc = 0;
 
-function morekmllist(loccontinue, loctotal) {
+function loadMoreLocations(loccontinue, loctotal) {
     ++moremapc;
-    map.setOptions({ draggableCursor: 'wait' });
+    
     displaySearchMapLoader();
 
-    $.getJSON(geturl(kmllisturl + "|offset=" + loccontinue), getkmllist)
-        .always(function() {
-            if (--moremapc <= 0)
-                map.setOptions({ draggableCursor: '' }); //clear the wait cursor
+    var numberToLoad = !!loctotal && loctotal - (loccontinue + loadLimit * 2) > 0
+        ? loadLimit
+        : loadLimit * 2; //if it's less than twice the load number to load all of them, then just load all of them.
+
+    $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json&query=' + kmllisturl + getLocationParameters(numberToLoad) + "|offset=" + loccontinue), getkmllist);
+
+    if (!loctotal) //need to query for the total
+    {
+        var urlCount = SITE_BASE_URL +
+            '/index.php?action=raw&templates=expand&ctype=text/x-wiki' +
+            '&title=Template:RegionCountArea' +
+            '&query=' + urlencode(kmllisturl);
+
+        $.get(geturl(urlCount), function (data) {
+            var loctotal = document.getElementById("loctotal");
+            if (loctotal) loctotal.innerHTML = data;
         });
-
-    if (loccontinue > 0) {
-        var tablelist = $(".loctable .loctabledata");
-
-        if (tablelist.length === 1)
-        {
-            ++morelistc;
-            document.body.style.cursor = 'wait';
-            $.get(geturl(tablelisturl + '&offset=' + loccontinue),
-                function(data) {
-                    var newtablelist = $('#morekmllist').html($(data).find('.loctable').html());
-                    if (newtablelist.length === 1) {
-                        var newdocument = newtablelist[0];
-                        newdocument.getElementsByName = function(name) {
-                            var list = [];
-                            return list;
-                        }
-                        newdocument.getElementById = function(name) {
-                            return null;
-                        }
-                        loadUserInterface(newdocument);
-                        findtag(newdocument.childNodes,
-                            'TR',
-                            function(item) {
-                                tablelist[0].appendChild(item);
-                            });
-                    }
-                }).always(function() {
-                if (--morelistc <= 0)
-                    document.body.style.cursor = '';
-            });
-        }
     }
 
-    loccontinue += loadLimit;
+    loccontinue += numberToLoad;
     if (loccontinue >= loctotal) {
-        morestop();
+        loadingFinished();
         return;
     }
 
     // more button
     var loadmore = document.getElementById("loadmore");
     if (loadmore)
-        loadmore.innerHTML = '<button onclick="morekmllist(' + loccontinue + ',' + loctotal + ')">+</button> ';
+        loadmore.innerHTML = '<button onclick="loadMoreLocations(' + loccontinue + ',' + loctotal + ')">+</button> ';
 
     var loccount = document.getElementById("loccount");
     if (loccount)
         loccount.innerHTML = loccontinue + " of ";
 
+    var loccountinfo = document.getElementById("loccountinfo");
+    if (loccountinfo) {
+        loccountinfo.innerHTML = " in this region (highest rated locations are loaded first)";
+    }
+
     var morelist = $(".loctable .smw-template-furtherresults a");
     if (morelist.length === 1) {
-        morelist[0].href = 'javascript:morekmllist(' + loccontinue + ',' + loctotal + ');';
+        morelist[0].href = 'javascript:loadMoreLocations(' + loccontinue + ',' + loctotal + ');';
     }
 }
 
-function morestop() {
-    // finished loading
+function loadingFinished() {
+    // loaded all available locations
     var loccount = document.getElementById("loccount");
-    //if (loccount) loccount.parentNode.removeChild(loccount);
-    if (loccount) loccount.innerHTML = "";
+    if (loccount) loccount.innerHTML = "all ";
+
+    var loccountinfo = document.getElementById("loccountinfo");
+    if (loccountinfo) {
+        loccountinfo.innerHTML = " in this region";
+    }
 
     var loadmore = document.getElementById("loadmore");
     if (loadmore) loadmore.parentNode.removeChild(loadmore);

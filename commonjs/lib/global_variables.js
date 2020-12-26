@@ -56,8 +56,7 @@ var handlekeys = false;
 // bounds
 var nlist = 10000;
 
-var kmllistn = 0;
-var kmllisturl, tablelisturl;
+var kmllisturl;
 var kmlsummary;
 
 // keep bounds for autozoom and center
