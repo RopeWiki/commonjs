@@ -490,6 +490,10 @@ function setLoadingInfoText() {
 
     setHeaderText();
 
+    locationsLoadedWithinArea = searchMapRectangle !== undefined
+        ? countLocationsWithinSearchArea()
+        : Math.min(loadOffset, locationsTotalWithinArea);
+
     if (loadOffset >= locationsTotalWithinArea) {
         loadingFinished();
     }
@@ -502,11 +506,6 @@ function setLoadingInfoText() {
     var info = "Loaded ";
 
     var totalLoaded = markers.length;
-
-    if (searchMapRectangle !== undefined)
-        countLocationsWithinSearchArea();
-    else
-        locationsLoadedWithinArea = Math.min(loadOffset, locationsTotalWithinArea);
 
     var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
     if (!moreToLoad) {
@@ -538,7 +537,7 @@ function loadingFinished() {
     // loaded all available locations
     var regionOrSearchArea = searchMapRectangle === undefined ? "region" : "search area";
     var info;
-    switch (locationsTotalWithinArea) {
+    switch (locationsLoadedWithinArea) {
         case 0:
             info = "There are no locations within this " + regionOrSearchArea;
             break;
@@ -601,17 +600,19 @@ function setHeaderText() {
 }
 
 function countLocationsWithinSearchArea() {
-    if (searchMapRectangle === undefined) return;
+    if (searchMapRectangle === undefined) return 0;
 
     var bounds = searchMapRectangle.bounds;
 
-    locationsLoadedWithinArea = 0;
+    var numLocations = 0;
 
     for (var i = 0; i < markers.length; i++) {
         var marker = markers[i];
         if (bounds.contains(marker.position))
-            locationsLoadedWithinArea++;
+            numLocations++;
     }
+
+    return numLocations;
 }
 
 function nonamespace(label) {
