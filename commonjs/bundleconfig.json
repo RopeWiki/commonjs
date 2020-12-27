@@ -32,7 +32,6 @@
       "lib/navigation.js",
       "lib/pdf.js",
       "lib/pictures.js",
-      "lib/regions.js",
       "lib/search.js",
       "lib/sites.js",
       "lib/skin.js",
