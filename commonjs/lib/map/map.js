@@ -576,13 +576,16 @@ function setHeaderText() {
     for (var i = 0; i < markers.length; i++) {
         var marker = markers[i];
         if (!marker.isVisible) continue;
+        
         var parentRegions = marker.locationData.parentRegions;
-        if (!parentRegions) continue;
-        for (var j = 0; j < parentRegions.length; j++) {
-            if (!regions.includes(parentRegions[j]))
-                regions.push(parentRegions[j]);
-        }
+        var parentRegion = parentRegions && parentRegions.length !== 0
+            ? parentRegions[0]
+            : marker.locationData.region;
+
+        if (!regions.includes(parentRegion))
+                regions.push(parentRegion);
     }
+
     var firstHeadingText = "";
     if (regions.length > 0)
         firstHeadingText = regions[0];
