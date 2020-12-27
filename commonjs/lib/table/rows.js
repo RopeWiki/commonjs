@@ -158,7 +158,7 @@ function addNewItemsToTable(list) {
         newRow.innerHTML = html;
     }
 
-    updateTable();
+    filterMarkers();
 }
 
 function getTableParentRegionLinks(regions) {

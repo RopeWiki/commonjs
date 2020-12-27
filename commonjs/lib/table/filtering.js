@@ -30,6 +30,118 @@ function getLocationParameters(loadLimit) {
     return locationParamters;
 }
 
+function filterMarkers(refreshTable) {
+    if (typeof refreshTable === 'undefined') refreshTable = true;
+
+    var filters = {};
+
+    // append filters (if any)
+    var mid, list, l, i;
+    var filterschk = document.getElementById('filterschk');
+    if (filterschk != null && filterschk.checked) {
+        var chk = document.getElementsByClassName('filterchk');
+        for (i = 0; i < chk.length; i++) {
+            var attr = [];
+
+            mid = chk[i].id;
+            list = document.getElementsByClassName(mid + '_chk');
+
+            var isDisabled = list[0].disabled;
+            if (!isDisabled) {
+                for (l = 0; l < list.length; l++)
+                    if (list[l].checked) {
+                        var value = list[l].id.substring(list[l].id.lastIndexOf('-') + 1);
+                        attr.push(value);
+                    }
+            }
+            filters[mid] = attr;
+        }
+    }
+
+    for (i = 0; i < markers.length; ++i) {
+
+        var marker = markers[i];
+        var p = marker.locationData;
+        if (!p) continue;
+
+        var display = true;
+
+        runFilter: {
+            if (!filters || Object.keys(filters).length === 0) break runFilter; //no filters set, enable all
+
+            //stars
+            var stars = filters["star"];
+            if (!!stars && stars.length > 0 && !(stars.includes(p.stars.toString())))
+                display = false;
+
+            //activity type
+            var activityTypes = filters["loctype"];
+            if (!!activityTypes && activityTypes.length > 0 && !(activityTypes.includes(p.activity)))
+                display = false;
+
+            //permits
+            var permits = filters["permits"];
+            if (!!permits && permits.length > 0 && !(permits.includes(p.permits)))
+                display = false;
+
+            //best season
+            var bestSeason = filters["best_month"];
+            if (!!bestSeason && bestSeason.length > 0) {
+                if (!!(p.bestMonths)) {
+                    var monthMatched = false;
+                    for (var j = 0; j < bestSeason.length; ++j) {
+                        if (p.bestMonths.includes(bestSeason[j])) {
+                            monthMatched = true;
+                            break;
+                        }
+                    }
+                    if (!monthMatched) display = false;
+                } else {
+                    display = false;
+                }
+            }
+
+            //technical rating ACA
+            var technical = filters["technical"];
+            if (!!technical && technical.length > 0 && !(technical.includes(p.technicalRating.technical)))
+                display = false;
+
+            var water = filters["water"];
+            if (!!water && water.length > 0 && !(water.includes(p.technicalRating.water)))
+                display = false;
+
+            var time = filters["time"];
+            if (!!time && time.length > 0 && !(time.includes(p.technicalRating.time)))
+                display = false;
+
+            var extraRisk = filters["extra_risk"];
+            if (!!extraRisk && extraRisk.length > 0 && !(extraRisk.includes(p.technicalRating.risk)))
+                display = false;
+
+            //technical rating French
+            var vertical = filters["vertical"];
+            if (!!vertical && vertical.length > 0 && !(vertical.includes(p.technicalRating.vertical)))
+                display = false;
+
+            var aquatic = filters["aquatic"];
+            if (!!aquatic && aquatic.length > 0 && !(aquatic.includes(p.technicalRating.aquatic)))
+                display = false;
+
+            var commitment = filters["commitment"];
+            if (!!commitment && commitment.length > 0 && !(commitment.includes(p.technicalRating.commitment)))
+                display = false;
+        }
+
+        marker.isVisible = display;
+        marker.setMap(display ? map : null);
+
+        if (marker.closedMarker)
+            marker.closedMarker.setMap(display ? map : null);
+    }
+
+    if (refreshTable) updateTable();
+}
+
 function updateTable() {
 
     var tableCurrentBody = document.getElementById("loctablebody");
@@ -70,6 +182,8 @@ function updateTable() {
 
     var frenchCheckbox = document.getElementsByClassName('fchk');
     frenchCheckbox[0].firstChild.firstChild.checked = french;
+
+    setLoadingInfoText();
 }
 
 var sortby = "";

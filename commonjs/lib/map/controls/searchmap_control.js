@@ -22,6 +22,7 @@ function initSearchMapControl() {
 }
 
 var isLoading = false; //sometimes the element creation happens after the loading is finished, so make sure it's still loading before displaying it
+var searchMapLoaderIsCreated = false;
 
 function displaySearchMapLoader() {
     isLoading = true;
@@ -35,11 +36,14 @@ function displaySearchMapLoader() {
         mapDiv.appendChild(searchMapLoader);
 
         //wait for the parent to change to the mapbox, otherwise it initially displays for a split second in the middle of the page
-        waitForElement(searchMapLoader.id).then(function () { searchMapLoader.style.display = isLoading ? "block" : "none"; });
+        waitForElement(searchMapLoader.id).then(function() {
+            searchMapLoaderIsCreated = true;
+            searchMapLoader.style.display = isLoading ? "block" : "none";
+        });
         return;
     }
 
-    searchMapLoader.style.display = "block";
+    searchMapLoader.style.display = searchMapLoaderIsCreated ? "block" : "none";
 }
 
 function waitForElement(elementId) {
@@ -101,6 +105,8 @@ function searchMapButtonClicked() {
         searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;line-height:0px;position: absolute;bottom: 0;left: 12px;">click inside rect to crop</p>';
 
         searchmapn = 0;
+
+        setLoadingInfoText();
     } else {
         closeSearchMapRectangle(searchButton);
     }
