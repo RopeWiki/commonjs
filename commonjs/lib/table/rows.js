@@ -217,9 +217,9 @@ function getTableInfoSummaryDisplay(summary) {
     //add tooltips to icons
     summary = summary.replace('id="vxx"', 'id="vxx" title="Precise coordinates unknown"');
     summary = summary.replace('id="vxi"', 'id="vxi" title="Detailed info on Ropewiki"');
-    summary = summary.replace('id="vxn"', 'id="vxn" title="Detailed info on other beta site"');
+    summary = summary.replace('id="vxn"', 'id="vxn" title="Detailed info on an external beta site"');
     summary = summary.replace('id="vxm"', 'id="vxm" title="KML map on Ropewiki"');
-    summary = summary.replace('id="vxe"', 'id="vxe" title="KML map on other beta site"');
+    summary = summary.replace('id="vxe"', 'id="vxe" title="KML map on an external beta site"');
     summary = summary.replace('id="vxs"', 'id="vxs" title="Has a sketch"');
     summary = summary.replace('id="vxd"', 'id="vxd" title="Has a PDF"');
     summary = summary.replace('id="vxp"', 'id="vxp" title="Has main photo"');

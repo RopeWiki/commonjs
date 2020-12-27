@@ -223,15 +223,10 @@ function loadInteractiveMap() {
     if (kmllistquery != null) {
         kmlmap = "kmllistquery";
         kmllist = kmllistquery;
-        kmllisturl = kmllistquery.innerHTML;
+        locationsQuery = urldecode(kmllistquery.innerHTML);
         
         // load dynamic query
-        var loctotaldiv = document.getElementById("loctotal");
-        if (loctotaldiv) {
-            var loctotal = loctotaldiv.innerHTML;
-            if (loctotal > 0)
-                loadMoreLocations(0, loctotal);
-        }
+        loadMoreLocations();
     }
     
     // set kml (if any) from "kmlfile"

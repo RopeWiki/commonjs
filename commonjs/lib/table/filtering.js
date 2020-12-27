@@ -1,20 +1,4 @@
 ﻿
-function getTotalLocations() {
-    var bounds = searchmaprectangle.bounds;
-    var sw = bounds.getSouthWest();
-    var ne = bounds.getNorthEast();
-
-    var urlCount = SITE_BASE_URL +
-        '/index.php?action=raw&templates=expand&ctype=text/x-wiki' +
-        '&title=Template:RegionCountArea' +
-        '&bounds=' + urlencode(sw.lat().toFixed(3) + "," + sw.lng().toFixed(3) + "," + ne.lat().toFixed(3) + "," + ne.lng().toFixed(3));
-
-    $.get(geturl(urlCount), function (data) {
-        var loctotal = document.getElementById("loctotal");
-        if (loctotal) loctotal.innerHTML = data;
-    });
-}
-
 function getLocationParameters(loadLimit) {
     
     const locationParamters =
@@ -50,6 +34,8 @@ function updateTable() {
 
     var tableCurrentBody = document.getElementById("loctablebody");
     if (!tableCurrentBody) return;
+
+    setTableHeaderSortIcons();
 
     markers.sort(predicateBy(sortProp, sortDirection));
 
@@ -97,6 +83,9 @@ function setTableSortLinks() {
         tableRef.id = "loctabledata";
         tableRef.className = "wikitable loctabledata colgroup";
         tableDiv.appendChild(tableRef);
+
+        //set default sort
+        setTableSortProperty("sort-rankRating");
     }
 
     var tableNewHeader = document.createElement('thead');
@@ -118,31 +107,42 @@ function setTableSortLinks() {
         sortIcons[i].className += " notranslate";
         
         sortIcons[i].onclick = function () {
+            setTableSortProperty(this.id);
+        }
+    }
+}
 
-            var sortIcons = document.getElementsByClassName('rwSortIcon');
-            for (var i = 0; i < sortIcons.length; i++) {
-                sortIcons[i].style.backgroundImage = "url('" + SORT_ICON + "')";
-                sortIcons[i].style.opacity = "";
-            }
+function setTableSortProperty(id) {
+    
+    var newSortProp = id.substr(5); //remove the 'sort-' at start of id
+    if (newSortProp === sortProp) {
+        sortDirection *= -1;
+    } else {
+        sortDirection = 1;
+        sortProp = newSortProp;
 
-            var newSortProp = this.id.substr(5); //remove the 'sort-' at start of id
-            if (newSortProp === sortProp) {
-                sortDirection *= -1;
-            } else {
-                sortDirection = 1;
-                sortProp = newSortProp;
+        if (sortProp === 'rankRating' ||
+            sortProp === 'totalRating' ||
+            sortProp === 'totalCounter' ||
+            sortProp === 'conditionDate') sortDirection = -1; //if it's any of these, first sort by descending
+    }
+    
+    updateTable();
+}
 
-                if (sortProp === 'rankRating' ||
-                    sortProp === 'totalRating' ||
-                    sortProp === 'totalCounter' ||
-                    sortProp === 'conditionDate') sortDirection = -1; //if it's any of these, first sort by descending
-            }
+function setTableHeaderSortIcons() {
 
-            var thisIcon = document.getElementById(this.id);
-            thisIcon.style.backgroundImage = "url('" + (sortDirection > 0 ? SORT_ICON_UP : SORT_ICON_DOWN) + "')";
-            thisIcon.style.opacity = "1.0";
+    var sortIconId = "sort-" + sortProp;
 
-            updateTable();
+    var sortIcons = document.getElementsByClassName('rwSortIcon');
+    for (var i = 0; i < sortIcons.length; i++) {
+        var sortIcon = sortIcons[i];
+        if (sortIcon.id === sortIconId) {
+            sortIcon.style.backgroundImage = "url('" + (sortDirection > 0 ? SORT_ICON_UP : SORT_ICON_DOWN) + "')";
+            sortIcon.style.opacity = "1.0";
+        } else {
+            sortIcon.style.backgroundImage = "url('" + SORT_ICON + "')";
+            sortIcon.style.opacity = "";
         }
     }
 }

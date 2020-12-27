@@ -431,85 +431,184 @@ function getrwlist(data) {
     return list;
 }
 
-function getkmllist(data) {
+function getkmllist(data, fitbounds) {
     var list = getrwlist(data);
 
-    if (data['query-continue-offset'] === undefined) //mediawiki returns 'query-continue-offset' if there are more results available, but doesn't say the actual total
-        loadingFinished();
+    //if (data['query-continue-offset'] === undefined) //mediawiki returns 'query-continue-offset' if there are more results available, but doesn't say the actual total
+    //    loadingFinished();
 
-    loadlist(list, true);
+    loadlist(list, fitbounds);
 
     hideSearchMapLoader();
 }
 
 const loadLimit = 100;
-var moremapc = 0, morelistc = 0;
+var loadOffset = 0;
+var locationsTotalWithinArea;
+var locationsLoadedWithinArea = 0;
 
-function loadMoreLocations(loccontinue, loctotal) {
-    ++moremapc;
+function loadMoreLocations() {
     
     displaySearchMapLoader();
 
-    var numberToLoad = !!loctotal && loctotal - (loccontinue + loadLimit * 2) > 0
-        ? loadLimit
-        : loadLimit * 2; //if it's less than twice the load number to load all of them, then just load all of them.
-
-    $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json&query=' + kmllisturl + getLocationParameters(numberToLoad) + "|offset=" + loccontinue), getkmllist);
-
-    if (!loctotal) //need to query for the total
+    if (locationsTotalWithinArea === undefined) //need to query for the total
     {
         var urlCount = SITE_BASE_URL +
             '/index.php?action=raw&templates=expand&ctype=text/x-wiki' +
             '&title=Template:RegionCountArea' +
-            '&query=' + urlencode(kmllisturl);
+            '&query=' + urlencode('[[Category:Canyons]][[Has coordinates::+]]' + locationsQuery);
 
         $.get(geturl(urlCount), function (data) {
-            var loctotal = document.getElementById("loctotal");
-            if (loctotal) loctotal.innerHTML = data;
+            if (data !== undefined) {
+                locationsTotalWithinArea = Number(data);
+                loadMoreLocations();
+            }
         });
+
+        return;
     }
 
-    loccontinue += numberToLoad;
-    if (loccontinue >= loctotal) {
+    var numberToLoad = locationsTotalWithinArea - (loadOffset + loadLimit * 2) > 0
+        ? loadLimit
+        : loadLimit * 2; //if it's less than twice the load number to load all of them, then just load all of them.
+
+    $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+            '&query=' + urlencode('[[Category:Canyons]][[Has coordinates::+]]'+ locationsQuery) + getLocationParameters(numberToLoad) +
+            "|order=descending,ascending|sort=Has rank rating,Has name" +
+            "|offset=" + loadOffset),
+        function (data) {
+            var fitBounds = searchMapRectangle === undefined;
+            getkmllist(data, fitBounds);
+
+            setLoadingInfoText();
+        });
+
+    loadOffset += numberToLoad;
+}
+
+function setLoadingInfoText() {
+
+    setHeaderText();
+
+    if (loadOffset >= locationsTotalWithinArea) {
+        loadingFinished();
+    }
+    
+    // more button
+    var loadmore = document.getElementById("loadmore");
+
+    loadmore.innerHTML = '<button onclick="loadMoreLocations()">+</button> ';
+
+    var info = "Loaded ";
+
+    var totalLoaded = markers.length;
+
+    if (searchMapRectangle !== undefined)
+        countLocationsWithinSearchArea();
+    else
+        locationsLoadedWithinArea = loadOffset;
+
+    var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
+    if (!moreToLoad) {
         loadingFinished();
         return;
     }
 
-    // more button
-    var loadmore = document.getElementById("loadmore");
-    if (loadmore)
-        loadmore.innerHTML = '<button onclick="loadMoreLocations(' + loccontinue + ',' + loctotal + ')">+</button> ';
+    info += locationsLoadedWithinArea + " of ";
 
-    var loccount = document.getElementById("loccount");
-    if (loccount)
-        loccount.innerHTML = loccontinue + " of ";
+    var regionOrSearchArea = searchMapRectangle === undefined ? "region" : "search area";
 
-    var loccountinfo = document.getElementById("loccountinfo");
-    if (loccountinfo) {
-        loccountinfo.innerHTML = " in this region (highest rated locations are loaded first)";
-    }
+    info += locationsTotalWithinArea + " locations in this " + regionOrSearchArea;
 
+    info += " (highest rated locations are loaded first)";
+
+    if (locationsLoadedWithinArea !== totalLoaded) info += ". " + totalLoaded + " total locations loaded.";
+    
+    var loadingInfo = document.getElementById("loadinginfo");
+    loadingInfo.innerHTML = info;
+
+    //this is the link to load more that is below the bottom of the table, but it should only affect the rows on the table
     var morelist = $(".loctable .smw-template-furtherresults a");
     if (morelist.length === 1) {
-        morelist[0].href = 'javascript:loadMoreLocations(' + loccontinue + ',' + loctotal + ');';
+        morelist[0].href = 'javascript:loadMoreLocations();';
     }
 }
 
 function loadingFinished() {
     // loaded all available locations
-    var loccount = document.getElementById("loccount");
-    if (loccount) loccount.innerHTML = "all ";
-
-    var loccountinfo = document.getElementById("loccountinfo");
-    if (loccountinfo) {
-        loccountinfo.innerHTML = " in this region";
+    var regionOrSearchArea = searchMapRectangle === undefined ? "region" : "search area";
+    var info;
+    switch (locationsTotalWithinArea) {
+        case 0:
+            info = "There are no locations within this " + regionOrSearchArea;
+            break;
+        case 1:
+            info = "Loaded the single location in this " + regionOrSearchArea;
+            break;
+        case 2:
+            info = "Loaded both locations in this " + regionOrSearchArea;
+            break;
+        default:
+            info = "Loaded all " + locationsTotalWithinArea + " locations in this " + regionOrSearchArea;
+            break;
     }
 
-    var loadmore = document.getElementById("loadmore");
-    if (loadmore) loadmore.parentNode.removeChild(loadmore);
+    var totalLoaded = markers.length;
+    if (locationsTotalWithinArea !== totalLoaded) info += ". (" + totalLoaded + " total locations loaded.)";
 
-    var morelist = $(".loctable .smw-template-furtherresults a");
-    if (morelist.length === 1) morelist[0].parentNode.removeChild(morelist[0]);
+    if (searchMapRectangle === undefined && locationsTotalWithinArea === 0) //search map was used but is now cancelled
+        info = "Loaded " + totalLoaded + " total locations";
+    
+    var loadingInfo = document.getElementById("loadinginfo");
+    loadingInfo.innerHTML = info;
+
+    var loadmore = document.getElementById("loadmore");
+    loadmore.innerHTML = "";
+
+    //var morelist = $(".loctable .smw-template-furtherresults a");
+    //if (morelist.length === 1) morelist[0].parentNode.removeChild(morelist[0]);
+}
+
+function setHeaderText() {
+    if (!searchWasRun) return; //don't change header unless custom search rectangle was run
+
+    var regions = [];
+    for (var i = 0; i < markers.length; i++) {
+        var marker = markers[i];
+        if (!marker.isVisible) continue;
+        var parentRegions = marker.locationData.parentRegions;
+        if (!parentRegions) continue;
+        for (var j = 0; j < parentRegions.length; j++) {
+            if (!regions.includes(parentRegions[j]))
+                regions.push(parentRegions[j]);
+        }
+    }
+    var firstHeadingText = "";
+    if (regions.length > 0)
+        firstHeadingText = regions[0];
+
+    if (regions.length > 1)
+        firstHeadingText += ", " + regions[1];
+
+    if (regions.length > 2)
+        firstHeadingText += ", and others";
+
+    if (firstHeadingText !== "")
+    document.getElementById("firstHeading").children[1].innerHTML = firstHeadingText;
+}
+
+function countLocationsWithinSearchArea() {
+    if (searchMapRectangle === undefined) return;
+
+    var bounds = searchMapRectangle.bounds;
+
+    locationsLoadedWithinArea = 0;
+
+    for (var i = 0; i < markers.length; i++) {
+        var marker = markers[i];
+        if (bounds.contains(marker.position))
+            locationsLoadedWithinArea++;
+    }
 }
 
 function nonamespace(label) {

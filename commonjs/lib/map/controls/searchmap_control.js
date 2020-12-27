@@ -15,7 +15,7 @@ function initSearchMapControl() {
     google.maps.event.addDomListener(searchMapControl,
         "click",
         function() {
-            searchmapClicked();
+            searchMapButtonClicked();
         });
 
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(searchMapControl);
@@ -69,10 +69,11 @@ function hideSearchMapLoader() {
 }
 
 var searchmapn = -1;
-var searchmaprectangle;
+var searchWasRun = false;
+var searchMapRectangle;
 var searchMapLoader;
 
-function searchmapClicked() {
+function searchMapButtonClicked() {
 
     var searchButton = document.getElementById('searchinfo');
 
@@ -80,57 +81,45 @@ function searchmapClicked() {
 
         //events that the shapes send: https://developers.google.com/maps/documentation/javascript/shapes#editable_events
 
-        //set bounds, if map is zoomed in, make the rectangle show within the displayed area so user doesn't have to zoom out to adjust it
-        var mapBounds = map.getBounds();
-        var mapLatTop = mapBounds.getNorthEast().lat();
-        var mapLatBtm = mapBounds.getSouthWest().lat();
-        var mapLngLft = mapBounds.getSouthWest().lng();
-        var mapLngRgt = mapBounds.getNorthEast().lng();
-        var mapHeight = mapLatTop - mapLatBtm;
-        var mapWidth = mapLngRgt - mapLngLft;
-        var markersLatTop = boundslist.getNorthEast().lat();
-        var markersLatBtm = boundslist.getSouthWest().lat();
-        var markersLngLft = boundslist.getSouthWest().lng();
-        var markersLngRgt = boundslist.getNorthEast().lng();
-        var padding = 0.05;
-        var searchRectLatTop = (markersLatTop < mapLatTop && markersLatTop > mapLatBtm) ? markersLatTop : mapLatTop - mapHeight * padding;
-        var searchRectLatBtm = (markersLatBtm > mapLatBtm && markersLatBtm < mapLatTop) ? markersLatBtm : mapLatBtm + mapHeight * padding;
-        var searchRectLatLft = (markersLngLft > mapLngLft && markersLngLft < mapLngRgt) ? markersLngLft : mapLngLft + mapWidth * padding;
-        var searchRectLatRgt = (markersLngRgt < mapLngRgt && markersLngRgt > mapLngLft) ? markersLngRgt : mapLngRgt - mapWidth * padding;
-
-        var searchRectBounds = new google.maps.LatLngBounds(
-            new google.maps.LatLng(searchRectLatBtm, searchRectLatLft),
-            new google.maps.LatLng(searchRectLatTop, searchRectLatRgt));
-
+        var searchRectBounds = getBoundsForSearchRectangle();
+        
         //create and display rectangle
-        searchmaprectangle = new google.maps.Rectangle({
+        searchMapRectangle = new google.maps.Rectangle({
             bounds: searchRectBounds,
             editable: true
         });
-        searchmaprectangle.setMap(map);
+        searchMapRectangle.setMap(map);
 
-        searchmaprectangle.addListener("click", function () {
-            searchmaprectangle.setMap(null);
-            searchButton.innerHTML = "Search Map";
-            searchmapn = -1;
+        searchMapRectangle.addListener("click", function () {
+            clearLocationsOutside(searchMapRectangle.bounds);
         });
 
-        searchmaprectangle.addListener("bounds_changed", function () {
-            searchmaprectangleBoundschanged();
+        searchMapRectangle.addListener("bounds_changed", function () {
+            searchMapRectangleBoundsChanged();
         });
 
-        searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;line-height:0px;position: absolute;bottom: 0;left: 22px;">or click inside rect</p>';
+        searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;line-height:0px;position: absolute;bottom: 0;left: 12px;">click inside rect to crop</p>';
 
         searchmapn = 0;
     } else {
-        searchmaprectangle.setMap(null);
-        searchButton.innerHTML = "Search Map";
-        searchmapn = -1;
+        closeSearchMapRectangle(searchButton);
     }
 }
 
-function searchmaprectangleBoundschanged() {
-    var bounds = searchmaprectangle.bounds;
+function closeSearchMapRectangle(searchButton) {
+    searchMapRectangle.setMap(null);
+    searchMapRectangle = undefined;
+    searchButton.innerHTML = "Search Map";
+    searchmapn = -1;
+    if (searchWasRun) {
+        locationsAlreadyLoadedWithinQuery = 0;
+        locationsTotalWithinArea = 0;
+    }
+    setLoadingInfoText();
+}
+
+function searchMapRectangleBoundsChanged() {
+    var bounds = searchMapRectangle.bounds;
     var sw = bounds.getSouthWest();
     var ne = bounds.getNorthEast();
     var query =
@@ -140,11 +129,62 @@ function searchmaprectangleBoundschanged() {
         '[[Has latitude::<' + ne.lat().toFixed(3) + ']]' +
         '[[Has longitude::<' + ne.lng().toFixed(3) + ']]';
 
-    kmllisturl = query;
+    searchWasRun = true;
+    locationsQuery = query;
+    locationsTotalWithinArea = undefined; //let loadMoreLocations retrieve the total
+    loadOffset = 0;
 
     isLoading = true;
     displaySearchMapLoader();
-
-    loadMoreLocations(0);
+    
+    loadMoreLocations();
 }
 
+function getBoundsForSearchRectangle() {
+
+    //set bounds, if map is zoomed in, make the rectangle show within the displayed area so user doesn't have to zoom out to adjust it
+    var mapBounds = map.getBounds();
+    var mapLatTop = mapBounds.getNorthEast().lat();
+    var mapLatBtm = mapBounds.getSouthWest().lat();
+    var mapLngLft = mapBounds.getSouthWest().lng();
+    var mapLngRgt = mapBounds.getNorthEast().lng();
+    var mapHeight = mapLatTop - mapLatBtm;
+    var mapWidth = mapLngRgt - mapLngLft;
+    var markersLatTop = boundslist.getNorthEast().lat();
+    var markersLatBtm = boundslist.getSouthWest().lat();
+    var markersLngLft = boundslist.getSouthWest().lng();
+    var markersLngRgt = boundslist.getNorthEast().lng();
+    var padding = 0.05;
+    var searchRectLatTop = (markersLatTop < mapLatTop && markersLatTop > mapLatBtm) ? markersLatTop : mapLatTop - mapHeight * padding;
+    var searchRectLatBtm = (markersLatBtm > mapLatBtm && markersLatBtm < mapLatTop) ? markersLatBtm : mapLatBtm + mapHeight * padding;
+    var searchRectLatLft = (markersLngLft > mapLngLft && markersLngLft < mapLngRgt) ? markersLngLft : mapLngLft + mapWidth * padding;
+    var searchRectLatRgt = (markersLngRgt < mapLngRgt && markersLngRgt > mapLngLft) ? markersLngRgt : mapLngRgt - mapWidth * padding;
+
+    var bounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(searchRectLatBtm, searchRectLatLft),
+        new google.maps.LatLng(searchRectLatTop, searchRectLatRgt));
+
+    return bounds;
+}
+
+function clearLocationsOutside(bounds) {
+    var newMarkers = [];
+    var newBounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < markers.length; i++) {
+        var marker = markers[i];
+        if (bounds.contains(marker.position)) {
+            newMarkers.push(marker);
+            newBounds.extend(marker.position);
+        } else {
+            marker.setMap(null);
+            if (marker.closedMarker) marker.closedMarker.setMap(null);
+        }
+    }
+
+    markers = newMarkers;
+    boundslist = newBounds;
+
+    setLoadingInfoText();
+
+    updateTable();
+}
