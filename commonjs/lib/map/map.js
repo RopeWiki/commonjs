@@ -506,7 +506,7 @@ function setLoadingInfoText() {
     if (searchMapRectangle !== undefined)
         countLocationsWithinSearchArea();
     else
-        locationsLoadedWithinArea = loadOffset;
+        locationsLoadedWithinArea = Math.min(loadOffset, locationsTotalWithinArea);
 
     var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
     if (!moreToLoad) {
@@ -549,12 +549,12 @@ function loadingFinished() {
             info = "Loaded both locations in this " + regionOrSearchArea;
             break;
         default:
-            info = "Loaded all " + locationsTotalWithinArea + " locations in this " + regionOrSearchArea;
+            info = "Loaded all " + locationsLoadedWithinArea + " locations in this " + regionOrSearchArea;
             break;
     }
 
     var totalLoaded = markers.length;
-    if (locationsTotalWithinArea !== totalLoaded) info += ". (" + totalLoaded + " total locations loaded.)";
+    if (locationsLoadedWithinArea !== totalLoaded) info += ". (" + totalLoaded + " total locations loaded.)";
 
     if (searchMapRectangle === undefined && locationsTotalWithinArea === 0) //search map was used but is now cancelled
         info = "Loaded " + totalLoaded + " total locations";
