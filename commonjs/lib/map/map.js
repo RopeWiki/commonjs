@@ -485,12 +485,15 @@ function loadMoreLocations() {
     var curuser = document.getElementById("curuser");
     if (curuser) {
         var currentUser = curuser.innerHTML;
-        $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
-            '&query=' + urlencode('[[Has page rating::+]][[Has page rating user::' + currentUser + ']][[Has page rating page::<q>' + locationsQuery + '</q>]]') +
-            '|mainlabel=-|?Has_page_rating_page|?Has_page_rating'),
-            function (data) {
-                setUserStarRatings(data);
-            });
+        setTimeout(function () {
+            $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+                    '&query=' + urlencode('[[Has page rating::+]][[Has page rating user::' + currentUser + ']][[Has page rating page::<q>' + locationsQuery + '</q>]]') +
+                    '|mainlabel=-|?Has_page_rating_page|?Has_page_rating'),
+                function (data) {
+                    setUserStarRatings(data);
+                });
+            },
+            2000);
     }
 
     loadOffset += numberToLoad;
