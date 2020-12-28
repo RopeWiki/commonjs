@@ -11,19 +11,14 @@ function togglewchk(varname) {
     weather = varval ? "on" : "";
     setCookie(varname, weather, 360*10); // 10 years
 
-    loadInlineWeather();
+    loadInlineWeather(weather);
 }
 
 function toggleStarrate() {
-    starrate = !starrate;
+    starrate = $("div#starrate :checkbox")[0].checked;
     setCookie("starrate", starrate ? "on" : "", 360 * 10); // 10 years
-    if (starrate) {
-        loadStars();
-    } else {
-        //TODO: implement this
-        //document.body.style.cursor = 'wait';
-        //window.location.reload();
-    }
+
+    updateTable();
 }
 
 function toggleLabels() {
@@ -197,9 +192,6 @@ function loadUserInterface(document) {
         var text = readmore[i].innerHTML;
         readmore[i].innerHTML = '<a href="#overviewstart" class="readmorebutton">' + text + '</a>';
     }
-
-    // load star votes
-    loadStars();
 
     // load months
     var months = document.getElementsByClassName('monthv');

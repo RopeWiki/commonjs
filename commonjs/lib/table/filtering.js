@@ -3,7 +3,6 @@ function getLocationParameters(loadLimit) {
     
     const locationParamters =
         '|%3FHas_coordinates' +
-        '|%3FHas_star_rating' + //this is raw rating rounded to integer, used for the icon selector. 4-5-5.0 = 5, 4.0-4.5 = 4, the rest rounded
         '|%3FHas_summary' +
         '|%3FHas_banner_image_file' +
         '|%3FHas_location_class' +
@@ -170,7 +169,11 @@ function updateTable() {
         newRow.innerHTML = html;
 
         numDisplayed++;
-        if (numDisplayed >= maxTableRows) break;
+        if (numDisplayed >= maxTableRows) {
+            newRow = tableNewBody.insertRow(tableNewBody.rows.length);
+            newRow.innerHTML = "&nbsp;&nbsp;Table limited to " + maxTableRows + " rows";
+            break;
+        }
     }
 
     tableCurrentBody.parentNode.replaceChild(tableNewBody, tableCurrentBody);

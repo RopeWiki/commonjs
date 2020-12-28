@@ -102,7 +102,8 @@ function searchMapButtonClicked() {
             searchMapRectangleBoundsChanged();
         });
 
-        searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;line-height:0px;position: absolute;bottom: 0;left: 12px;">click inside rect to crop</p>';
+        searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;position: absolute;bottom: -30px;left: -25px;">click inside rect to crop</p>';
+        searchButton.classList.add("cancel");
 
         searchmapn = 0;
 
@@ -116,6 +117,7 @@ function closeSearchMapRectangle(searchButton) {
     searchMapRectangle.setMap(null);
     searchMapRectangle = undefined;
     searchButton.innerHTML = "Search Map";
+    searchButton.classList.remove("cancel");
     searchmapn = -1;
     if (searchWasRun) {
         locationsAlreadyLoadedWithinQuery = 0;

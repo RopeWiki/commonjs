@@ -337,9 +337,20 @@ function getrwlist(data) {
             if (v && v.length > 0) {
                 obj.location = { lat: v[0].lat, lng: v[0].lon };
 
-                // icon
-                v = item.printouts["Has star rating"];
-                obj.stars = (v && v.length > 0) ? v[0] : 0;
+                // ratings & icon
+                v = item.printouts["Has rank rating"]; //used for sorting only
+                obj.rankRating = (v && v.length > 0) ? v[0] : 0;
+                v = item.printouts["Has total rating"]; //total of all ratings, used to select icon
+                obj.totalRating = (v && v.length > 0) ? v[0] : 0;
+                //apply formula -- raw rating rounded to integer, used for the icon selector.
+                // 4-5-5.0 = 5, 4.0-4.5 = 4, the rest rounded down to nearest int
+                obj.stars = obj.totalRating >= 4.5
+                    ? 5
+                    : Math.floor(obj.totalRating);
+                v = item.printouts["Has total counter"];
+                if (v && v.length > 0)
+                    obj.totalCounter = v[0];
+
                 v = item.printouts["Has location class"];
                 if (v && v.length > 0) {
                     obj.activity = v[0];
@@ -380,15 +391,6 @@ function getrwlist(data) {
                 if (v && v.length > 0) {
                     obj.parentRegions = parseMajorRegion(v[0]);
                 }
-                v = item.printouts["Has total rating"];
-                if (v && v.length > 0)
-                    obj.totalRating = v[0];
-                v = item.printouts["Has total counter"];
-                if (v && v.length > 0)
-                    obj.totalCounter = v[0];
-                v = item.printouts["Has rank rating"];
-                if (v && v.length > 0)
-                    obj.rankRating = v[0];
                 v = item.printouts["Has info typical time"];
                 if (v && v.length > 0) {
                     obj.typicalTime = v[0];
@@ -469,6 +471,7 @@ function loadMoreLocations() {
         ? loadLimit
         : loadLimit * 2; //if it's less than twice the load number to load all of them, then just load all of them.
 
+    //load location data
     $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
             '&query=' + urlencode('[[Category:Canyons]][[Has coordinates::+]]'+ locationsQuery) + getLocationParameters(numberToLoad) +
             "|order=descending,ascending|sort=Has rank rating,Has name" +
@@ -477,6 +480,18 @@ function loadMoreLocations() {
             var fitBounds = searchMapRectangle === undefined;
             getkmllist(data, fitBounds);
         });
+
+    //load user star ratings
+    var curuser = document.getElementById("curuser");
+    if (curuser) {
+        var currentUser = curuser.innerHTML;
+        $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+            '&query=' + urlencode('[[Has page rating::+]][[Has page rating user::' + currentUser + ']][[Has page rating page::<q>' + locationsQuery + '</q>]]') +
+            '|mainlabel=-|?Has_page_rating_page|?Has_page_rating'),
+            function (data) {
+                setUserStarRatings(data);
+            });
+    }
 
     loadOffset += numberToLoad;
 }
@@ -511,25 +526,26 @@ function setLoadingInfoText() { //called at the end of updateTable()
 
     var regionOrSearchArea = searchMapRectangle === undefined ? "region" : "search area";
 
-    info += locationsTotalWithinArea + " locations in this " + regionOrSearchArea + " (highest rated locations are loaded first).";
+    info += locationsTotalWithinArea + " locations in this " + regionOrSearchArea + " (highest rated locations are loaded first)";
 
-    if (locationsLoadedWithinArea !== totalLoaded) info += ". " + totalLoaded + " total locations loaded.";
+    if (locationsLoadedWithinArea !== totalLoaded) info += ". " + totalLoaded + " total locations loaded";
 
-    info += getFilteringInfo();
+    var filterInfo = getFilteringInfo();
+    if (filterInfo) info += "." + filterInfo;
 
     var loadingInfo = document.getElementById("loadinginfo");
     loadingInfo.innerHTML = info;
-
-
-    //this is the link to load more that is below the bottom of the table, but it should only affect the rows on the table
-    var morelist = $(".loctable .smw-template-furtherresults a");
-    if (morelist.length === 1) {
-        morelist[0].href = 'javascript:loadMoreLocations();';
-    }
 }
 
 function loadingFinished() {
+
     // loaded all available locations
+
+    var loadmore = document.getElementById("loadmore");
+    loadmore.innerHTML = "";
+
+    if (isNaN(locationsLoadedWithinArea)) return; //page is first loading -- return
+
     var regionOrSearchArea = searchMapRectangle === undefined ? "region" : "search area";
     var info;
     switch (locationsLoadedWithinArea) {
@@ -558,12 +574,6 @@ function loadingFinished() {
     
     var loadingInfo = document.getElementById("loadinginfo");
     loadingInfo.innerHTML = info;
-
-    var loadmore = document.getElementById("loadmore");
-    loadmore.innerHTML = "";
-
-    //var morelist = $(".loctable .smw-template-furtherresults a");
-    //if (morelist.length === 1) morelist[0].parentNode.removeChild(morelist[0]);
 }
 
 function setHeaderText() {
@@ -611,7 +621,7 @@ function getFilteringInfo() {
         var totalLoaded = markers.length;
 
         if (totalLoaded === locationsDisplayed)
-            filterInfo += "all " + totalLoaded;
+            filterInfo += (locationsDisplayed !== 1) ? "all " + totalLoaded : "the one";
         else
             switch (locationsDisplayed) {
             case 0:

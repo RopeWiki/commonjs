@@ -8,7 +8,7 @@ var STARLIST = [
 ];
 
 function getStar(num, size) {
-    var pre = '<img width="' + size + 'px" height="' + size + 'px" src="', pos = '"/>'
+    var pre = '<img width="' + size + 'px" height="' + size + 'px" src="', pos = '"/>';
     return pre + STARLIST[4] + pos;
 }
 
@@ -23,7 +23,6 @@ function getStarFraction(num) {
         return 1;
     else
         return 0;
-    //if (i!=4) line+='&zwj;';
 }
 
 function getStars(num, numRatings, size) {
@@ -34,17 +33,18 @@ function getStars(num, numRatings, size) {
     }
     if (numRatings > 0)
         line += '<span class="starsub">' + numRatings + '</span>';
-    line += '</span>'
+    line += '</span>';
     return line;
 }
 
-function getStarsVote(num, unum, ratings, size) {
+function getStarsVote(num, unum, ratings) {
     var line = '<span class="starRate" style="white-space: nowrap;">';
     var text = ['Delete', 'Not worth doing', 'Worthwhile', 'Ok', 'Great', 'Among the best'];
+    var i;
     if (!document.getElementById('curuser'))
-        for (var i = 0; i <= 5; ++i)
+        for (i = 0; i <= 5; ++i)
             text[i] = 'Log in to rate';
-    for (var i = 1; i <= 5; ++i) {
+    for (i = 1; i <= 5; ++i) {
         line += '<b id="' + i + '" class="starRate' + getStarFraction(num) + '" style="cursor:pointer" onclick="starVote(this)"><span class="starText starvText">' + text[i] + '</span></b>';
         num -= 1;
     }
@@ -52,17 +52,18 @@ function getStarsVote(num, unum, ratings, size) {
         line += '<b id="0" class="starx starsub" style="color:red;cursor:pointer;" onclick="starVote(this)">X<span class="starText starvText">' + text[0] + '</span></b>';
     else if (ratings > 0)
         line += '<span class="starsub">' + ratings + '</span>';
-    line += '</span>'
+    line += '</span>';
+
     return line;
 }
 
 function getStarsId(elem) {
     var tr = elem.parentNode;
-    while (tr != null && tr.nodeName != 'TR')
+    while (tr != null && tr.nodeName !== 'TR')
         tr = tr.parentNode;
     if (tr == null)
         return null;
-    var link = tr.getElementsByTagName('A')
+    var link = tr.getElementsByTagName('A');
     if (link && link[0])
         return link[0].innerHTML; //link.title;
     return null;
@@ -78,7 +79,7 @@ function starVote(elem) {
         var user = euser.innerHTML;
         var fr = document.createElement("IFRAME");
         var target = 'Votes:' + id + '/' + user;
-        if (stars == '0') {
+        if (stars === '0') {
             stars = "";
             user = "";
         }
@@ -122,9 +123,24 @@ function starVote(elem) {
     }
 }
 
-function loadStars() {
+function setUserStarRatings(data) {
+    $.each(data.query.results,
+        function(i, item) {
+            var name = item.printouts["Has page rating page"][0].fulltext;
+            var stars = item.printouts["Has page rating"][0];
+
+            var marker = markers.filter(function (x) {
+                return x.name === name;
+            })[0];
+
+            if (marker != undefined)
+                marker.locationData.userStars = stars;
+        });
+}
+
+function loadStars(enabled) {
     var url = window.location.href.toString();
-    var onlyuser = starrate || url.indexOf('onlyuser=') > 0 || url.indexOf('starratechk=') > 0;
+    var onlyuser = enabled || url.indexOf('onlyuser=') > 0 || url.indexOf('starratechk=') > 0;
     var starsv = document.getElementsByClassName('starv');
 
     for (var i = 0; i < starsv.length; i++) {
@@ -139,8 +155,7 @@ function loadStars() {
         var id = getStarsId(starsv[i]);
         if (id != null) {
             var ratings = -1;
-            var ustars = -1;
-            ustars = parseFloat(str[1]);
+            var ustars = parseFloat(str[1]);
             var strp = str[1].split("#");
             if (strp.length > 1)
                 ratings = parseInt(strp[1]);
@@ -149,7 +164,7 @@ function loadStars() {
                 stars = ustars;
                 ratings = 0;
             }
-            if (starrate) {
+            if (enabled) {
                 // vote stars
                 starsv[i].innerHTML = getStarsVote(stars, ustars, ratings, 16);
                 if (ustars > 0)
@@ -169,8 +184,54 @@ function loadStars() {
     }
 }
 
-function getStarDisplay(location, stars, numRatings, size) {
+
+function getUserStarDisplay(location, stars, ustars, numRatings, size) {
+
+    if (starrate) {
+        // display user's stars
+        return getStarsVoteDisplay(stars, ustars, numRatings);
+    } else {
+        // display general star rates
+        return getStarDisplay(location, stars, ustars, numRatings, size);
+    }
+}
+
+function getStarsVoteDisplay(stars, ustars, numRatings) {
     if (!stars) stars = 0;
+    if (!ustars) ustars = 0;
+    else stars = ustars;
+    if (!numRatings) numRatings = 0;
+
+    var starDisplay = {}, i;
+
+    var line = '<span class="starRate" style="white-space: nowrap;">';
+    var text = ['Delete', 'Not worth doing', 'Worthwhile', 'Ok', 'Great', 'Among the best'];
+    
+    if (!document.getElementById('curuser'))
+        for (i = 0; i <= 5; ++i)
+            text[i] = 'Log in to rate';
+    for (i = 1; i <= 5; ++i) {
+        line += '<b id="' + i + '" class="starRate' + getStarFraction(stars) + '" style="cursor:pointer" onclick="starVote(this)"><span class="starText starvText">' + text[i] + '</span></b>';
+        stars -= 1;
+    }
+    if (ustars > 0)
+        line += '<b id="0" class="starx starsub" style="color:red;cursor:pointer;" onclick="starVote(this)">X<span class="starText starvText">' + text[0] + '</span></b>';
+    else if (numRatings > 0)
+        line += '<span class="starsub">' + numRatings + '</span>';
+    line += '</span>';
+
+    starDisplay.title = "";
+    starDisplay.innerHTML = line;
+    starDisplay.className = "starv";
+    if (ustars > 0)
+        starDisplay.className += ' votedrow';
+
+    return starDisplay;
+}
+
+function getStarDisplay(location, stars, ustars, numRatings, size) {
+    if (!stars) stars = 0;
+    if (!ustars) ustars = 0;
     if (!numRatings) numRatings = 0;
     if (!size) size = 16;
 
@@ -178,6 +239,9 @@ function getStarDisplay(location, stars, numRatings, size) {
 
     starDisplay.innerHTML = '<a href="' + SITE_BASE_URL + '/List_ratings?location=' + location + '">' + getStars(stars, numRatings, size) + '</a>';
     starDisplay.title = stars.toFixed(1) + '*' + (numRatings <= 0 ? '' : ' (' + numRatings + ' ratings)');
+    starDisplay.className = "starv";
+    if (ustars > 0)
+        starDisplay.className += ' votedsub';
 
     return starDisplay;
 }

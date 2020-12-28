@@ -19,10 +19,10 @@ function assembleTableHeaderRow() {
             '</th>' +
             '<th class="rwHdr">' +
                 '<div id="starrate" class="schk gmnoprint toption notranslate"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My ratings</label></div>' +
-                '<span id="sort-rankRating" title="Sort by quality and popularity" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-rankRating" title="Sort by star rating formula" class="rwSortIcon gmnoprint notranslate"></span>' +
                 '<span class="rwText"><a href="/StarRank" title="StarRank">Quality</a></span>' +
-                '<span id="sort-totalRating" title="Sort by quality" class="rwSortIcon gmnoprint notranslate"></span>' +
-                '<span id="sort-totalCounter" title="Sort by popularity" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-totalRating" title="Sort by raw user rating" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-totalCounter" title="Sort by number of ratings" class="rwSortIcon gmnoprint notranslate"></span>' +
             '</th>' +
         '<th class="rwHdr">' +
                 '<div class="fchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div>' +
@@ -70,7 +70,7 @@ function assembleTableRow(item) {
         '</td></tr></tbody></table></td>';
 
     const Stars =
-        '<td class="starv" title="[StarsTitle]">[StarsIcons]</td >';
+        '<td class="[StarsClassname]" title="[StarsTitle]">[StarsIcons]</td >';
 
     const TechnicalRating =
         '<td class="uaca">[Technical Rating]</td>';
@@ -101,10 +101,11 @@ function assembleTableRow(item) {
         .replace(/\[RegionLink]/, linkify(item.region))
         .replace(/\[ParentRegionLinks]/, getTableParentRegionLinks(item.parentRegions));
 
-    var starDisplay = getStarDisplay(item.id, item.totalRating, item.totalCounter, 16);
+    var starDisplay = getUserStarDisplay(item.id, item.totalRating, item.userStars, item.totalCounter, 16);
     var quality = Stars
         .replace(/\[StarsTitle]/, starDisplay.title)
-        .replace(/\[StarsIcons]/, starDisplay.innerHTML);
+        .replace(/\[StarsIcons]/, starDisplay.innerHTML)
+        .replace(/\[StarsClassname]/, starDisplay.className);
 
     var technicalRating = TechnicalRating
         .replace(/\[Technical Rating]/, getTableTechnicalRating(item.technicalRating));

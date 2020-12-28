@@ -23,9 +23,9 @@ function initializeGlobalVariables() {
         starrate = true;
     labels = getCookie("labels");
     slideshowchk = getCookie("slideshowchk", "undefined");
-    if (slideshowchk == "undefined")// && $(window).width()<1200)
+    if (slideshowchk === "undefined")// && $(window).width()<1200)
         slideshowchk = "on";
-    slideshowchk = slideshowchk != "";
+    slideshowchk = slideshowchk !== "";
 }
 
 // ===== other global variables:

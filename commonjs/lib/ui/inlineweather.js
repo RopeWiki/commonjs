@@ -1,13 +1,13 @@
 ﻿
 //inline weather
-function loadInlineWeather() {
+function loadInlineWeather(enabled) {
     var coords = "";
     var kmlmarker = document.getElementById('kmlmarker');
     if (kmlmarker)
         coords = kmlmarker.innerHTML.toString().split(',').map(function (item) { return item.trim(); });
 
     var weatherdiv = document.getElementById('weatherdiv');
-    if (coords.length >= 2 && weatherdiv && weather) {
+    if (coords.length >= 2 && weatherdiv && enabled) {
 
         //May2018 WUnderground API was shutdown
         //Aug2020 DarkSky API was shutdown (purchased by Apple)
