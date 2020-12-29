@@ -4,7 +4,10 @@ var dragging = false;
 
 function initResizeControl() {
 
-    if (iOS()) return;
+    var mw = $("#mapbox").width();
+    var dw = $(window).width() - mw;
+    if (dw < 50 || mw < 500)
+        return; //mobile device
     
     var resizeControl = document.createElement('div');
     resizeControl.id = 'dragbar';

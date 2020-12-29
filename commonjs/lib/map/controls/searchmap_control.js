@@ -102,7 +102,7 @@ function searchMapButtonClicked() {
             searchMapRectangleBoundsChanged();
         });
 
-        searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;position: absolute;bottom: -30px;left: -25px;">click inside rect to crop</p>';
+        searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;position:relative;line-height:0px;margin:0px;">click inside rect to crop</p>';
         searchButton.classList.add("cancel");
 
         searchmapn = 0;

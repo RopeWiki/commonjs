@@ -19,7 +19,7 @@ function assembleTableHeaderRow() {
             '</th>' +
             '<th class="rwHdr">' +
                 '<div id="starrate" class="schk gmnoprint toption notranslate"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My ratings</label></div>' +
-                '<span id="sort-rankRating" title="Sort by star rating formula" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-rankRating" title="Sort by combined Quality & Popularity formula" class="rwSortIcon gmnoprint notranslate"></span>' +
                 '<span class="rwText"><a href="/StarRank" title="StarRank">Quality</a></span>' +
                 '<span id="sort-totalRating" title="Sort by raw user rating" class="rwSortIcon gmnoprint notranslate"></span>' +
                 '<span id="sort-totalCounter" title="Sort by number of ratings" class="rwSortIcon gmnoprint notranslate"></span>' +

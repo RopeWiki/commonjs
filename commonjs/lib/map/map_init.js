@@ -223,7 +223,8 @@ function loadInteractiveMap() {
     if (kmllistquery != null) {
         kmlmap = "kmllistquery";
         kmllist = kmllistquery;
-        locationsQuery = urldecode(kmllistquery.innerHTML);
+        locationsQuery = kmllistquery.innerHTML.split("+").join(" "); //mediawiki encodes spaces as "+" characters
+        locationsQuery = decodeURIComponent(locationsQuery); //now decode the url encoded string
         
         // load dynamic query
         loadMoreLocations();
