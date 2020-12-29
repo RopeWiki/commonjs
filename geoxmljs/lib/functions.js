@@ -89,6 +89,9 @@ function validateIconUrl(href) {
 
         if (href.includes("drinkingwater.png"))
             href = 'http://maps.google.com/mapfiles/ms/icons/drinking_water.png';
+
+        if (href.includes("nps-caving.png"))
+            href = '/images/1/13/CavingIcon.png';
     }
 
     // add others as needed

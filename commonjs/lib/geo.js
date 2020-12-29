@@ -23,7 +23,7 @@ function distance(p1, p2) {
 
 // See uconv below.
 function ftStr(feet, space) {
-    if ((typeof feet == "undefined")) return ""; //empty
+    if (typeof feet == "undefined" || feet === null) return ""; //empty
 
     feet = feet.toString().trim();
     if (!feet) return ""; //whitespace
@@ -50,12 +50,12 @@ function ftStr(feet, space) {
 
 // See uconv below.
 function miStr(miles, space) {
-    if ((typeof miles == "undefined")) return ""; //empty 
+    if (typeof miles == "undefined" || miles === null) return ""; //empty 
 
     miles = miles.toString().trim();
     if (!miles) return ""; //whitespace
 
-    if (miles.includes("ft") || miles.includes("m")) return ftStr(miles, space); //already converted to ft or m
+    if (miles.includes("ft") || (miles.includes("m") && !miles.includes("mi") && !miles.includes("km"))) return ftStr(miles, space); //already converted to ft or m
 
     miles = miles.replace(",", "");
 
