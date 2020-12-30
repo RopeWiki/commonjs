@@ -6,12 +6,12 @@ var m2ft = 3.28084;
 var geoElevationService;
 
 /**
- * Compute the distance between two (lat,lng) points.
+ * Compute the distance between two (lat,lng) points
  *
- * @param {Object with lat and lng properties, each in degrees} p1 First point.
- * @param {Object with lat and lng properties, each in degrees} p2 Second point.
+ * @param {Object with lat and lng properties, each in degrees} p1 First point
+ * @param {Object with lat and lng properties, each in degrees} p2 Second point
  *
- * @return {float} Miles between the specified points.
+ * @return {float} Miles between the specified points
  */
 function distance(p1, p2) {
     var e = Math, ra = e.PI / 180;
@@ -21,7 +21,7 @@ function distance(p1, p2) {
     return f * 6378.137 * km2mi;
 }
 
-// See uconv below.
+// See uconv below
 function ftStr(feet, space) {
     if (typeof feet == "undefined" || feet === null) return ""; //empty
 
@@ -48,7 +48,7 @@ function ftStr(feet, space) {
     return Number(feet.toPrecision(2)) + (space ? "&nbsp;" : "") + (metric ? "m" : "ft");
 }
 
-// See uconv below.
+// See uconv below
 function miStr(miles, space) {
     if (typeof miles == "undefined" || miles === null) return ""; //empty 
 
@@ -79,7 +79,37 @@ function miStr(miles, space) {
     return Number(miles.toPrecision(decimalPos)) + (space ? "&nbsp;" : "") + (metric ? "km" : "mi");
 }
 
-// called by uconv below.
+// See uconv below
+function miExStr(milesEx) { //locate the mi string within and convert it, leaving surrounding text as-is
+    if (typeof milesEx == "undefined" || milesEx === null) return ""; //empty 
+
+    milesEx = milesEx.toString().trim();
+    if (!milesEx) return ""; //whitespace
+
+    var converted = "";
+    var cursor = 0;
+
+    const regex = /([\d.]+)\s*(min|mi|km)/g; //finds floating point or numbers
+    
+    var matches;
+    while ((matches = regex.exec(milesEx)) !== null) {
+        if (matches === undefined) break;
+
+        var match = matches[0];
+        var units = matches[2];
+        if (units === "min") continue;
+        var convertedMatch = miStr(match);
+
+        converted += milesEx.substr(cursor, matches.index) + convertedMatch;
+
+        cursor = regex.lastIndex;
+    }
+    converted += milesEx.substr(cursor);
+
+    return converted;
+}
+
+// called by uconv below
 function rap(raps, space) {
     if (!raps || !raps.trim()) return ""; //empty or whitespace
 
@@ -89,19 +119,19 @@ function rap(raps, space) {
 }
 
 /**
- * Convert a value to a human-readable string with units according to locale based on `metric` global variable.
+ * Convert a value to a human-readable string with units according to locale based on `metric` global variable
  *
  * @see  ft, mi functions above
  *
  * @param {string}                               str String representation of a distance, possibly followed by up-down
  *                                                   arrow (unicode 2195) and then a height in feet, sometimes with a
- *                                                   non-breaking space (e.g., "2.7", "1.5&nbsp;\u21951000").
+ *                                                   non-breaking space (e.g., "2.7", "1.5&nbsp;\u21951000")
  * @param {function(float value, bool hasSpace)} cnv Conversion function accepting (float value, bool hasSpace) and
  *                                                   returning a string representation of the appropriately-rounded
- *                                                   value followed by units.
+ *                                                   value followed by units
  *
  * @return {string} Human-readable string with units according to locale (e.g., "2.7mi",
- *                  "1.5&nbsp;mi \u21951000&nbsp;ft").
+ *                  "1.5&nbsp;mi \u21951000&nbsp;ft")
  */
 function uconv(str, cnv) {
     if (str == null || str == "")

@@ -8,16 +8,23 @@ function toggleMetric() {
 }
 
 function setMetricFields() {
+    var i, texts;
 
     //update fields in sidebar
-    var texts = document.getElementsByClassName('uft');
-    for (var i = 0; i < texts.length; i++)
+    texts = document.getElementsByClassName('uft');
+    for (i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, ftStr);
+
     texts = document.getElementsByClassName('umi');
-    for (var i = 0; i < texts.length; i++)
+    for (i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, miStr);
+
+    texts = document.getElementsByClassName('umi-ex'); //extended miles, may have text other than the miles
+    for (i = 0; i < texts.length; i++)
+        texts[i].innerHTML = uconv(texts[i].innerHTML, miExStr);
+
     texts = document.getElementsByClassName('urap');
-    for (var i = 0; i < texts.length; i++)
+    for (i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, rap);
 
     //update table
