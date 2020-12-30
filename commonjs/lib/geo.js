@@ -89,7 +89,7 @@ function miExStr(milesEx) { //locate the mi string within and convert it, leavin
     var converted = "";
     var cursor = 0;
 
-    const regex = /([\d.]+)\s*(min|mi|km)/g; //finds floating point or numbers
+    const regex = /([\d.]+)\s*(min|miles|mile|mi|kilometers|kilometer|km)/g; //finds floating point or numbers
     
     var matches;
     while ((matches = regex.exec(milesEx)) !== null) {
