@@ -136,6 +136,8 @@ function setUserStarRatings(data) {
             if (marker != undefined)
                 marker.locationData.userStars = stars;
         });
+
+    updateTable();
 }
 
 function loadStars(enabled) {
