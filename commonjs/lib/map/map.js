@@ -460,11 +460,23 @@ function loadMoreLocations() {
         $.get(geturl(urlCount), function (data) {
             if (data !== undefined) {
                 locationsTotalWithinArea = Number(data);
-                loadMoreLocations();
+                loadMoreLocations(); //self callback
             }
         });
 
         return;
+    }
+
+    //only call to load more locations if we haven't already loaded all available locations in the search box
+    if (searchMapRectangle !== undefined) {
+        locationsLoadedWithinArea = countLocationsWithinSearchArea();
+
+        var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
+        if (!moreToLoad) {
+            hideSearchMapLoader();
+            setLoadingInfoText();
+            return;
+        }
     }
 
     var numberToLoad = locationsTotalWithinArea - (loadOffset + loadLimit * 2) > 0
@@ -503,7 +515,7 @@ function setLoadingInfoText() { //called at the end of updateTable()
 
     setHeaderText();
 
-    locationsLoadedWithinArea = searchMapRectangle !== undefined
+    locationsLoadedWithinArea = searchMapRectangle !== undefined //set this before possibly proceeding to loadingFinished() in the next line
         ? countLocationsWithinSearchArea()
         : Math.min(loadOffset, locationsTotalWithinArea);
 
@@ -511,6 +523,12 @@ function setLoadingInfoText() { //called at the end of updateTable()
         loadingFinished();
     }
     
+    var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
+    if (!moreToLoad) {
+        loadingFinished();
+        return;
+    }
+
     // more button
     var loadmore = document.getElementById("loadmore");
     loadmore.innerHTML = '<button onclick="loadMoreLocations()">+</button> ';
@@ -518,12 +536,6 @@ function setLoadingInfoText() { //called at the end of updateTable()
     var info = "Loaded ";
 
     var totalLoaded = markers.length;
-
-    var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
-    if (!moreToLoad) {
-        loadingFinished();
-        return;
-    }
 
     info += locationsLoadedWithinArea + " of ";
 

@@ -142,7 +142,6 @@ function searchMapRectangleBoundsChanged() {
     locationsTotalWithinArea = undefined; //let loadMoreLocations retrieve the total
     loadOffset = 0;
 
-    isLoading = true;
     displaySearchMapLoader();
     
     loadMoreLocations();
