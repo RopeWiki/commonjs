@@ -4,7 +4,7 @@ function toggleMetric() {
 
     setMetricFields();
 
-    loadInlineWeather();
+    loadInlineWeather(weather);
 }
 
 function setMetricFields() {

@@ -434,7 +434,7 @@ function loadUserInterface(document) {
     }
 
     // load inline weather
-    loadInlineWeather();
+    loadInlineWeather(weather);
 
     // waterflow
     var maptype = document.getElementById("kmltype");
