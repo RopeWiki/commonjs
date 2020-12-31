@@ -176,6 +176,15 @@ function updateTable() {
         }
     }
 
+    //add 'star rating info bar' if star rating is checked
+    if (starrate) {
+        var starRatingInfoRow = tableNewBody.insertRow(0);
+        var colSpan = 9;
+        starRatingInfoRow.innerHTML = '<th colspan="' + colSpan + '" class="rwwarningbox" style="font-size:x-small">YOUR RATINGS ARE HIGHLIGHTED IN GREEN, CLICK ON THE STARS TO ADD/CHANGE RATINGS, X TO DELETE</th>';
+        starRatingInfoRow.className = 'schkon';
+    }
+
+
     tableCurrentBody.parentNode.replaceChild(tableNewBody, tableCurrentBody);
 
 

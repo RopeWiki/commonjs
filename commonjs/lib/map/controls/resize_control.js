@@ -6,8 +6,9 @@ function initResizeControl() {
 
     var mw = $("#mapbox").width();
     var dw = $(window).width() - mw;
-    if (dw < 50 || mw < 500)
-        return; //mobile device
+    if (dw < 200 || //mapbox and right sidebar are not side-by-side
+        mw < 330)  //mapbox too small to show resize control, overlaps 'Search Map' button
+        return; //hide the resize control, likely mobile device
     
     var resizeControl = document.createElement('div');
     resizeControl.id = 'dragbar';

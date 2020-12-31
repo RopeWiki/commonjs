@@ -7,11 +7,6 @@ var STARLIST = [
     SITE_BASE_URL + '/images/4/41/GoldStar4.png'
 ];
 
-function getStar(num, size) {
-    var pre = '<img width="' + size + 'px" height="' + size + 'px" src="', pos = '"/>';
-    return pre + STARLIST[4] + pos;
-}
-
 function getStarFraction(num) {
     if (num >= 0.875)
         return 4;
@@ -86,7 +81,7 @@ function starVote(elem) {
 
         fr.src = SITE_BASE_URL + '/api.php?action=sfautoedit&form=Page_rating&target=' + target + '&query=Page_rating[Page]=' + id + '%26Page_rating[Rating]=' + stars + '%26Page_rating[User]=' + user;
         fr.style.display = "none";
-        //alert(fr.src);
+
         document.body.appendChild(fr);
 
         // update
