@@ -145,7 +145,7 @@ var tooltip = function () {
 
 function addhighlight(idlist) {
     for (var i = 0; i < markers.length; ++i)
-        if (idlist.indexOf(markers[i].name) >= 0) {
+        if (idlist.includes(markers[i].name)) {
             var m = markers[i];
             if (m.highlight)
                 continue;

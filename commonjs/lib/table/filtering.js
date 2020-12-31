@@ -134,8 +134,8 @@ function filterMarkers(refreshTable) {
         marker.isVisible = display;
         marker.setMap(display ? map : null);
 
-        if (marker.closedMarker)
-            marker.closedMarker.setMap(display ? map : null);
+        if (marker.closedMarker) marker.closedMarker.setMap(display ? map : null);
+        if (marker.highlight) marker.highlight.setMap(display ? map : null);
     }
 
     if (refreshTable) updateTable();
@@ -179,12 +179,15 @@ function updateTable() {
     tableCurrentBody.parentNode.replaceChild(tableNewBody, tableCurrentBody);
 
 
-    //set checkboxes
-    var metricCheckbox = document.getElementsByClassName('uchk');
-    metricCheckbox[0].firstChild.firstChild.checked = metric;
+    //set checkboxes (these checkboxes no longer exist on page load, not until after the table is drawn)
+    var myRatingsCheckbox = document.getElementsByClassName('schk');
+    myRatingsCheckbox[0].firstChild.firstChild.checked = starrate;
 
     var frenchCheckbox = document.getElementsByClassName('fchk');
     frenchCheckbox[0].firstChild.firstChild.checked = french;
+
+    var metricCheckbox = document.getElementsByClassName('uchk');
+    metricCheckbox[0].firstChild.firstChild.checked = metric;
 
     setLoadingInfoText();
 }

@@ -185,6 +185,7 @@ function clearLocationsOutside(bounds) {
         } else {
             marker.setMap(null);
             if (marker.closedMarker) marker.closedMarker.setMap(null);
+            if (marker.highlight) marker.highlight.setMap(null);
         }
     }
 
