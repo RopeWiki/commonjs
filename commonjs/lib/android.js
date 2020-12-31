@@ -1,7 +1,7 @@
 function isAndroid() {
     if (typeof Android != "undefined")
         return true;
-    if (urlget(window.location.href.toString(), "debugandroid", "") != "")
+    if (urlget(window.location.href.toString(), "debugandroid", "") !== "")
         return true;
     return false;
 }
@@ -38,6 +38,7 @@ function WebViewStyle() {
     //style += " @media only screen and (max-width: 800px) { .staticmap { width:100% !important; height:auto !important; } }";
 
     var pinmap = document.getElementsByClassName("pinmap");
+    var i;
     for (var i = 0, n = 1; i < pinmap.length; ++i, ++n) {
         var num = n.toString();
         if (num.length < 2) num = "0" + num;
@@ -46,16 +47,17 @@ function WebViewStyle() {
     }
 
     var kmltitle = document.getElementById("kmltitle");
+    var size;
     if (kmltitle) {
-        var size = viewsize();
+        size = viewsize();
         remove += " #firstHeading ";
         style += " .kmlmapdisplay { width:" + size + "px !important; height:" + size + "px !important; }";
     }
 
     var kmlsummary = document.getElementById("kmlsummary");
     if (kmlsummary) {
-        var size = viewsize();
-        remove += " #firstHeading, #displaysummary, "
+        size = viewsize();
+        remove += " #firstHeading, #displaysummary, ";
         style += " #mapbox { width:" + size + "px !important; height:" + size + "px !important; }";
     }
 
@@ -66,8 +68,8 @@ function WebViewStyle() {
     $('.tableregion').remove();
     var mapmenu = document.getElementById("mapmenu");
     if (mapmenu) {
-        psum = $('a:contains("Printable Summary")')
-        pmap = $('a[href*="/Map?pagename"]');
+        var psum = $('a:contains("Printable Summary")');
+        var pmap = $('a[href*="/Map?pagename"]');
         var menu = [];
         if (kmlsummary) {
             menu.push('<a class="button-link" href="' + kmlurl(window.location.href.toString()) + '">Open KML</a>');
@@ -77,7 +79,7 @@ function WebViewStyle() {
             menu.push('<a class="button-link" href="' + kmlurl(psum[0].href) + '">Open KML</a>');
         } else if (pmap.length > 0) {
             $('#kmlmapdisplay').remove();
-            elem = $('a:contains("Download KML")')
+            var elem = $('a:contains("Download KML")')
             if (elem.length > 0) {
                 menu.push('<a class="button-link" href="' + pmap[0].href + '">View Map</a>');
                 menu.push('<a class="button-link" href="' + elem[0].href + '">Open KML</a>');
@@ -89,7 +91,7 @@ function WebViewStyle() {
 
     // erase  {display:none !important; }
     var removelist = remove.split(",").join(" ").split(" ");
-    for (var i = 0; i < removelist.length; ++i)
+    for (i = 0; i < removelist.length; ++i)
         if (removelist[i].length > 0)
             $(removelist[i]).remove();
 

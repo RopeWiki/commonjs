@@ -8,9 +8,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "uglify-js": "~3.10.0",
+    "@types/googlemaps": "^3.43.0",
+    "@types/jquery": "^3.5.5",
     "fs": "~0.0.1-security",
-    "path": "~0.12.7"
+    "path": "~0.12.7",
+    "uglify-js": "~3.10.0",
+    "webpack": "^5.11.1",
+    "webpack-cli": "^4.3.0"
   },
   "scripts": {
     "build": "node build.js"

@@ -1,4 +1,6 @@
-﻿//google maps custom control to create a dropdown list for the map element
+﻿// @ts-check
+
+//google maps custom control to create a dropdown list for the map element
 
 /**
  This is how the structure of the id's and class naming goes (using map-layer as the example):

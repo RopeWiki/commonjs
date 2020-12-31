@@ -69,15 +69,16 @@ var CollapsibleLists =
 
             // REGION ROPEWIKI PATCH
             var lis, tag;
-            if ((lis = node.getElementsByTagName(tag = 'A')).length == 0)
+            if ((lis = node.getElementsByTagName(tag = 'A')).length === 0)
                 lis = node.getElementsByTagName(tag = 'SPAN');
             var list = [], titles = [];
-            for (var index = 0; index < lis.length; index++)
+            var index;
+            for (index = 0; index < lis.length; index++)
                 list.push(lis[index]);
 
-            for (var index = 0; index < list.length; index++) {
+            for (index = 0; index < list.length; index++) {
                 var dup = -1;
-                if (tag == 'A') {
+                if (tag === 'A') {
                     dup = titles.indexOf(list[index].href);
                     titles.push(list[index].href);
                 } else {
@@ -87,26 +88,26 @@ var CollapsibleLists =
                 if (dup < 0) continue;
                 // duplicate node! find li nodes
                 var li1 = list[index];
-                while (li1 && li1.tagName != "LI")
+                while (li1 && li1.tagName !== "LI")
                     li1 = li1.parentNode;
                 var uls1 = li1.getElementsByTagName('UL');
                 var li2 = list[dup];
-                while (li2 && li2.tagName != "LI")
+                while (li2 && li2.tagName !== "LI")
                     li2 = li2.parentNode;
                 var uls2 = li2.getElementsByTagName('UL');
 
-                if (uls1.length > 0 && uls2.length == 0)
+                if (uls1.length > 0 && uls2.length === 0)
                     li2.appendChild(uls1[0].cloneNode(true));
-                else if (uls2.length > 0 && uls1.length == 0)
+                else if (uls2.length > 0 && uls1.length === 0)
                     li1.appendChild(uls2[0].cloneNode(true));
             }
 
             // loop over the list items within this node
-            var lis = node.getElementsByTagName('li');
-            for (var index = 0; index < lis.length; index++) {
+            lis = node.getElementsByTagName('li');
+            for (index = 0; index < lis.length; index++) {
 
                 // check whether this list item should be collapsible
-                if (!doNotRecurse || node == lis[index].parentNode) {
+                if (!doNotRecurse || node === lis[index].parentNode) {
 
                     // prevent text from being selected unintentionally
                     if (lis[index].addEventListener) {
@@ -158,11 +159,11 @@ var CollapsibleLists =
                 //    li = li.parentNode;
 
                 // only process LI node events
-                if (li.nodeName != 'LI')
+                if (li.nodeName !== 'LI')
                     return;
 
                 // toggle the state of the node if it was the target of the event
-                if (li == node) {
+                if (li === node) {
                     toggle(node);
                     getregioncount();
                 }
@@ -188,10 +189,10 @@ var CollapsibleLists =
 
                 // find the parent list item of this unordered list
                 var li = uls[index];
-                while (li.nodeName != 'LI') li = li.parentNode;
+                while (li.nodeName !== 'LI') li = li.parentNode;
 
                 // style the unordered list if it is directly within this node
-                if (li == node) {
+                if (li === node) {
                     uls[index].style.display = (open ? 'block' : 'none');
 
                     // on-demand region count
@@ -219,7 +220,7 @@ var CollapsibleLists =
         function save(node, open) {
             var href = null;
             var links = node.getElementsByTagName("a");
-            if (links.length == 0)
+            if (links.length === 0)
                 links = node.getElementsByTagName("span");
             if (links.length > 0)
                 href = links[0].innerHTML;
@@ -236,7 +237,7 @@ var CollapsibleLists =
             } else {
                 // save status
                 var str = getCookie(clistcookie);
-                str = str.split(href).join('')
+                str = str.split(href).join('');
                 if (open)
                     str += href;
                 setCookie(clistcookie, str);
@@ -278,13 +279,13 @@ var CollapsibleLists =
         function regioncountlist(elem, list) {
             for (var i = 0; i < elem.childNodes.length; ++i) {
                 var child = elem.childNodes[i];
-                if (child.style && child.style.display != 'none') {
+                if (child.style && child.style.display !== 'none') {
                     if (list.length < 30 && child.className && child.className.indexOf('regioncount') >= 0) {
                         $(child).removeClass('regioncount');
                         list.push(child);
                     }
                     if (child.childNodes.length > 0)
-                        if (child.tagName == 'LI')
+                        if (child.tagName === 'LI')
                             regioncountlist(child, list);
                 }
             }

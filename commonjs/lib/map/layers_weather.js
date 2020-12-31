@@ -1,4 +1,7 @@
-﻿
+﻿// @ts-nocheck
+
+//import { map } from "../global_variables";
+
 // Section for managing and animating weather radar layers
 
 var radarInterval;
@@ -41,7 +44,7 @@ function displayWeatherLayer(showing) {
     }
 }
 
-function toggleWeatherLayerStatic() {
+function toggleWeatherLayerStatic() { //currently not used
     if (!showing) {
 
         var radarLayer = new google.maps.ImageMapType({
@@ -55,7 +58,7 @@ function toggleWeatherLayerStatic() {
         map.overlayMapTypes.push(radarLayer);
         showing = 'true';
 
-        zoomOut();
+        zoomOutThenStartAnimation(); //there is no animation, but call this method anyway
     } else {
         map.overlayMapTypes.pop();
         showing = null;

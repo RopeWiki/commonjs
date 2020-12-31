@@ -1,3 +1,7 @@
+// @ts-checkoff
+
+//import { boundslist, map } from "../global_variables";
+
 function initializemap() {
 
     if ($("#kmllistquery").length === 0) 

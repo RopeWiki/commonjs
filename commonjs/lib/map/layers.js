@@ -1,4 +1,6 @@
 
+//import { map } from "../global_variables";
+
 function SetupMapLayers() {
 
     // credits
@@ -132,6 +134,7 @@ function isUSAorCanada() {
         embeddedMapType = mapSet[0];
     }
 
+    // @ts-ignore
     var pageName = mw.config.get("wgPageName");
     var parentRegionEnable = ($("[title='United States']").length > 0 || $("[title='Canada']").length > 0) && pageName !== 'North_America';
 

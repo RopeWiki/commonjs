@@ -1,7 +1,11 @@
+// @ts-check
+
+//import { SITE_BASE_URL } from "../constants";
+
 // Placemarker icons "StarnXY.png" based on quality X and category Y.
 // Quality 0 is black & white (unknown) then 1-5 is ascending quality.
 // Categories are {hiking=0, rappelling=1, caving=2, climbing=3, blank=4, star=5}
-var KML_ICON_LIST = [
+const KML_ICON_LIST = [
     SITE_BASE_URL + "/images/7/75/Starn00.png",
     SITE_BASE_URL + "/images/8/87/Starn10.png",
     SITE_BASE_URL + "/images/1/15/Starn20.png",
@@ -40,10 +44,10 @@ var KML_ICON_LIST = [
     SITE_BASE_URL + "/images/3/37/Starn55.png"
 ];
 
-var ICON_CLOSED = SITE_BASE_URL + "/images/f/f8/Permit-closed.png";
-var ICON_RESTRICTED = SITE_BASE_URL + "/images/1/11/Permit-restricted.png";
-var ICON_PERMIT_YES = SITE_BASE_URL + "/images/2/29/Permit-yes.png";
+const ICON_CLOSED = SITE_BASE_URL + "/images/f/f8/Permit-closed.png";
+const ICON_RESTRICTED = SITE_BASE_URL + "/images/1/11/Permit-restricted.png";
+const ICON_PERMIT_YES = SITE_BASE_URL + "/images/2/29/Permit-yes.png";
 
-var SORT_ICON = SITE_BASE_URL + "/images/2/2c/Sorticon.png";
-var SORT_ICON_UP = SITE_BASE_URL + "/images/4/4b/Sorticonup.png";
-var SORT_ICON_DOWN = SITE_BASE_URL + "/images/8/87/Sorticondown.png";
+const SORT_ICON = SITE_BASE_URL + "/images/2/2c/Sorticon.png";
+const SORT_ICON_UP = SITE_BASE_URL + "/images/4/4b/Sorticonup.png";
+const SORT_ICON_DOWN = SITE_BASE_URL + "/images/8/87/Sorticondown.png";

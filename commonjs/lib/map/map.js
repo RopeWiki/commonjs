@@ -1,3 +1,4 @@
+// @ts-checkoff
 
 var zindex = 0;
 var lastinfowindow = null;
