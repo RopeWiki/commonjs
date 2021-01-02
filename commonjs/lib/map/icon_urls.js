@@ -5,7 +5,7 @@
 // Placemarker icons "StarnXY.png" based on quality X and category Y.
 // Quality 0 is black & white (unknown) then 1-5 is ascending quality.
 // Categories are {hiking=0, rappelling=1, caving=2, climbing=3, blank=4, star=5}
-const KML_ICON_LIST = [
+var KML_ICON_LIST = [  //not a const because it is assigned to by Waterflow analysis page
     SITE_BASE_URL + "/images/7/75/Starn00.png",
     SITE_BASE_URL + "/images/8/87/Starn10.png",
     SITE_BASE_URL + "/images/1/15/Starn20.png",

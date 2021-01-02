@@ -2,46 +2,79 @@
 
 //import { boundslist, map } from "../global_variables";
 
+function loadmapScript() {
+
+    smallstyle();
+
+    loadSkin();
+
+    loadEditor();
+
+    loadFacebook();
+
+    loadMapInterface();
+
+    loadUserInterface(document);
+    loadFormInterface();
+    loadTranslation();
+    setInterval(function () { loadTranslation(); }, 2000);
+
+    // translate script
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    document.body.appendChild(script);
+}
+
+function loadMapInterface() {
+    var elem = document.getElementById("mapbox");
+    if (elem == null) {
+        $('.locateicon').hide();
+        return;
+    }
+
+    if ((typeof staticscripts) == 'undefined') {
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = "https://www.google.com/jsapi";
+        document.body.appendChild(script);
+
+        script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = "https://maps.googleapis.com/maps/api/js?v=3&key=" + GOOGLE_MAPS_APIKEY + "&callback=initializemap";
+        document.body.appendChild(script);
+    } else {
+        initializemap();
+    }
+
+    // recent pictures
+    pictureinit();
+
+    // waterflow
+    var table = document.getElementById('waterflow-table');
+    if (!table) return;
+    if ((typeof staticscripts) == 'undefined')
+        $.getScript((typeof waterflowjs) != 'undefined' ? waterflowjs : geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
+    else
+        setTimeout(waterflowinit, 100);
+}
+
 function initializemap() {
 
-    if ($("#kmllistquery").length === 0) 
-        loadStaticMap();
-    else
+    if ($("#kmllistquery").length === 0 || //region page
+        !document.getElementById("waterflow-table")) //waterflow analysis
         loadInteractiveMap();
+    else
+        loadStaticMap();
 }
 
 function loadStaticMap() {
     var mapbox = document.getElementById("mapbox");
     if (!mapbox) return;
 
-    var url = "https://maps.googleapis.com/maps/api/staticmap";
-    var wmap = $("#mapbox").width();
-    var hmap = $("#mapbox").height();
-    var lat = 0;
-    var lon = 0;
-    var zoom = 13;
-    var scale = 1;
-    var maptype = "terrain";
-    var markers = "";
+    var url = getGoogleMapsStaticUrl();
 
-    while (wmap > 640 || hmap > 640) {
-        wmap = Math.round(wmap / 2);
-        hmap = Math.round(hmap / 2);
-        scale = scale * 2;
-    }
-
-    var kmlmarker = document.getElementById("kmlmarker");
-    if (kmlmarker != null) {
-        var coords = kmlmarker.innerHTML.split(",");
-        if (coords != null && coords.length > 1) {
-            lat = coords[0];
-            lon = coords[1];
-        }
-
-        markers = "&markers=size:tiny|" + lat + "," + lon;
-    }
-
-    mapbox.style.backgroundImage = "url('" + url + "?center=" + lat + "," + lon + "&zoom=" + zoom + "&scale=" + scale + "&size=" + wmap + "x" + hmap + markers + "&maptype=" + maptype + "&key=" + GOOGLE_MAPS_APIKEY + "')";
+    mapbox.style.backgroundImage = "url('" + url + "')";
     mapbox.style.backgroundRepeat = 'no-repeat';
     mapbox.style.backgroundPosition = 'center';
     mapbox.style.backgroundSize = 'cover';
@@ -229,7 +262,14 @@ function loadInteractiveMap() {
         kmllist = kmllistquery;
         locationsQuery = kmllistquery.innerHTML.split("+").join(" "); //mediawiki encodes spaces as "+" characters
         locationsQuery = decodeURIComponent(locationsQuery); //now decode the url encoded string
-        
+
+        if (locationsQuery === "[[toplocations]]") { //special case
+            locationsQuery = '[[Category:Canyons]][[Has coordinates::+]]';
+            var heading = document.getElementById("firstHeading");
+            var index = heading.children.length > 1 ? 1 : 0;
+            heading.children[index].innerHTML = "Worldwide";
+        }
+
         // load dynamic query
         loadMoreLocations();
     }
@@ -604,60 +644,38 @@ function waterflowinit() {
     waterflow(); //this is in waterflow.js, which needs to be loaded first
 }
 
-function loadMapInterface() {
-    var elem = document.getElementById("mapbox");
-    if (elem == null) {
-        $('.locateicon').hide();
-        return;
+function getGoogleMapsStaticUrl() {
+
+    var url = "https://maps.googleapis.com/maps/api/staticmap";
+    var wmap = $("#mapbox").width();
+    var hmap = $("#mapbox").height();
+    var lat = 0;
+    var lon = 0;
+    var zoom = 13;
+    var scale = 1;
+    var maptype = "terrain";
+    var markers = "";
+
+    while (wmap > 640 || hmap > 640) {
+        wmap = Math.round(wmap / 2);
+        hmap = Math.round(hmap / 2);
+        scale = scale * 2;
     }
 
-    if ((typeof staticscripts) == 'undefined') {
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = "https://www.google.com/jsapi";
-        document.body.appendChild(script);
+    var kmlmarker = document.getElementById("kmlmarker");
+    if (kmlmarker != null) {
+        var coords = kmlmarker.innerHTML.split(",");
+        if (coords != null && coords.length > 1) {
+            lat = coords[0];
+            lon = coords[1];
+        }
 
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = "https://maps.googleapis.com/maps/api/js?v=3&key=" + GOOGLE_MAPS_APIKEY + "&callback=initializemap";
-        document.body.appendChild(script);
-    } else {
-        initializemap();
+        markers = "&markers=size:tiny|" + lat + "," + lon;
     }
 
-    // recent pictures
-    pictureinit();
+    url += "?center=" + lat + "," + lon + "&zoom=" + zoom + "&scale=" + scale + "&size=" + wmap + "x" + hmap + markers + "&maptype=" + maptype + "&key=" + GOOGLE_MAPS_APIKEY;
 
-    // waterflow
-    var table = document.getElementById('waterflow-table');
-    if (!table) return;
-    if ((typeof staticscripts) == 'undefined')
-        $.getScript((typeof waterflowjs) != 'undefined' ? waterflowjs : geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
-    else
-        setTimeout(waterflowinit, 100);
-}
-
-function loadmapScript() {
-
-    smallstyle();
-
-    loadSkin();
-
-    loadEditor();
-
-    loadFacebook();
-
-    loadMapInterface();
-
-    loadUserInterface(document);
-    loadFormInterface();
-    loadTranslation();
-    var transtimer = setInterval(function () { loadTranslation(); }, 2000);
-    // translate script
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    document.body.appendChild(script);
+    return url;
 }
 
 function smallstyle() {

@@ -20,7 +20,7 @@ adjustFaviconElements();
 initBasicEditor();
 initToolbarCustomization();
 
-//console.log("A");
+
 window.onload = function() {
     loadmapScript();
 };
