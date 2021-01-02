@@ -61,8 +61,8 @@ function loadMapInterface() {
 
 function initializemap() {
 
-    if ($("#kmllistquery").length === 0 || //region page
-        !document.getElementById("waterflow-table")) //waterflow analysis
+    if ($("#kmllistquery").length !== 0 || //region page
+        !!document.getElementById("waterflow-table")) //waterflow analysis
         loadInteractiveMap();
     else
         loadStaticMap();
@@ -262,13 +262,6 @@ function loadInteractiveMap() {
         kmllist = kmllistquery;
         locationsQuery = kmllistquery.innerHTML.split("+").join(" "); //mediawiki encodes spaces as "+" characters
         locationsQuery = decodeURIComponent(locationsQuery); //now decode the url encoded string
-
-        if (locationsQuery === "[[toplocations]]") { //special case
-            locationsQuery = '[[Category:Canyons]][[Has coordinates::+]]';
-            var heading = document.getElementById("firstHeading");
-            var index = heading.children.length > 1 ? 1 : 0;
-            heading.children[index].innerHTML = "Worldwide";
-        }
 
         // load dynamic query
         loadMoreLocations();
