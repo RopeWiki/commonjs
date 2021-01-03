@@ -4,10 +4,6 @@ function locsearch() {
     if (locnameval != null && deftext(locnameval.value))
         return;
 
-    filtersearch();
-}
-
-function filtersearch() {
     var url = window.location.href;
 
     url = url.split('#')[0].split('?')[0];

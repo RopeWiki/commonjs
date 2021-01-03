@@ -176,7 +176,6 @@ function wfsitelink(siteid, label, date, days, today)
         url = url.replace("%YYYY1", date.substr(0,4)).replace("%MM1", date.substr(5,2)).replace("%DD1", date.substr(8,2)).replace("%MT1", monthname(date.substr(5,2))).replace("%stamp", stamp);
         var date = isodate(d2);
         url = url.replace("%YYYY2", date.substr(0,4)).replace("%MM2", date.substr(5,2)).replace("%DD2", date.substr(8,2)).replace("%MT2", monthname(date.substr(5,2))).replace("%stamp", stamp);
-        //url = "javascript:window.open('"+url+"', '_blank');"; //popupwin(url, site.pwidth, site.pheight);
         }         
       }
       

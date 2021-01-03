@@ -7,6 +7,13 @@ function toggleMetric() {
     loadInlineWeather(weather);
 }
 
+function toggleFrench() {
+    french = !french;
+    setCookie("french", french ? "on" : "", 360 * 10); // 10 years
+
+    updateTable();
+}
+
 function setMetricFields() {
     
     convertUnitElements(document);
@@ -52,13 +59,6 @@ function adjustHtmlStringForMetric(txt) {
     convertUnitElements(wrapper);
 
     return wrapper.innerHTML;
-}
-
-function toggleFrench() {
-    french = !french;
-    setCookie("french", french ? "on" : "", 360*10); // 10 years
-
-    updateTable();
 }
 
 // See uconv below
@@ -213,4 +213,11 @@ function acaconv(str, more) {
     if (more)
         val += ' (' + rating[french ? 0 : 1].trim() + ')';
     return str.substr(0, start) + val + str.substr(end + 1);
+}
+
+function addUACAStyle() {
+    var sheet = document.createElement('style');
+    sheet.id = 'french';
+    sheet.innerHTML = french ? " .uaca0 { display: none ; }" : " .uaca1 { display: none ; }";
+    if (document.body) document.body.appendChild(sheet);
 }

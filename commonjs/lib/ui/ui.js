@@ -122,27 +122,14 @@ function loadUserInterface(document) {
         }
     }
 
-    // popwin
-    var popups = document.getElementsByClassName('popwin');
+    // popups
+    var popups = document.getElementsByClassName('pops');
     for (var i = 0; i < popups.length; i++) {
         var links = popups[i].getElementsByTagName('A');
 
         for (var j = 0; j < links.length; j++) {
             var link = links[j];
-            var url = link.href;
-            link.href = popupwin(url);
-        }
-    }
-
-    // popups
-    var popups = document.getElementsByClassName('pops');
-    for (var i = 0; i < popups.length; i++) {
-        var links = popups[i].getElementsByTagName('A');
-        {
-            for (var j = 0; j < links.length; j++) {
-                var link = links[j];
-                link.target = '_blank';
-            }
+            link.target = '_blank';
         }
     }
 
@@ -600,6 +587,27 @@ function loadFormInterface() {
     CollapsibleLists.apply();
 }
 
+function inputkey(event, submitfunc) {
+    if (event.which == 13)
+        submitfunc();
+    //console.log("key:"+event.which+":");
+}
+
+function inputfocus(elem) {
+    elem.style.color = 'black';
+    //console.log(":"+elem.value[0]+":"+elem.value.charCodeAt(0));
+    if (deftext(elem.value)) {
+        elem.value = '';
+        //console.log("reset:"+elem.value+":");
+    }
+}
+
+function setfield(id) {
+    var list = $('#setfieldtarget input');
+    if (list.length > 0 && id)
+        list[0].value = id.innerHTML;
+}
+
 function getLinkLang(node) {
     for (var i = 1; i < 3 && node; ++i) {
         node = node.previousSibling;
@@ -626,3 +634,20 @@ function addPopOutLinkSupport() {
     }
 }
 
+function findtag(children, tag, f) {
+    function findlist(children, tag) {
+        var list = [];
+        for (var i = 0; i < children.length; ++i) {
+            var item = children[i];
+            if (item.nodeName == tag)
+                list.push(item);
+            else
+                list = list.concat(findlist(item.childNodes, tag));
+        }
+        return list;
+    }
+
+    var list = findlist(children, tag);
+    for (var i = 0; i < list.length; ++i)
+        f(list[i]);
+}

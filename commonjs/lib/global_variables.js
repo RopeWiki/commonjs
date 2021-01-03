@@ -45,6 +45,9 @@ var lastfrom = "", lastto = "";
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+// geo constants
+const km2mi = 0.621371;
+const m2ft = 3.28084;
 
 // ===== Map global variables =====
 

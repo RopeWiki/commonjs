@@ -242,21 +242,3 @@ function getStarDisplay(location, stars, ustars, numRatings, size) {
 
     return starDisplay;
 }
-
-/*
-function starRate(counter)
-{
-      if (counter>100)
-         if (!confirm('The list has over 100 canyons, refreshing the list will be slow.\nIt may be faster to rate smaller areas separately or use filters to display only canyons that have never been rated (check [x]Filters and Star Rate: [x]0).\n\nAre you sure you want to proceed?'))
-            return;
-
-      // enable options
-      var id = 'displayschk';
-      toggleOption(id, true);
-      elems = document.getElementsByClassName(id.split('chk').join('on'));
-      for (var i = 0; i < elems.length; i++)
-            toggleFilter(elems[i].id+'chk', true);
-      // refresh page
-      filtersearch();
-}
-*/
