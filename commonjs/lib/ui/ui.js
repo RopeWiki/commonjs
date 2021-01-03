@@ -550,21 +550,6 @@ function loadFormInterface() {
         locfind.innerHTML = '<input class="submitoff" type="submit" onclick="locsearch()" value="' + locfind.innerHTML + '">';
     }
 
-    // region search
-    var regfind = document.getElementById('regfind');
-    if (regfind) {
-        setinput('regname', '<input id="regnameval" class="submitoff" autocomplete="on" style="width:30em;', 'regsearch');
-        regfind.innerHTML = '<input class="submitoff" type="submit" onclick="regsearch()" value="' + regfind.innerHTML + '">';
-
-        var regnameval = urldecode(getCookie("regnameval"));
-        if (regnameval != "") {
-            var elem = document.getElementById('regnameval');
-            elem.value = regnameval;
-            if (url.split('?').length > 1)
-                elem.focus();
-        }
-    }
-
     // read option on/off from url (but only on filter page)
     var filters = document.getElementById('filters');
     if (filters) {

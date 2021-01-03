@@ -1,23 +1,3 @@
-function regsearch() {
-    var regnameval = document.getElementById('regnameval');
-    if (regnameval.value !== "" && deftext(regnameval.value))
-        return;
-
-    var url = window.location.href;
-    url = url.split('#')[0].split('?')[0];
-    var val = regnameval.value;
-    if (val.length > 0)
-        url += "?region=" + urlencode(val);
-    setCookie('regnameval', urlencode(val));
-
-    // disable buttons, wait cursor and navigate away
-    var buttons = document.getElementsByClassName("submitoff");
-    for (var i = 0; i < buttons.length; i++)
-        buttons[i].disabled = true;
-
-    document.body.style.cursor = 'wait';
-    window.location.href = url;
-}
 
 function locsearch() {
     var locnameval = document.getElementById('locnameval');

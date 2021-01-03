@@ -4,7 +4,6 @@ initializeCookies();
 initializeGlobalVariables();
 addPopOutLinkSupport();
 addUACAStyle();
-checkregname();
 
 // required for CSS for small screens
 //$('head').prepend('<meta name="viewport" content="width=device-width, initial-scale=0.6,">');

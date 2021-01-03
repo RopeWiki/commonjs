@@ -29,7 +29,6 @@
       "lib/map/controls/searchmap_control.js",
       "lib/map/controls/showtracks_control.js",
       "lib/map/controls/tracksource_control.js",
-      "lib/navigation.js",
       "lib/pdf.js",
       "lib/pictures.js",
       "lib/search.js",
