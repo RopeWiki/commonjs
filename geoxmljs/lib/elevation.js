@@ -8,8 +8,6 @@ var samplesize = 200;
 var zeroelev = 0;
 var mousemarker;
 
-var elevationService;
-
 function elevationinfowindowm(m) {
     if (m.elevation != null) {
         var str = m.infoWindow.getContent();
@@ -26,6 +24,7 @@ function elevationinfowindowm(m) {
 
     if (!elevationService)
         elevationService = new google.maps.ElevationService();
+
     if (elevationService)
         elevationService.getElevationForLocations({ 'locations': latlngs }, function (results) {
             // process elevation for marker

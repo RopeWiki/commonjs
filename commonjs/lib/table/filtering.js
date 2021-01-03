@@ -11,9 +11,9 @@ function getLocationParameters(loadLimit) {
         '|%3FLocated_in_region' + //remove this, included in 'has info major region'
 
         '|%3FHas_info_major_region' +
+        '|%3FHas_rank_rating' + //weighted rating taking into consideration the number of votes
         '|%3FHas_total_rating' +
         '|%3FHas_total_counter' +
-        '|%3FHas_rank_rating' + //weighted rating taking into consideration the number of votes
         '|%3FHas_info_typical_time' +
         '|%3FHas_length_of_hike' +
         '|%3FHas_length' +
@@ -184,10 +184,9 @@ function updateTable() {
         starRatingInfoRow.className = 'schkon';
     }
 
-
+    //now replace the table with the new one
     tableCurrentBody.parentNode.replaceChild(tableNewBody, tableCurrentBody);
-
-
+    
     //set checkboxes (these checkboxes no longer exist on page load, not until after the table is drawn)
     var myRatingsCheckbox = document.getElementsByClassName('schk');
     myRatingsCheckbox[0].firstChild.firstChild.checked = starrate;

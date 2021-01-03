@@ -697,7 +697,7 @@ function setPrimaryMarker(name, lat, lng, zIndex) {
         'click',
         function () {
             this.infowindow.open(map, this);
-            getGeoElevation(this.getPosition(), "elevation", "~");
+            getElevation(this.getPosition(), "elevation", "~");
         });
 
     boundslist.extend(latLng);

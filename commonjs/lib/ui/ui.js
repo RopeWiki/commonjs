@@ -615,6 +615,19 @@ function loadFormInterface() {
     CollapsibleLists.apply();
 }
 
+function getLinkLang(node) {
+    for (var i = 1; i < 3 && node; ++i) {
+        node = node.previousSibling;
+        if (node && node.nodeName == 'IMG') {
+            var s, e;
+            var src = node.src;
+            if ((s = src.indexOf("Rwl_")) > 0 && (e = src.indexOf(".", s)) > 0)
+                return src.substr(s + 4, e - s - 4);
+        }
+    }
+    return null;
+}
+
 // Pop-out link support
 function addPopOutLinkSupport() {
     var popOuts = document.getElementsByClassName('mw-popout-link');

@@ -5,11 +5,11 @@
 function checkregname() {
     var url = window.location.href.toString().split('?');
     var regnameval = urldecode(getCookie("regnameval"));
-    if (url.length < 2 && regnameval != "") {
+    if (url.length < 2 && regnameval !== "") {
         // reload page
         var urlp = url[0].split('/');
         var last = urlp[urlp.length - 1];
-        if (last == 'Beta' || last == 'Conditions' || last == 'conditions.html')
+        if (last === 'Beta' || last === 'Conditions' || last === 'conditions.html')
             window.location.href = url + '?region=' + urlencode(regnameval);
     }
 }

@@ -1,22 +1,4 @@
 
-function acaconv(str, more) {
-    var end = str.indexOf(')');
-    if (end < 0)
-        return str;
-    var start = str.indexOf('*') + 1;
-    while (start < end && !(str.charAt(start) >= '1' && str.charAt(start) <= '4'))
-        ++start;
-    if (start >= 3 && str.substr(start - 3, 3) === '<i>')
-        start -= 3;
-    var rating = str.substr(start, end - start).split('(');
-    if (rating.length < 2)
-        return str;
-    var val = rating[french ? 1 : 0].trim();
-    if (more)
-        val += ' (' + rating[french ? 0 : 1].trim() + ')';
-    return str.substr(0, start) + val + str.substr(end + 1);
-}
-
 //cool code to create a bounding box from a point, but isn't used anywhere:
 function latLngBox(px, py, pz, tsize) {
     function Clip(n, minValue, maxValue) {
