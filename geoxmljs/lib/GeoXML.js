@@ -94,7 +94,7 @@ function GeoXml(myvar, map, url, opts) {
     }
 
     this.dohilite = true;
-    if (typeof this.opts.dohilite != "undefined" && this.opts.dohilite == false) {
+    if (typeof this.opts.dohilite != "undefined" && this.opts.dohilite === false) {
         this.dohilite = false;
     }
 
@@ -1075,16 +1075,16 @@ GeoXml.prototype.processLine = function (pnum, lnum, idx, multi) {
         if (e) {
             var text = this.title2.split("<br>");
             function addtitle(txt) {
-                if (!txt || txt == "")
-                    return;
+                if (!txt) return;
+
                 var t = txt.split("<br>");
                 if (t.length > 1) {
                     for (var j = 0; j < text.length; ++j) {
-                        if (text[j] == t[0]) {
+                        if (text[j] === t[0]) {
                             text.splice(j + 1, 0, t[1]);
                             return;
                         }
-                        if (text[j] == t[1]) {
+                        if (text[j] === t[1]) {
                             text.splice(j, 0, t[0]);
                             return;
                         }
@@ -1120,9 +1120,11 @@ GeoXml.prototype.processLine = function (pnum, lnum, idx, multi) {
             // find more overlapping lines      
             var markers = this.geoxml.overlayman.markers;
             for (var i = 0; i < markers.length; ++i)
-                if (markers[i].ismouseover(ll) && markers[i] != this)
+                if (markers[i].ismouseover(ll) && markers[i] !== this)
                     addtitle(markers[i].title2);
-            tooltip.show(text.join("<br>"), e, this);
+            text = text.join("<br>");
+            text = adjustHtmlStringForMetric(text);
+            tooltip.show(text, e, this);
         }
         if (this.mess) { this.geoxml.mb.showMess(this.mess, 5000); } else { this.title2 = this.mytitle; }
     };
@@ -1170,6 +1172,10 @@ GeoXml.prototype.processLine = function (pnum, lnum, idx, multi) {
                 p.infoWindow.setPosition(dest);
             }
         }
+        var str = p.infoWindow.getContent();
+        str = adjustHtmlStringForMetric(str);
+        p.infoWindow.setContent(str);
+
         p.infoWindow.open(p.geoxml.map); //, this
         elevationinfowindowp(p);
         tooltip.hide();
@@ -4059,7 +4065,7 @@ GeoXml.prototype.loadXMLUrl = function (url, group, title2, latlon, desc, idx) {
         that.urlgroup = group ? group : "";
         that.urltitle2 = title2 ? '<b>' + title2 + ':</b><br>' : "";
         // fix style bug
-        that.styles = []
+        that.styles = [];
         var xmlDoc = that.parseXML(doc);
         that.processing(xmlDoc, title2, latlon, desc, idx);
     }, title2, true);
@@ -4069,7 +4075,7 @@ GeoXml.prototype.upgradeLayer = function (n) {
     var mt = this.map.getMapTypes();
     var found = false;
     for (var i = 0; i < mt.length; i++) {
-        if (mt[i] == this.baseLayers[n]) {
+        if (mt[i] === this.baseLayers[n]) {
             found = true;
             this.map.removeMapType(this.baseLayers[n]);
         }

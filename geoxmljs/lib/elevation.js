@@ -14,14 +14,9 @@ function elevationinfowindowm(m) {
     if (m.elevation != null) {
         var str = m.infoWindow.getContent();
 
-        var wrapper = document.createElement('div');
-        wrapper.innerHTML = str;
+        str = adjustHtmlStringForMetric(str);
 
-        var texts = wrapper.getElementsByClassName('uft');
-        for (var i = 0; i < texts.length; i++)
-            texts[i].innerHTML = uconv(texts[i].innerHTML, ftStr);
-
-        m.infoWindow.setContent(wrapper.innerHTML);
+        m.infoWindow.setContent(str);
         return;
     }
 
