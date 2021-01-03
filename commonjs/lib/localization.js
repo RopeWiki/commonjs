@@ -9,11 +9,14 @@ function toggleMetric() {
 
 function setMetricFields() {
     var i, texts;
-
-    //update fields in sidebar
+    
     texts = document.getElementsByClassName('uft');
     for (i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, ftStr);
+
+    texts = document.getElementsByClassName('uft-round');
+    for (i = 0; i < texts.length; i++)
+        texts[i].innerHTML = uconv(texts[i].innerHTML, ftStrRound);
 
     texts = document.getElementsByClassName('umi');
     for (i = 0; i < texts.length; i++)
@@ -26,6 +29,11 @@ function setMetricFields() {
     texts = document.getElementsByClassName('urap');
     for (i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, rap);
+
+    var graph = document.getElementById('elevationgraph');
+    if (graph !== undefined && graph !== null) {
+        drawElevationGraph();
+    }
 
     //update table
     updateTable();

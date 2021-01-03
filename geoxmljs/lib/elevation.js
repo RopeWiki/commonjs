@@ -11,8 +11,19 @@ var mousemarker;
 var elevationService;
 
 function elevationinfowindowm(m) {
-    if (m.elevation != null)
+    if (m.elevation != null) {
+        var str = m.infoWindow.getContent();
+
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = str;
+
+        var texts = wrapper.getElementsByClassName('uft');
+        for (var i = 0; i < texts.length; i++)
+            texts[i].innerHTML = uconv(texts[i].innerHTML, ftStr);
+
+        m.infoWindow.setContent(wrapper.innerHTML);
         return;
+    }
 
     var latlngs = [];
     var pt = m.getPosition();
@@ -26,7 +37,7 @@ function elevationinfowindowm(m) {
             if (results[0]) {
                 var str = m.infoWindow.getContent();
                 var elev = Math.round(results[0].elevation * m2ft);
-                str = str.replace("#Computing#", ft(elev));
+                str = str.replace("#Computing#", "<span class='uft'>" + ftStr(elev) + "</span>");
                 m.infoWindow.setContent(str);
             }
             m.elevation = results;
@@ -47,10 +58,10 @@ function plotelevation(results, ticks, conv) {
         //}
     }
 
-    var elem = document.getElementById('elevationgraph');
-    elem.style.display = 'block';
+    var graph = document.getElementById('elevationgraph');
+    graph.style.display = 'block';
 
-    var chart = new google.visualization.AreaChart(elem);
+    var chart = new google.visualization.AreaChart(graph);
 
     chart.draw(data, {
         //width: 100,
@@ -114,7 +125,7 @@ var elevationpl = [];
 function getelevation(pl) {
     elevationpl.push(pl);
 
-    if (elevationpl.length == 1)
+    if (elevationpl.length === 1)
         getnextelevation();
 }
 
@@ -122,6 +133,8 @@ function getnextelevation() {
     if (elevationpl.length > 0)
         elevationinfowindowp(elevationpl[0], getnextelevation);
 }
+
+var lastPolyline;
 
 function elevationinfowindowp(pl, computeonly) {
     function plotinfowindow(pl) {
@@ -141,9 +154,13 @@ function elevationinfowindowp(pl, computeonly) {
         //only needed if scrolling the client window
         //pl.elevation.minTick = ticks[0];
         //pl.elevation.maxTick = maxt;
-        
-        pl.infoWindow.setContent(document.getElementById('elevationiw').innerHTML);
+
+        var elevationiw = document.getElementById('elevationiw');
+        if (!!elevationiw)
+            pl.infoWindow.setContent(elevationiw.innerHTML);
+
         pl.infoWindow.open(map);
+
         google.maps.event.addListener(pl.infoWindow, 'domready', function () {
 
             var height = Math.round((pl.ticks[pl.ticks.length - 1] - pl.ticks[0]) / pl.conv * hscale);
@@ -165,18 +182,42 @@ function elevationinfowindowp(pl, computeonly) {
                 mousemarker.setMap(null);
                 mousemarker = null;
             }
+            lastPolyline = null;
         });
     }
 
-    function getresults(results) {
+    var len;
+
+    function processresults(results) {
         // unit conversion  
         if (!results) {
             console.log("getElevationAlongPath failed len:" + len);
             return;
         }
 
+        var i;
+
+        if (pl.rawResults === undefined) {
+            var rawResults = [];
+            for (i = 0; i < results.length; i++) {
+                rawResults[i] = {
+                    elevation: results[i].elevation,
+                    location: results[i].location
+                };
+            }
+            pl.rawResults = rawResults;
+        } else { //make copy of the original array
+            results = [];
+            for (i = 0; i < pl.rawResults.length; i++) {
+                results[i] = {
+                    elevation: pl.rawResults[i].elevation,
+                    location: pl.rawResults[i].location
+                };
+            }
+        }
+
         var dist = 0;
-        for (var i = 0; i < results.length; i++) {
+        for (i = 0; i < results.length; i++) {
             results[i].elevation = Math.round(results[i].elevation * m2ft);
             if (i > 0) dist += DistanceLength(results[i - 1].location, results[i].location);
             results[i].distance = dist;
@@ -184,7 +225,7 @@ function elevationinfowindowp(pl, computeonly) {
 
         var gup = 0, gdn = 0, cup = 0, cdn = 0, gmax = 0, gmin = 0;
         var miperslope2 = miperslope / 2;
-        for (var i = 0; i < results.length; i++) {
+        for (i = 0; i < results.length; i++) {
             for (var j = i; j >= 0 && results[i].distance - results[j].distance < miperslope2; --j);
             for (var k = i; k <= results.length - 1 && results[k].distance - results[i].distance < miperslope2; ++k);
             results[i].g = 0;
@@ -205,7 +246,7 @@ function elevationinfowindowp(pl, computeonly) {
 
         var mini, maxi, minelev, maxelev, lastelev, gainelev = 0, losselev = 0;
         minelev = maxelev = lastelev = results[maxi = mini = 0].elevation;
-        for (var i = 1; i < results.length; i++) {
+        for (i = 1; i < results.length; i++) {
             var elev = results[i].elevation;
             if (elev > maxelev) maxelev = elev, maxi = i;
             if (elev < minelev) minelev = elev, mini = i;
@@ -219,7 +260,7 @@ function elevationinfowindowp(pl, computeonly) {
         var abselev = (maxelev - minelev) * (mini < maxi ? 1 : -1);
         var bar = Lance$(pl.sidebarid);
         if (bar && bar.innerHTML)
-            bar.innerHTML = bar.innerHTML.replace("</a></span>", " " + ft(abselev) + "</a> </span>");
+            bar.innerHTML = bar.innerHTML.replace("</a></span>", " " + "<span class='uft'>" + ftStr(abselev) + "</span>" + "</a> </span>");
 
         var absdist = (results[maxi].distance - results[mini].distance) * (mini < maxi ? 1 : -1);
         if (absdist < miperslope) absdist = miperslope;
@@ -228,10 +269,10 @@ function elevationinfowindowp(pl, computeonly) {
         var div = document.getElementById('elevation');
         if (div != null) {
             var str = div.innerHTML;
-            /* Min/Max Elev*/         str = str.replace("####Computing1####", ft(maxelev) + " / " + ft(minelev));
+            /* Min/Max Elev*/         str = str.replace("####Computing1####", "<span class='uft'>" + ftStr(maxelev) + "</span>" + " / " + "<span class='uft'>" + ftStr(minelev) + "</span>");
             //str = str.replace("#GL#", abselev>0 ? "Gain" : "Loss");
-            /* Elev. Change*/         str = str.replace("####Computing2####", (abselev >= 0 ? "+" : "") + ft(abselev) + " in " + mi(absdist));
-            /* Cumulative Gain/Loss*/ str = str.replace("####Computing3####", "+" + ft(gainelev) + " / " + ft(losselev));
+            /* Elev. Change*/         str = str.replace("####Computing2####", (abselev >= 0 ? "+" : "") + "<span class='uft-round'>" + ftStrRound(abselev) + "</span>" + " in " + "<span class='uft'>" + miStr(absdist) + "</span>");
+            /* Total Gain/Loss*/      str = str.replace("####Computing3####", "+" + "<span class='uft-round'>" + ftStrRound(gainelev) + "</span>" + " / " + "<span class='uft-round'>" + ftStrRound(losselev) + "</span>");
             /* Average Slope*/        //str = str.replace("####Computing4####", xdeg(gup) + "º / " + xdeg(gdn) + "º (Max " + xdeg(gmax) + "º / " + xdeg(gmin) + "º)");
             /* Average Slope %*/      //str = str.replace("####Computing5####", gup + "% / " + gdn + "% (Max " + gmax + "% / " + gmin + "%)");
             /* Average Slope ft/mi*/  //str = str.replace("####Computing6####", ftxmi(gup / 100 * mi2ft) + " / " + ftxmi(gdn / 100 * mi2ft));
@@ -239,6 +280,7 @@ function elevationinfowindowp(pl, computeonly) {
             div.innerHTML = str;
         }
 
+        pl.metric = metric;
         pl.conv = metric ? 1 / m2ft : 1;
         pl.minelev = Math.round(minelev * pl.conv);
         pl.maxelev = Math.round(maxelev * pl.conv);
@@ -253,6 +295,13 @@ function elevationinfowindowp(pl, computeonly) {
         plotinfowindow(pl);
     }
 
+    lastPolyline = pl;
+
+    if (pl.metric !== undefined && pl.metric !== metric) {
+        processresults(pl.rawResults);
+        return;
+    }
+
     // already plotted
     if (pl.ticks != null)
         return;
@@ -265,12 +314,13 @@ function elevationinfowindowp(pl, computeonly) {
 
     // Create a new chart in the elevation_chart DIV.    
     var latlngs = [];
-    var a = pl.getPath(), len = a.getLength();
+    var a = pl.getPath();
+    len = a.getLength();
     var maxlen = len;
     if (len > maxpathlen) len = maxpathlen;
     for (var i = 0; i < len; i++) {
         var ii = i;
-        if (len != maxlen)
+        if (len !== maxlen)
             ii = Math.round(i * maxlen / len);
         var pt = a.getAt(ii);
         latlngs.push(pt);
@@ -279,10 +329,13 @@ function elevationinfowindowp(pl, computeonly) {
     if (!elevationService)
         elevationService = new google.maps.ElevationService();
     if (elevationService)
-        elevationService.getElevationAlongPath({ path: latlngs, samples: samplesize }, getresults);
+        elevationService.getElevationAlongPath({ path: latlngs, samples: samplesize }, processresults);
 }
 
+function drawElevationGraph() {
 
-function vizloaded() {
-    //alert("loaded");
+    var pl = lastPolyline;
+    if (pl === undefined || pl === null) return;
+
+    elevationinfowindowp(pl);
 }

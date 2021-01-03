@@ -22,11 +22,18 @@ function distance(p1, p2) {
 }
 
 // See uconv below
-function ftStr(feet, space) {
+function ftStrRound(feet, space) {
+    return ftStr(feet, space, true);
+}
+
+// See uconv below
+function ftStr(feet, space, round) {
     if (typeof feet == "undefined" || feet === null) return ""; //empty
 
     feet = feet.toString().trim();
     if (!feet) return ""; //whitespace
+
+    if (feet.includes("mi") || (feet.includes("km"))) return miStr(feet, space); //already converted to mi or km
 
     feet = feet.replace(",", "");
 
@@ -44,8 +51,10 @@ function ftStr(feet, space) {
 
     if (!metric) //round to nearest 5 feet
         feet = Math.round(feet / 5) * 5;
+
+    var feetStr = !round ? feet.toFixed(0) : feet.toPrecision(2);
     
-    return Number(feet.toPrecision(2)) + (space ? "&nbsp;" : "") + (metric ? "m" : "ft");
+    return Number(feetStr) + (space ? "&nbsp;" : "") + (metric ? "m" : "ft");
 }
 
 // See uconv below
@@ -170,6 +179,16 @@ function getGeoCode(lat, lng, element) {
 }
 
 function getGeoElevation(latLng, element, holdingText) {
+    var res = document.getElementById(element);
+    if (!!res && !res.innerHTML.includes(holdingText)) { //already loaded or doesn't match holding text
+        //need to convert to metric here -- setMetricFields() won't catch this if the window was closed
+        var texts = res.getElementsByClassName('uft');
+        for (var i = 0; i < texts.length; i++)
+            texts[i].innerHTML = uconv(texts[i].innerHTML, ftStr);
+
+        return;
+    }
+
     if (!geoElevationService)
         geoElevationService = new google.maps.ElevationService();
 
@@ -182,7 +201,7 @@ function getGeoElevation(latLng, element, holdingText) {
                 if (results[0]) {
                     var elev = results[0].elevation * m2ft;
                     var res = document.getElementById(element);
-                    if (res) res.innerHTML = res.innerHTML.replace(holdingText, ftStr(elev));
+                    if (res) res.innerHTML = res.innerHTML.replace(holdingText, "<span class='uft'>" + ftStr(elev) + "</span>");
                 }
             });
     }

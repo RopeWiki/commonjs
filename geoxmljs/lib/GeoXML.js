@@ -284,6 +284,10 @@ function GeoXml(myvar, map, url, opts) {
     }
 }
 
+function vizloaded() {
+    //alert("loaded");
+}
+
 GeoXml.SEMI_MAJOR_AXIS = 6378137.0;
 GeoXml.ECCENTRICITY = 0.0818191913108718138;
 GeoXml.DEG2RAD = 180.0 / (Math.PI);
@@ -947,7 +951,7 @@ GeoXml.prototype.processLine = function (pnum, lnum, idx, multi) {
     var desc = op.description;
     
     var dist = Length(p);
-    op.name += ": " + mi(dist);
+    op.name += ": " + "<span class='uft'>" + miStr(dist) + "</span>";
 
     if (this.opts.debug) {
         var ccolor = parseInt(op.color.replace("#", "0x"));
