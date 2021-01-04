@@ -27,7 +27,7 @@ function assembleTableHeaderRow() {
         '<th class="rwHdr">' +
                 '<div class="fchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div>' +
                 '<span class="rwText"><a href="/Rating" title="Rating">Rating</a></span>' +
-                '<span id="sort-technicalRating.combinedACA" title="Sort by rating" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-technicalRating" title="Sort by rating" class="rwSortIcon gmnoprint notranslate"></span>' +
             '</th>' +
             '<th class="rwHdr">' +
                 '<span class="rwText ctranslate">Time</span>' +
@@ -181,9 +181,14 @@ function getTableParentRegionLinks(regions) {
 }
 
 function getTableTechnicalRating(rating) {
-    return !french
+    var tableRating = !french
         ? rating.combinedACA
         : rating.combinedFrench;
+
+    var italicize = (!french && rating.convertedACA) || (french && rating.convertedFrench);
+    if (italicize) tableRating = "<i>" + tableRating + "</i>";
+
+    return tableRating;
 }
 
 function getTableRaps(rapSummary, longestRap) {

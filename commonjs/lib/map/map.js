@@ -339,9 +339,9 @@ function getrwlist(data) {
                 obj.location = { lat: v[0].lat, lng: v[0].lon };
 
                 // ratings & icon
-                v = item.printouts["Has rank rating"]; //used for sorting only
+                v = item.printouts["Has rank rating"]; //rating weighted by count (popularity), used for sorting only
                 obj.rankRating = (v && v.length > 0) ? v[0] : 0;
-                v = item.printouts["Has total rating"]; //total of all ratings, used to select icon
+                v = item.printouts["Has total rating"]; //weighted rating with users and conditions, used to select icon
                 obj.totalRating = (v && v.length > 0) ? v[0] : 0;
                 //apply formula -- raw rating rounded to integer, used for the icon selector.
                 // 4-5-5.0 = 5, 4.0-4.5 = 4, the rest rounded down to nearest int
@@ -759,7 +759,10 @@ function parseBestMonths(bestSeasonRaw) {
 }
 
 function parseTechnicalRating(description) {
-    //example (Tanner Creek):  "4.6*  4C4 III R (<i>v5a7&nbsp;III</i>) 5h-8h 5.5mi 5r 90ft"
+    //examples:
+    // "4.6*  4C4 III R (<i>v5a7&nbsp;III</i>) 5h-8h 5.5mi 5r 90ft"
+    // "4.9*  <i>3C1&nbsp;IV</i>  (v3a4 III) 6h-13.5h  30r 98ft 2cars"
+    // "4.9*  2A <i>IV</i> X (v3a4 III) 6h-13.5h  30r 98ft 2cars" <-note that only the ACA time is italicized; we don't italizice individual components right now
 
     //ACA
     const technical = ["1", "2", "3", "4"];
@@ -770,7 +773,7 @@ function parseTechnicalRating(description) {
     //French
     const vertical = ["v1", "v2", "v3", "v4", "v5", "v6", "v7"];
     const aquatic = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
-    const commitment = ["III", "II", "IV", "I", "VI", "V"]; //order this way because using 'startsWith' to test
+    const commitment = ["I", "II", "III", "IV", "V", "VI"];
 
     var technicalRating = {};
 
@@ -782,15 +785,37 @@ function parseTechnicalRating(description) {
             var test = entries[i];
             if (test.includes("*")) break testEntry; //star rating
 
+            if (test.includes("h") || test.includes("d") ||
+                test.includes("r") ||
+                test.includes("f") || test.includes("m") ||
+                test.includes("c")) {
+                entries.length = 0; //we're finished, now were into other fields
+                break testEntry;
+            }
+
+            var isConverted = false;
+            if (test.startsWith('<i>')) {
+                isConverted = true;
+                test = test.substr(3);
+            }
+
+            if (test.endsWith('</i>')) {
+                test = test.substr(0, test.length - 4);
+            }
+
             var j;
-            if (technicalRating["technical"] == null)
+            if (technicalRating["technical"] == null) {
                 for (j = 0; j < technical.length; ++j) {
                     if (test.startsWith(technical[j])) {
                         technicalRating["technical"] = technical[j];
                         test = test.substr(technical[j].length);
-                        break; //just break the 'for j' loop, need to test 'water' using same entry
+
+                        technicalRating["convertedACA"] = isConverted;
+                        
+                        break; //break only the 'for j' loop, need to test 'water' using same entry
                     }
                 }
+            }
 
             if (technicalRating["water"] == null)
                 for (j = 0; j < water.length; ++j) {
@@ -800,13 +825,14 @@ function parseTechnicalRating(description) {
                     }
                 }
 
-            if (technicalRating["time"] == null)
+            if (technicalRating["time"] == null) {
                 for (j = 0; j < time.length; ++j) {
                     if (test === time[j]) {
                         technicalRating["time"] = time[j];
                         break testEntry;
                     }
                 }
+            }
 
             if (technicalRating["risk"] == null)
                 for (j = 0; j < risk.length; ++j) {
@@ -816,15 +842,19 @@ function parseTechnicalRating(description) {
                     }
                 }
 
-            if (technicalRating["vertical"] == null)
+            if (technicalRating["vertical"] == null) {
+                if (test.startsWith('(')) {
+                    test = test.substr(1);
+                }
                 for (j = 0; j < vertical.length; ++j) {
-                    var index = test.indexOf(vertical[j]);
-                    if (index >= 0) {
+                    if (test.startsWith(vertical[j])) {
                         technicalRating["vertical"] = vertical[j];
-                        test = test.substr(index + vertical[j].length);
-                        break; //just break the 'for j' loop, need to test 'aquatic' using same entry
+                        test = test.substr(vertical[j].length);
+                        technicalRating["convertedFrench"] = isConverted;
+                        break; //break only the 'for j' loop, need to test 'water' using same entry
                     }
                 }
+            }
 
             if (technicalRating["aquatic"] == null)
                 for (j = 0; j < aquatic.length; ++j) {
@@ -834,20 +864,24 @@ function parseTechnicalRating(description) {
                     }
                 }
 
-            if (technicalRating["commitment"] == null)
+            if (technicalRating["commitment"] == null) {
+                if (test.endsWith(')')) {
+                    test = test.substr(0, test.length - 1);
+                }
                 for (j = 0; j < commitment.length; ++j) {
-                    if (test.startsWith(commitment[j])) {
+                    if (test === commitment[j]) {
                         technicalRating["commitment"] = commitment[j];
                         break testEntry;
                     }
                 }
+            }
         }
     }
 
     technicalRating.combinedACA =
         (!!technicalRating.technical ? technicalRating.technical : "") + (!!technicalRating.water ? technicalRating.water : "") +
         " " + (!!technicalRating.time ? technicalRating.time : "") +
-        ((!!technicalRating.extra_risk) ? " " + technicalRating.extra_risk : "");
+        ((!!technicalRating.risk) ? " " + technicalRating.risk : "");
 
     technicalRating.combinedFrench =
         (!!technicalRating.vertical ? technicalRating.vertical : "") + (!!technicalRating.aquatic ? technicalRating.aquatic : "") +

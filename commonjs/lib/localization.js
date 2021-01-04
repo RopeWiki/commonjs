@@ -11,7 +11,7 @@ function toggleFrench() {
     french = !french;
     setCookie("french", french ? "on" : "", 360 * 10); // 10 years
 
-    updateTable();
+    setTableSortProperty("technicalRating"); //might have to resort table when changing aca/french rating
 }
 
 function setMetricFields() {

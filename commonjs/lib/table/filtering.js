@@ -213,7 +213,7 @@ function setTableSortLinks() {
         tableDiv.appendChild(tableRef);
 
         //set default sort
-        setTableSortProperty("sort-rankRating");
+        setTableSortProperty("rankRating");
     }
 
     var tableNewHeader = document.createElement('thead');
@@ -235,24 +235,32 @@ function setTableSortLinks() {
         sortIcons[i].className += " notranslate";
         
         sortIcons[i].onclick = function () {
-            setTableSortProperty(this.id);
+            setTableSortProperty(this.id.substr(5)); //remove the 'sort-' at start of id;
         }
     }
 }
 
-function setTableSortProperty(id) {
+function setTableSortProperty(newSortProp) {
     
-    var newSortProp = id.substr(5); //remove the 'sort-' at start of id
+    if (newSortProp === "technicalRating") {
+        newSortProp += (!french ? ".combinedACA" : ".combinedFrench");
+    }
+
     if (newSortProp === sortProp) {
         sortDirection *= -1;
     } else {
-        sortDirection = 1;
-        sortProp = newSortProp;
+        var newSortDirection = 1; //otherwise set default sort order
+        
+        if (newSortProp === 'rankRating' ||
+            newSortProp === 'totalRating' ||
+            newSortProp === 'totalCounter' ||
+            newSortProp === 'conditionDate') newSortDirection = -1; //if it's any of these, first sort by descending
 
-        if (sortProp === 'rankRating' ||
-            sortProp === 'totalRating' ||
-            sortProp === 'totalCounter' ||
-            sortProp === 'conditionDate') sortDirection = -1; //if it's any of these, first sort by descending
+        //if it's just changing from aca to french, don't change sort order
+        if (!newSortProp.includes("technicalRating") || !sortProp.includes("technicalRating"))
+            sortDirection = newSortDirection;
+
+        sortProp = newSortProp;
     }
     
     updateTable();
