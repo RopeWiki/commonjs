@@ -793,12 +793,19 @@ function parseTechnicalRating(description) {
                 break testEntry;
             }
 
+            if (test.startsWith('(')) {
+                test = test.substr(1);
+            }
+
             var isConverted = false;
             if (test.startsWith('<i>')) {
                 isConverted = true;
                 test = test.substr(3);
             }
 
+            if (test.endsWith(')')) {
+                test = test.substr(0, test.length - 1);
+            }
             if (test.endsWith('</i>')) {
                 test = test.substr(0, test.length - 4);
             }
@@ -843,9 +850,6 @@ function parseTechnicalRating(description) {
                 }
 
             if (technicalRating["vertical"] == null) {
-                if (test.startsWith('(')) {
-                    test = test.substr(1);
-                }
                 for (j = 0; j < vertical.length; ++j) {
                     if (test.startsWith(vertical[j])) {
                         technicalRating["vertical"] = vertical[j];
@@ -865,9 +869,6 @@ function parseTechnicalRating(description) {
                 }
 
             if (technicalRating["commitment"] == null) {
-                if (test.endsWith(')')) {
-                    test = test.substr(0, test.length - 1);
-                }
                 for (j = 0; j < commitment.length; ++j) {
                     if (test === commitment[j]) {
                         technicalRating["commitment"] = commitment[j];
