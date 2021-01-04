@@ -268,7 +268,8 @@ function setTableSortProperty(newSortProp) {
 
 function setTableHeaderSortIcons() {
 
-    var sortIconId = "sort-" + sortProp;
+    var iconId = !sortProp.includes("technicalRating") ? sortProp : "technicalRating"; //don't include the ".combinedACA" or ".combinedFrench"
+    var sortIconId = "sort-" + iconId;
 
     var sortIcons = document.getElementsByClassName('rwSortIcon');
     for (var i = 0; i < sortIcons.length; i++) {
