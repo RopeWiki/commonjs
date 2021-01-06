@@ -137,7 +137,6 @@ function closeSearchMapRectangle() {
     searchmapn = -1;
     if (searchWasRun) {
         locationsAlreadyLoadedWithinQuery = 0;
-        locationsTotalWithinArea = 0;
     }
     setLoadingInfoText();
 }

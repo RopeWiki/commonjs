@@ -162,6 +162,7 @@ function loadInteractiveMap() {
                 new google.maps.LatLng(coords[2], coords[3]));
 
             createAndDisplaySearchRectangle(boundslist);
+            searchWasRun = true; //to set the proper loading text
             
             map.fitBounds(boundslist);
             map.panToBounds(boundslist);

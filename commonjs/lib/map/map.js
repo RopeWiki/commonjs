@@ -475,6 +475,7 @@ function loadMoreLocations() {
         var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
         if (!moreToLoad) {
             hideSearchMapLoader();
+            loadOffset = locationsLoadedWithinArea;
             setLoadingInfoText();
             return;
         }
@@ -619,8 +620,10 @@ function setHeaderText() {
     if (regions.length > 2)
         firstHeadingText += ", and others";
 
-    if (firstHeadingText !== "")
-    document.getElementById("firstHeading").children[1].innerHTML = firstHeadingText;
+    if (firstHeadingText !== "") {
+        var header = document.getElementById("firstHeading");
+        header.children[header.children.length - 1].innerHTML = firstHeadingText;
+    }
 }
 
 function getFilteringInfo() {
