@@ -14,6 +14,8 @@ function toggleRoutes(kmlfile, kmlgroup) {
         return;
     }
 
+    //kml routes is a query on region pages to download all routes for that region.
+    //It needs the ShowKMLCheckbox to initially be displayed. I think we'll leave it disabled and just allow manually picking routes to show, otherwise it's quite a mess
     var kmlroutes = document.getElementById('kmlroutes');
     if (!kmlroutes)
         return;
@@ -35,7 +37,7 @@ function toggleRoutes(kmlfile, kmlgroup) {
     }
 
     var group = "KML";
-    var url = kmlroutes.innerHTML.split('&amp;').join('&');
+    var url = kmlroutes.innerHTML.replace("{{SERVER}}", SITE_BASE_URL).split('&amp;').join('&');
     if (!gxml || kmlfile) {
         function geoxmlinitr() {
             // Here you can use anything you defined in the loaded script

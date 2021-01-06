@@ -133,6 +133,8 @@ function loadInteractiveMap() {
 
     var kmlmap;
 
+    var coords;
+
     // set marker (if any) from "kmlmarker"
     var kmlmarker = document.getElementById("kmlmarker");
     if (kmlmarker != null) {
@@ -151,25 +153,16 @@ function loadInteractiveMap() {
     // set rectangle (if any) from "kmlrect"
     var kmlrect = document.getElementById("kmlrect");
     if (kmlrect != null) {
-        var coords = kmlrect.innerHTML.split(',');
+        coords = kmlrect.innerHTML.split(',');
         if (coords != null && coords.length > 1) {
             kmlmap = "kmlrect";
 
-            var maprectangle = new google.maps.Rectangle({
-                strokeColor: '#FF0000',
-                strokeOpacity: 0.5,
-                strokeWeight: 2,
-                fillColor: '#FF0000',
-                fillOpacity: 0.05,
-                map: map,
-                bounds: new google.maps.LatLngBounds(
-                    new google.maps.LatLng(coords[0], coords[1]),
-                    new google.maps.LatLng(coords[2], coords[3])),
-                draggable: false,
-                clickable: false,
-                optimized: false
-            });
-            boundslist = maprectangle.getBounds();
+            boundslist = new google.maps.LatLngBounds(
+                new google.maps.LatLng(coords[0], coords[1]),
+                new google.maps.LatLng(coords[2], coords[3]));
+
+            createAndDisplaySearchRectangle(boundslist);
+            
             map.fitBounds(boundslist);
             map.panToBounds(boundslist);
             if (coords.length > 4) {
@@ -184,7 +177,7 @@ function loadInteractiveMap() {
     // set circle (if any) from "kmlcircle"
     var kmlcircle = document.getElementById("kmlcircle");
     if (kmlcircle != null) {
-        var coords = kmlcircle.innerHTML.split(',');
+        coords = kmlcircle.innerHTML.split(',');
         if (coords != null && coords.length > 1) {
             kmlmap = "kmlcircle";
             var circleopt = {
@@ -204,10 +197,9 @@ function loadInteractiveMap() {
             if (kmlrect == null) {
                 var mapcircle = new google.maps.Circle(circleopt);
                 boundslist = mapcircle.getBounds();
+                map.fitBounds(boundslist);
+                map.panToBounds(boundslist);
             }
-
-            map.fitBounds(boundslist);
-            map.panToBounds(boundslist);
         }
     }
     

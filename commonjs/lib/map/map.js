@@ -149,7 +149,7 @@ function loadlist(list, fitbounds) {
             sdescm += '<a href="javascript:toggleRoutes(\'' + urlencode(item.kmlfile) + '\',\'' + urlencode(item.id) + '\');">Show track data on map</a>';
             sdescm += '</i></div>';
         }
-        var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=Coord:' + item.location.lat.toFixed(4) + ',' + item.location.lng.toFixed(4) + '">Search nearby</a>';
+        var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=' + item.location.lat.toFixed(4) + ',' + item.location.lng.toFixed(4) + '">Search nearby</a>';
         sdescm += displaydirections(item.location.lat, item.location.lng, extra);
         
         var permitStatus = "None";
@@ -351,7 +351,7 @@ function getrwlist(data) {
                 v = item.printouts["Has total counter"];
                 if (v && v.length > 0)
                     obj.totalCounter = v[0];
-
+                //obj.rankRating = calculateRankRating(obj);
                 v = item.printouts["Has location class"];
                 if (v && v.length > 0) {
                     obj.activity = v[0];
@@ -743,6 +743,15 @@ function addToList(id) {
         oldid = id;
     }
 }
+
+//function calculateRankRating(item) {
+//    if (!item.totalRating || !item.totalCounter) return 0;
+//    //{{#set:Has rank rating={{#expr: 2.5*{{#var:totalrating}}/5 + 2.5*(1-exp(-{{#var:totalsum}}/6)) }}}} <-Q of 6 here
+//    //<!-- Formula: 2.5*stars/5+2.5*(1-exp(-numvotes/Q)) described at 
+//    // http://math.stackexchange.com/questions/942738/algorithm-to-calculate-rating-based-on-multiple-reviews-using-both-review-score -->
+//    const Q = 2.8;
+//    return 2.5 * item.totalRating / 5 + 2.5 * (1 - Math.pow(2.71828183, (-1 * item.totalCounter / Q)));
+//}
 
 function parseBestMonths(bestSeasonRaw) {
     var parsed = bestSeasonRaw.replace(/,/g, '');

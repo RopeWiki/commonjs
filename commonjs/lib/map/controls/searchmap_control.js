@@ -1,7 +1,7 @@
 ﻿//google maps custom control to allow user to draw on map and select search area
 
 function initSearchMapControl() {
-
+    
     var searchMapControl = document.createElement("div");
     searchMapControl.id = "searchmap";
     searchMapControl.className = "map-control dropdown selection searchmap";
@@ -53,10 +53,11 @@ function waitForElement(elementId) {
             for (var i = 0; i < mutationsList.length; i++) {
                 var mutation = mutationsList[i];
 
-                if (!!mutation.previousSibling && mutation.previousSibling.id === elementId) {
-                    observer.disconnect();
-                    resolve();
-                    return;
+                if (!!mutation.previousSibling && mutation.previousSibling.id === elementId ||
+                    mutation.addedNodes.length > 0 && mutation.addedNodes[0].id === elementId) {
+                        observer.disconnect();
+                        resolve();
+                        return;
                 }
             }
         });
@@ -78,46 +79,61 @@ var searchMapRectangle;
 var searchMapLoader;
 
 function searchMapButtonClicked() {
-
-    var searchButton = document.getElementById('searchinfo');
-
+    
     if (searchmapn < 0) {
 
         //events that the shapes send: https://developers.google.com/maps/documentation/javascript/shapes#editable_events
 
         var searchRectBounds = getBoundsForSearchRectangle();
+
+        createAndDisplaySearchRectangle(searchRectBounds);
         
-        //create and display rectangle
-        searchMapRectangle = new google.maps.Rectangle({
-            bounds: searchRectBounds,
-            editable: true
-        });
-        searchMapRectangle.setMap(map);
-
-        searchMapRectangle.addListener("click", function () {
-            clearLocationsOutside(searchMapRectangle.bounds);
-        });
-
-        searchMapRectangle.addListener("bounds_changed", function () {
-            searchMapRectangleBoundsChanged();
-        });
-
-        searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;position:relative;line-height:0px;margin:0px;">click inside rect to crop</p>';
-        searchButton.classList.add("cancel");
-
-        searchmapn = 0;
-
         setLoadingInfoText();
     } else {
-        closeSearchMapRectangle(searchButton);
+        closeSearchMapRectangle();
     }
 }
 
-function closeSearchMapRectangle(searchButton) {
+function createAndDisplaySearchRectangle(bounds) {
+
+    searchmapn = 0;
+
+    searchMapRectangle = new google.maps.Rectangle({
+        bounds: bounds,
+        editable: true
+    });
+    searchMapRectangle.setMap(map);
+
+    searchMapRectangle.addListener("click", function () {
+        clearLocationsOutside(searchMapRectangle.bounds);
+    });
+
+    searchMapRectangle.addListener("bounds_changed", function () {
+        searchMapRectangleBoundsChanged();
+    });
+
+    function setCancelText() {
+        var searchButton = document.getElementById('searchinfo');
+        searchButton.innerHTML = 'Cancel<br><p style="font-size:10px;position:relative;line-height:0px;margin:0px;">click inside rect to crop</p>';
+        searchButton.classList.add("cancel");
+    }
+
+    var searchButton = document.getElementById('searchinfo');
+    if (searchButton !== null)
+        setCancelText();
+    else {
+        waitForElement('searchmap').then(setCancelText);
+    }
+}
+
+function closeSearchMapRectangle() {
     searchMapRectangle.setMap(null);
     searchMapRectangle = undefined;
+
+    var searchButton = document.getElementById('searchinfo');
     searchButton.innerHTML = "Search Map";
     searchButton.classList.remove("cancel");
+
     searchmapn = -1;
     if (searchWasRun) {
         locationsAlreadyLoadedWithinQuery = 0;

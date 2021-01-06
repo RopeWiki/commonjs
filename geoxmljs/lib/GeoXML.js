@@ -3443,6 +3443,7 @@ GeoXml.prototype.processKML = function (node, marks, title2, sbid, depth, paren)
             var urlname = this.urllist[this.urlindex++];
             var url = urlname.url;
             var title2 = urlname.name;
+            title2.replace('\'', "");
             var re = /&amp;/g;
             url = url.replace(re, "&");
             var nl = /\n/g;

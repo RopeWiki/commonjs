@@ -42,8 +42,7 @@ function locsearch() {
             if (!deftext(locnameval)) {
                 var locdistval = document.getElementById('locdistval').value;
                 if (deftext(locdistval))
-                    if (locnameval.substr(0, 6) !== 'Coord:')
-                        locdistval = "50mi"; // default
+                    locdistval = "30mi"; // default
                 url = SITE_BASE_URL + '/Location';
                 param = addUrlParam(param, 'locname', urlencode(locnameval));
                 if (!deftext(locdistval))
