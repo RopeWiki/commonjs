@@ -526,11 +526,12 @@ function setLoadingInfoText() { //called at the end of updateTable()
     }
     
     var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
+    if (searchMapRectangle === undefined && searchWasRun) moreToLoad = false;
     if (!moreToLoad) {
         loadingFinished();
         return;
     }
-
+    
     // more button
     var loadmore = document.getElementById("loadmore");
     loadmore.innerHTML = '<button onclick="loadMoreLocations()">+</button> ';
@@ -583,7 +584,7 @@ function loadingFinished() {
     var totalLoaded = markers.length;
     if (locationsLoadedWithinArea !== totalLoaded) info += ". (" + totalLoaded + " total locations loaded)";
 
-    if (searchMapRectangle === undefined && locationsTotalWithinArea === 0) //search map was used but is now cancelled
+    if (searchMapRectangle === undefined && searchWasRun) //search map was used but is now cancelled
         info = "Loaded " + totalLoaded + " total locations";
 
     var filterInfo = getFilteringInfo(); 
