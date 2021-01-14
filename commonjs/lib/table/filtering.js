@@ -175,8 +175,12 @@ function updateTable() {
             break;
         }
     }
+    
+    //hide star rate checkbox if user isn't logged in
+    var curuser = document.getElementById("curuser");
+    if (!curuser) $("div#starrate")[0].style.display = "none";
 
-    //add 'star rating info bar' if star rating is checked
+    //add 'star rating info bar' table row if star rating is checked
     if (starrate) {
         var starRatingInfoRow = tableNewBody.insertRow(0);
         var colSpan = 9;

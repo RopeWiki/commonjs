@@ -247,6 +247,9 @@ function loadUserInterface(document) {
         elem[i].innerHTML = '<label><input class="wchk__chk gmnoprint" type="checkbox" onclick="togglewchk(\'' + id + '\')" ' + (eval(id) ? 'checked' : '') + '>' + label + '</label>';
     }
 
+    var curuser = document.getElementById("curuser");
+    if (!curuser) starrate = false;
+
     elem = document.getElementsByClassName('schk');
     for (var i = 0; i < elem.length; i++) {
         elem[i].className += " notranslate";

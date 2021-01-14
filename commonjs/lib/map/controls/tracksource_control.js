@@ -160,7 +160,7 @@ function prettyPrint(url) {
     if (url.includes("canyonchronicles")) name = "Canyon Chronicles";
     if (url.includes("hikearizona"))      name = "Hike Arizona";
     if (url.includes("wikiloc"))          name = "Wikiloc";
-    if (url.includes("brennen"))          name = "Adventure Hikes";
+    if (url.includes("brennen"))          name = "Brennen Adv Hikes";
     if (url.includes("roadtripryan"))     name = "Road Trip Ryan";
     if (url.includes("canyoncollective")) name = "Canyon Collective";
     if (url.includes("onropecanyoneer"))  name = "On Rope";

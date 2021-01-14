@@ -87,6 +87,9 @@ function searchMapButtonClicked() {
         var searchRectBounds = getBoundsForSearchRectangle();
 
         createAndDisplaySearchRectangle(searchRectBounds);
+
+        if (searchRectBounds !== map.getBounds())
+            searchMapRectangleBoundsChanged();
         
         setLoadingInfoText();
     } else {

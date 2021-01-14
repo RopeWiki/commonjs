@@ -13,9 +13,9 @@ function assembleTableHeaderRow() {
         '<tr>' +
             '<th class="rwHdr">' +
                 '<div class="gmnoprint toption locateicon"">↓ Click on icon to locate on map</div>' +
-                '<span class="rwText">Location</span>' +
-                '<span id="sort-id" title="Sort by name" class="rwSortIcon gmnoprint notranslate"></span>' +
-                '<span id="sort-region" title="Sort by region" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span class="rwText">Location Name</span>' +
+                '<span id="sort-id" title="Sort by name of location" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-region" title="Sort by name of region" class="rwSortIcon gmnoprint notranslate"></span>' +
             '</th>' +
             '<th class="rwHdr">' +
                 '<div id="starrate" class="schk gmnoprint toption notranslate"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My ratings</label></div>' +
@@ -27,11 +27,11 @@ function assembleTableHeaderRow() {
         '<th class="rwHdr">' +
                 '<div class="fchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div>' +
                 '<span class="rwText"><a href="/Rating" title="Rating">Rating</a></span>' +
-                '<span id="sort-technicalRating" title="Sort by rating" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-technicalRating" title="Sort by technical rating" class="rwSortIcon gmnoprint notranslate"></span>' +
             '</th>' +
             '<th class="rwHdr">' +
                 '<span class="rwText ctranslate">Time</span>' +
-                '<span id="sort-averageTime" title="Sort by average typical time" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-averageTime" title="Sort by typical time" class="rwSortIcon gmnoprint notranslate"></span>' +
             '</th>' +
             '<th class="rwHdr">' +
                 '<div class="uchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></div>' +
@@ -40,20 +40,20 @@ function assembleTableHeaderRow() {
             '</th>' +
             '<th class="rwHdr">' +
                 '<span class="rwText ctranslate">Descent</span>' +
-                '<span id="sort-descentLength" title="Sort by length" class="rwSortIcon gmnoprint notranslate"></span>' +
-                '<span id="sort-descentDepth" title="Sort by depth" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-descentLength" title="Sort by length of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-descentDepth" title="Sort by depth of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
             '</th>' +
             '<th class="rwHdr">' +
                 '<span class="rwText ctranslate">Raps</span>' +
                 '<span id="sort-rappelsNum" title="Sort by number of rappels" class="rwSortIcon gmnoprint notranslate"></span>' +
-                '<span id="sort-longestRappel" title="Sort by longest rappel" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-longestRappel" title="Sort by highest rappel" class="rwSortIcon gmnoprint notranslate"></span>' +
             '</th>' +
             '<th class="rwHdr">' +
                 '<span class="rwTextNoSort"><a href="/Extra_info" title="Extra info">Info</a></span>' +
             '</th>' +
             '<th class="rwHdr">' +
                 '<span class="rwText"><a href="/Conditions_info" title="Conditions info">Conditions</a></span>' +
-                '<span id="sort-conditionDate" title="Sort by condition report date" class="rwSortIcon gmnoprint notranslate"></span>' +
+                '<span id="sort-conditionDate" title="Sort by date of condition report" class="rwSortIcon gmnoprint notranslate"></span>' +
             '</th>' + 
         '</tr>';
 

@@ -446,6 +446,7 @@ const loadLimit = 100;
 var loadOffset = 0;
 var locationsTotalWithinArea;
 var locationsLoadedWithinArea = 0;
+var userStarRatingsLoaded = false;
 
 function loadMoreLocations() {
     
@@ -497,12 +498,14 @@ function loadMoreLocations() {
 
     //load user star ratings
     var curuser = document.getElementById("curuser");
-    if (curuser) {
+    if (curuser && !userStarRatingsLoaded) {
         var currentUser = curuser.innerHTML;
+        userStarRatingsLoaded = true;
         setTimeout(function () {
             $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
                     '&query=' + urlencode('[[Has page rating::+]][[Has page rating user::' + currentUser + ']][[Has page rating page::<q>' + locationsQuery + '</q>]]') +
-                    '|mainlabel=-|?Has_page_rating_page|?Has_page_rating'),
+                    '|mainlabel=-|?Has_page_rating_page|?Has_page_rating' +
+                    '|limit=' + 1000), //load all ratings the user has made
                 function (data) {
                     setUserStarRatings(data);
                 });

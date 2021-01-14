@@ -7,29 +7,30 @@ var sites = [];
 // cookies
 var metric = null;
 var french = null;
-var urlcheckbox = null;
-var weather = null;
-var watershed = null;
-
-var starrate = null;
 var labels = null;
 var slideshowchk = null;
+var starrate = null;
+var urlcheckbox = null;
+var watershed = null;
+var weather = null;
 
 function initializeGlobalVariables() {
     metric = getCookie("metric");
     french = getCookie("french");
-    urlcheckbox = getCookie("urlcheckbox");
-    weather = getCookie("weather");
-    watershed = getCookie("watershed");
-
-    starrate = getCookie("starrate");
-    if (window.location.href.toString().indexOf('starratechk=') >= 0)
-        starrate = true;
     labels = getCookie("labels");
+    
     slideshowchk = getCookie("slideshowchk", "undefined");
     if (slideshowchk === "undefined")// && $(window).width()<1200)
         slideshowchk = "on";
     slideshowchk = slideshowchk !== "";
+
+    starrate = getCookie("starrate");
+    if (window.location.href.toString().indexOf('starratechk=') >= 0)
+        starrate = true;
+
+    urlcheckbox = getCookie("urlcheckbox");
+    watershed = getCookie("watershed");
+    weather = getCookie("weather");
 }
 
 // ===== other global variables:
