@@ -312,7 +312,7 @@ function getTableConditionDisplay(summary) {
 
     if (wikiLink != null) {
         var conditions = wikiLink[1].split("|");
-        var conditionsStr = '<a href="/' + linkify(conditions[0]) + '" title="'+ conditions[0] +'"><b>'+ conditions[1].replace(/'/g, "") +'</b></a>';
+        var conditionsStr = '<a href="/' + linkify(conditions[0]) + '" title="'+ conditions[0] +'"><b class="table condition-date">'+ conditions[1].replace(/'/g, "") +'</b></a>';
         summary = summary.replace(wikiLink[0], conditionsStr);
     }
     
