@@ -895,14 +895,16 @@ function parseTechnicalRating(description) {
         }
     }
 
-    technicalRating.combinedACA =
+    var combinedACA =
         (!!technicalRating.technical ? technicalRating.technical : "") + (!!technicalRating.water ? technicalRating.water : "") +
         " " + (!!technicalRating.time ? technicalRating.time : "") +
         ((!!technicalRating.risk) ? " " + technicalRating.risk : "");
+    if (combinedACA.trim().length > 0) technicalRating.combinedACA = combinedACA;
 
-    technicalRating.combinedFrench =
+    var combinedFrench =
         (!!technicalRating.vertical ? technicalRating.vertical : "") + (!!technicalRating.aquatic ? technicalRating.aquatic : "") +
         " " + (!!technicalRating.commitment ? technicalRating.commitment : "");
+    if (combinedFrench.trim().length > 0) technicalRating.combinedFrench = combinedFrench;
     
     return technicalRating;
 }

@@ -181,14 +181,20 @@ function getTableParentRegionLinks(regions) {
 }
 
 function getTableTechnicalRating(rating) {
+    var tableRatingDisplay = "";
+
     var tableRating = !french
         ? rating.combinedACA
         : rating.combinedFrench;
 
-    var italicize = (!french && rating.convertedACA) || (french && rating.convertedFrench);
-    if (italicize) tableRating = "<i>" + tableRating + "</i>";
+    if (tableRating !== undefined) {
+        var italicize = (!french && rating.convertedACA) || (french && rating.convertedFrench);
+        if (italicize) tableRating = "<i>" + tableRating + "</i>";
 
-    return tableRating;
+        tableRatingDisplay = tableRating;
+    }
+
+    return tableRatingDisplay;
 }
 
 function getTableRaps(rapSummary, longestRap) {
