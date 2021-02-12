@@ -76,7 +76,7 @@ function getUserListTableHeaderRow() {
 function getUserListTableRow(item) {
     
     const UserDate =
-        '<td class="tdate">[UserDate]</td>';
+        '<td class="tdate" id="[LocationName]-userdate">[UserDate]</td>';
 
     const Comment =
         '<td class="tcomment" id="[LocationName]-comment">[Comment]</td>';
@@ -87,9 +87,10 @@ function getUserListTableRow(item) {
                 '<input type="button" value="\u2716" id="[LocationName]-canceledit" onclick="cancelEditComment(\'[LocationName]\')" class="plain" style="display:none"> ' +
                 '<input type="button" value="Remove" id="[LocationName]-remove" onclick="removeLocationFromUserList(\'[LocationName]\')" class="plain"> ' +
             '</td>';
-    
+
     var userDate = UserDate
-        .replace(/\[UserDate]/, getTableUserDate(item.userDate));
+        .replace(/\[UserDate]/, getTableUserDate(item.userDate))
+        .replace(/\[LocationName]/, item.id);
 
     var comment = Comment
         .replace(/\[Comment]/, (!item.comment ? "" : item.comment))
@@ -121,10 +122,14 @@ function getTableUserDate(unix_timestamp) {
 // Edit/Remove functionality
 var editComment = function (elementId) {
     var commentElement = document.getElementById(elementId + "-comment");
+    var userDateElement = document.getElementById(elementId + "-userdate");
     var editButton = document.getElementById(elementId + "-edit");
     var canceleditButton = document.getElementById(elementId + "-canceledit");
     if (editButton.value === "Edit") {
         editButton.value = "\u2714"; //checkmark
+
+        userDateElement.originalText = userDateElement.innerHTML;
+        userDateElement.innerHTML = "<input type=\"date\" value=" + new Date(userDateElement.innerHTML).toLocaleDateString('en-CA') + ">";
 
         commentElement.originalText = commentElement.innerHTML;
         commentElement.contentEditable = true;
@@ -134,19 +139,24 @@ var editComment = function (elementId) {
     } else {
         editButton.value = "Edit";
 
+        userDateElement.innerHTML = userDateElement.firstChild.value !== undefined ? getTableUserDate(new Date(userDateElement.firstChild.value).getTime() / 1000) : "";
+
         commentElement.contentEditable = false;
 
         canceleditButton.style.display = "none";
 
         //save the data to mediawiki
-        saveComment(elementId, commentElement.innerHTML);
+        saveComment(elementId, commentElement.innerHTML, userDateElement.innerHTML);
     }
 }
 
 var cancelEditComment = function (elementId) {
     var commentElement = document.getElementById(elementId + "-comment");
+    var userDateElement = document.getElementById(elementId + "-userdate");
     var editButton = document.getElementById(elementId + "-edit");
     var canceleditButton = document.getElementById(elementId + "-canceledit");
+
+    userDateElement.innerHTML = userDateElement.originalText;
 
     commentElement.contentEditable = false;
     commentElement.innerHTML = commentElement.originalText;
@@ -178,10 +188,14 @@ function getCsrfToken(callback, state) {
     getPageContent(callback, state);
 }
 
-function saveComment(elementId, newComment) {
+function saveComment(elementId, newComment, newUserDate) {
+    //convert date to unix timestamp
+    var unixTime = parseInt((new Date(newUserDate).getTime() / 1000).toFixed(0));
+
     var state = {
         elementId: elementId,
-        newComment: newComment
+        newComment: newComment,
+        newUserDate: unixTime
     };
 
     getCsrfToken(editRequest, state);
@@ -204,10 +218,11 @@ function getPageContent(callback, state) {
 
 function editRequest(state) {
 
+    var content = state.pageContent;
+
+    //set comment
     const commentMarker = "|Comment=";
     const commentEndMarker = "\n";
-
-    var content = state.pageContent;
 
     var startIndex = content.indexOf(commentMarker);
     var endIndex;
@@ -219,7 +234,24 @@ function editRequest(state) {
     }
 
     var newPageContent = content.substring(0, startIndex) + commentMarker + state.newComment + commentEndMarker + content.substring(endIndex);
+    
+    //set user date
+    content = newPageContent;
 
+    const dateMarker = "|Date=";
+    const dateEndMarker = "\n";
+
+    startIndex = content.indexOf(dateMarker);
+    if (startIndex > 0) {
+        endIndex = content.indexOf(dateEndMarker, startIndex) + dateEndMarker.length;
+    } else {
+        startIndex = content.indexOf("}}");
+        endIndex = startIndex;
+    }
+
+    newPageContent = content.substring(0, startIndex) + dateMarker + state.newUserDate + dateEndMarker + content.substring(endIndex);
+    
+    //call to server
     var params = {
         action: "edit",
         title: state.pageTitle,
