@@ -8,59 +8,72 @@
 // just the specs specific to a canyon location, and all the surrounding html is generated locally
 
 function assembleTableHeaderRow() {
+    var header = !isUserListTable()
+        ? getStandardTableHeaderRow()
+        : getUserListTableHeaderRow();
+
+    return '<tr>' + header + '</tr>';
+}
+
+function assembleTableRow(item) {
+    var row = !isUserListTable()
+        ? getStandardTableRow(item)
+        : getUserListTableRow(item);
     
+    return '<tr class="trow notranslate">' + row + '</tr>';
+}
+
+function getStandardTableHeaderRow() {    
     const Header =
-        '<tr>' +
-            '<th class="rwHdr">' +
-                '<div class="gmnoprint toption locateicon"">↓ Click on icon to locate on map</div>' +
-                '<span class="rwText">Location Name</span>' +
-                '<span id="sort-id" title="Sort by name of location" class="rwSortIcon gmnoprint notranslate"></span>' +
-                '<span id="sort-region" title="Sort by name of region" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '</th>' +
-            '<th class="rwHdr">' +
-                '<div id="starrate" class="schk gmnoprint toption notranslate"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My ratings</label></div>' +
-                '<span id="sort-rankRating" title="Sort by combined Quality & Popularity formula" class="rwSortIcon gmnoprint notranslate"></span>' +
-                '<span class="rwText"><a href="/StarRank" title="StarRank">Quality</a></span>' +
-                '<span id="sort-totalRating" title="Sort by raw user rating" class="rwSortIcon gmnoprint notranslate"></span>' +
-                '<span id="sort-totalCounter" title="Sort by number of ratings" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '</th>' +
         '<th class="rwHdr">' +
-                '<div class="fchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div>' +
-                '<span class="rwText"><a href="/Rating" title="Rating">Rating</a></span>' +
-                '<span id="sort-technicalRating" title="Sort by technical rating" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '</th>' +
-            '<th class="rwHdr">' +
-                '<span class="rwText ctranslate">Time</span>' +
-                '<span id="sort-averageTime" title="Sort by typical time" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '</th>' +
-            '<th class="rwHdr">' +
-                '<div class="uchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></div>' +
-                '<span class="rwText ctranslate">Hike</span>' +
-                '<span id="sort-hikeLength" title="Sort by length of hike" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '</th>' +
-            '<th class="rwHdr">' +
-                '<span class="rwText ctranslate">Descent</span>' +
-                '<span id="sort-descentLength" title="Sort by length of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
-                '<span id="sort-descentDepth" title="Sort by depth of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '</th>' +
-            '<th class="rwHdr">' +
-                '<span class="rwText ctranslate">Raps</span>' +
-                '<span id="sort-rappelsNum" title="Sort by number of rappels" class="rwSortIcon gmnoprint notranslate"></span>' +
-                '<span id="sort-longestRappel" title="Sort by highest rappel" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '</th>' +
-            '<th class="rwHdr">' +
-                '<span class="rwTextNoSort"><a href="/Extra_info" title="Extra info">Info</a></span>' +
-            '</th>' +
-            '<th class="rwHdr">' +
-                '<span class="rwText"><a href="/Conditions_info" title="Conditions info">Conditions</a></span>' +
-                '<span id="sort-conditionDate" title="Sort by date of condition report" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '</th>' + 
-        '</tr>';
+            '<div class="gmnoprint toption locateicon"">↓ Click on icon to locate on map</div>' +
+            '<span class="rwText">Location Name</span>' +
+            '<span id="sort-id" title="Sort by name of location" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '<span id="sort-region" title="Sort by name of region" class="rwSortIcon gmnoprint notranslate"></span>' +
+        '</th>' +
+        '<th class="rwHdr">' +
+            '<div id="starrate" class="schk gmnoprint toption notranslate"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My ratings</label></div>' +
+            '<span id="sort-rankRating" title="Sort by combined Quality & Popularity formula" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '<span class="rwText"><a href="/StarRank" title="StarRank">Quality</a></span>' +
+            '<span id="sort-totalRating" title="Sort by raw user rating" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '<span id="sort-totalCounter" title="Sort by number of ratings" class="rwSortIcon gmnoprint notranslate"></span>' +
+        '</th>' +
+        '<th class="rwHdr">' +
+            '<div class="fchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div>' +
+            '<span class="rwText"><a href="/Rating" title="Rating">Rating</a></span>' +
+            '<span id="sort-technicalRating" title="Sort by technical rating" class="rwSortIcon gmnoprint notranslate"></span>' +
+        '</th>' +
+        '<th class="rwHdr">' +
+            '<span class="rwText ctranslate">Time</span>' +
+            '<span id="sort-averageTime" title="Sort by typical time" class="rwSortIcon gmnoprint notranslate"></span>' +
+        '</th>' +
+        '<th class="rwHdr">' +
+            '<div class="uchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></div>' +
+            '<span class="rwText ctranslate">Hike</span>' +
+            '<span id="sort-hikeLength" title="Sort by length of hike" class="rwSortIcon gmnoprint notranslate"></span>' +
+        '</th>' +
+        '<th class="rwHdr">' +
+            '<span class="rwText ctranslate">Descent</span>' +
+            '<span id="sort-descentLength" title="Sort by length of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '<span id="sort-descentDepth" title="Sort by depth of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
+        '</th>' +
+        '<th class="rwHdr">' +
+            '<span class="rwText ctranslate">Raps</span>' +
+            '<span id="sort-rappelsNum" title="Sort by number of rappels" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '<span id="sort-longestRappel" title="Sort by highest rappel" class="rwSortIcon gmnoprint notranslate"></span>' +
+        '</th>' +
+        '<th class="rwHdr">' +
+            '<span class="rwTextNoSort"><a href="/Extra_info" title="Extra info">Info</a></span>' +
+        '</th>' +
+        '<th class="rwHdr">' +
+            '<span class="rwText"><a href="/Conditions_info" title="Conditions info">Conditions</a></span>' +
+            '<span id="sort-conditionDate" title="Sort by date of condition report" class="rwSortIcon gmnoprint notranslate"></span>' +
+        '</th>';
 
     return Header;
 }
 
-function assembleTableRow(item) {
+function getStandardTableRow(item) {
 
     const Location =
         '<td><table><tbody><tr><td rowspan="2" class="pinmap" id="[LocationName]">' +
@@ -92,7 +105,7 @@ function assembleTableRow(item) {
     
     const Conditions =
         '<td class="ctable">[ConditionsSummary]</td>';
-
+    
     var location = Location
         .replace(/\[LocationName]/g, item.id)
         .replace(/\[LocationNameLink]/g, linkify(item.id))
@@ -127,9 +140,8 @@ function assembleTableRow(item) {
 
     var conditions = Conditions
         .replace(/\[ConditionsSummary]/, getTableConditionDisplay(item.conditionSummary));
-
+    
     var html =
-        '<tr class="trow notranslate">' +
         location +
         quality +
         technicalRating +
@@ -138,8 +150,7 @@ function assembleTableRow(item) {
         descent +
         raps +
         info +
-        conditions +
-        '</tr>';
+        conditions;
 
     return html;
 }

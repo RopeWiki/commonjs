@@ -414,7 +414,7 @@ function getrwlist(data) {
                 v = item.printouts["Has longest rappel"];
                 if (v && v.length > 0) {
                     obj.longestRappel = v[0];
-                    if (obj.rappels === undefined) { //ropewiki sets 0 rap height if it's non-technical canyon, so need to match with 0r
+                    if (obj.longestRappel.value === 0 && obj.rappels === undefined) { //ropewiki sets 0 rap height if it's non-technical canyon, so need to match with 0r
                         obj.rappels = "0r";
                     }
                 }
@@ -494,6 +494,17 @@ function loadMoreLocations() {
         function (data) {
             var fitBounds = searchMapRectangle === undefined;
             getkmllist(data, fitBounds);
+            
+            //load user list - custom dates and comments
+            if (isUserListTable()) {
+                $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+                        '&query=' + urlencode('[[Has user::' + listUser + ']][[Has list::~' + listName + '*]][[Has location::+]]') +
+                        '|?Has location|?Has tentative date|?Has comment' +
+                        '|limit=' + 100),
+                    function (data) {
+                        setUserListInfo(data);
+                    });
+            }
         });
 
     //load user star ratings
@@ -501,16 +512,14 @@ function loadMoreLocations() {
     if (curuser && !userStarRatingsLoaded) {
         var currentUser = curuser.innerHTML;
         userStarRatingsLoaded = true;
-        setTimeout(function () {
-            $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
-                    '&query=' + urlencode('[[Has page rating::+]][[Has page rating user::' + currentUser + ']][[Has page rating page::<q>' + locationsQuery + '</q>]]') +
-                    '|mainlabel=-|?Has_page_rating_page|?Has_page_rating' +
-                    '|limit=' + 1000), //load all ratings the user has made
-                function (data) {
-                    setUserStarRatings(data);
-                });
-            },
-            2000);
+
+        $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+                '&query=' + urlencode('[[Has page rating::+]][[Has page rating user::' + currentUser + ']][[Has page rating page::<q>' + locationsQuery + '</q>]]') +
+                '|?Has_page_rating_page|?Has_page_rating|mainlabel=-' +
+                '|limit=' + 1000), //load all ratings the user has made
+            function (data) {
+                setUserStarRatings(data);
+            });
     }
 
     loadOffset += numberToLoad;
