@@ -14,7 +14,7 @@ var tooltip = function () {
     var ie = document.all ? true : false;
     return {
         show: function (v, w, highlight) {
-            if (!v || v == "")
+            if (!v || v === "")
                 return;
 
             if (highlight && lasthighlight)
@@ -26,7 +26,7 @@ var tooltip = function () {
                         return;
                     }
 
-            if (lasthighlight && highlight != lasthighlight && lasthighlight.highlight) {
+            if (lasthighlight && highlight !== lasthighlight && lasthighlight.highlight) {
                 lasthighlight.highlight.setMap(null);
                 lasthighlight.highlight = null;
             }
@@ -106,11 +106,11 @@ var tooltip = function () {
 
         fade: function (d) {
             var a = alpha;
-            if ((a != endalpha && d == 1) || (a != 0 && d == -1)) {
+            if ((a !== endalpha && d === 1) || (a !== 0 && d === -1)) {
                 var i = speed;
-                if (endalpha - a < speed && d == 1) {
+                if (endalpha - a < speed && d === 1) {
                     i = endalpha - a;
-                } else if (alpha < speed && d == -1) {
+                } else if (alpha < speed && d === -1) {
                     i = a;
                 }
                 alpha = a + (i * d);
@@ -118,7 +118,7 @@ var tooltip = function () {
                 tt.style.filter = 'alpha(opacity=' + alpha + ')';
             } else {
                 clearInterval(tt.timer);
-                if (d == -1) {
+                if (d === -1) {
                     tt.style.display = 'none';
                 }
             }
@@ -126,7 +126,7 @@ var tooltip = function () {
 
         hide: function (highlight) {
             if (highlight)
-                if (highlight != lasthighlight) {
+                if (highlight !== lasthighlight) {
                     return;
                 }
 
@@ -144,7 +144,8 @@ var tooltip = function () {
 }();
 
 function addhighlight(idlist) {
-    for (var i = 0; i < markers.length; ++i)
+    var i;
+    for (i = 0; i < markers.length; ++i)
         if (idlist.includes(markers[i].name)) {
             var m = markers[i];
             if (m.highlight)
@@ -167,7 +168,7 @@ function addhighlight(idlist) {
         }
 
     var pinicons = document.getElementsByClassName('pinicon');
-    for (var i = 0; i < pinicons.length; ++i)
+    for (i = 0; i < pinicons.length; ++i)
         if (idlist.indexOf(pinicons[i].id) >= 0)
             pinicons[i].style.backgroundImage = "url(" + MARKER_USERLIST_HIGHLIGHT + ")";
 }
