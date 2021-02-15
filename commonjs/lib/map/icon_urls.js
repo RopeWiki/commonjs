@@ -44,6 +44,23 @@ var KML_ICON_LIST = [  //not a const because it is assigned to by Waterflow anal
     SITE_BASE_URL + "/images/3/37/Starn55.png"
 ];
 
+var STARLIST = [
+    SITE_BASE_URL + "/images/9/9d/GoldStar0.png",
+    SITE_BASE_URL + "/images/8/86/GoldStar1.png",
+    SITE_BASE_URL + "/images/f/fd/GoldStar2.png",
+    SITE_BASE_URL + "/images/8/8d/GoldStar3.png",
+    SITE_BASE_URL + "/images/4/41/GoldStar4.png"
+];
+
+const DOWNLOAD_FILE = SITE_BASE_URL + "/images/a/ad/DownIcon.png";
+
+const PINMAP_ICON = SITE_BASE_URL + "/images/8/86/PinMap.png";
+const MARKER_MOUSEOVER_HIGHLIGHT = SITE_BASE_URL + "/images/3/39/Starn_b.png"; //blue outline
+const MARKER_USERLIST_HIGHLIGHT = SITE_BASE_URL + "/images/e/e6/Starn_y.png"; //yellow outline
+
+const WEATHER_MINI_ICON = SITE_BASE_URL + "/images/d/d5/Wforecast.png";
+const OPENWEATHER_LOGO = SITE_BASE_URL + "/images/f/f2/OpenWeatherLogo.png";
+
 const ICON_CLOSED = SITE_BASE_URL + "/images/f/f8/Permit-closed.png";
 const ICON_RESTRICTED = SITE_BASE_URL + "/images/1/11/Permit-restricted.png";
 const ICON_PERMIT_YES = SITE_BASE_URL + "/images/2/29/Permit-yes.png";
@@ -51,3 +68,15 @@ const ICON_PERMIT_YES = SITE_BASE_URL + "/images/2/29/Permit-yes.png";
 const SORT_ICON = SITE_BASE_URL + "/images/2/2c/Sorticon.png";
 const SORT_ICON_UP = SITE_BASE_URL + "/images/4/4b/Sorticonup.png";
 const SORT_ICON_DOWN = SITE_BASE_URL + "/images/8/87/Sorticondown.png";
+
+const INSTAGRAM_ICON = SITE_BASE_URL + "/images/c/c0/InstaIcon.png";
+const FACEBOOK_ICON = SITE_BASE_URL + "/images/0/03/FacebIcon.png";
+const FLICKR_ICON = SITE_BASE_URL + "/images/f/f7/FlickIcon.png";
+const PANORAMIO_ICON = SITE_BASE_URL + "/images/a/a4/PanorIcon.png";
+
+const MULTI_FLAG_ICON = SITE_BASE_URL + "/images/c/c9/FlagIcon.png";
+
+const BULLET_LIST_ICON = SITE_BASE_URL + "/images/0/01/BulletlistIcon.png";
+const PHOTO_GALLERY_ICON = SITE_BASE_URL + "/images/4/45/Galleryicon1.png";
+const PHOTO_GALLERY_ICON2 = SITE_BASE_URL + "/images/c/ca/Galleryiconx.png";
+const MULTIPHOTO_GALLERY_ICON = SITE_BASE_URL + "/images/d/d4/Galleryiconn.png";

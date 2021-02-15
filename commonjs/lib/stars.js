@@ -1,11 +1,3 @@
-// Constants
-var STARLIST = [
-    SITE_BASE_URL + '/images/9/9d/GoldStar0.png',
-    SITE_BASE_URL + '/images/8/86/GoldStar1.png',
-    SITE_BASE_URL + '/images/f/fd/GoldStar2.png',
-    SITE_BASE_URL + '/images/8/8d/GoldStar3.png',
-    SITE_BASE_URL + '/images/4/41/GoldStar4.png'
-];
 
 function getStarFraction(num) {
     if (num >= 0.875)

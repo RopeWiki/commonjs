@@ -159,7 +159,7 @@ function googleTranslateElementInit() {
         div.className = 'noprint';
         div.style.cssText = 'float:right';
         div.id = 'google_translate_flags';
-        div.innerHTML = '<table class="noprint"><tr><td><img src="' + SITE_BASE_URL + '/images/c/c9/FlagIcon.png"/></td><td id="google_translate_element"></td></tr></table>';
+        div.innerHTML = '<table class="noprint"><tr><td><img src="' + MULTI_FLAG_ICON + '"/></td><td id="google_translate_element"></td></tr></table>';
         //hdr.parentNode.insertBefore(div, hdr);
         hdr.insertBefore(div, hdr.firstChild);
 

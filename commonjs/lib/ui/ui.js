@@ -285,7 +285,7 @@ function loadUserInterface(document) {
     var kml = document.getElementById('kmlmapdisplay');
     var edit = window.location.href.toString().indexOf("&action=") > 0;
     if (hdr && pdf && kml && !edit) {
-        var text = ' <select class="notranslate" style="width:27px;height:32px;background-image:url(' + SITE_BASE_URL + '/images/a/ad/DownIcon.png);" id="pdfselect" value="" onchange="pdfselect(this)">';
+        var text = ' <select class="notranslate" style="width:27px;height:32px;background-image:url(' + DOWNLOAD_FILE + ');" id="pdfselect" value="" onchange="pdfselect(this)">';
         text += '<option selected disabled hidden style="display: none" value=""></option>';
         text += '<option value="P">PDF: Page</option>';
         text += '<option value="PM">PDF: Map</option><option value="KM">KML: Map</option><option value="GM">GPX: Map</option>';

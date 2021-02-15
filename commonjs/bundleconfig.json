@@ -35,10 +35,12 @@
       "lib/skin.js",
       "lib/stars.js",
       "lib/table/rows.js",
+      "lib/table/userlist.js",
       "lib/table/filtering.js",
       "lib/translation.js",
       "lib/ui/fav.js",
       "lib/ui/inlineweather.js",
+      "lib/ui/modal.js",
       "lib/ui/toggle.js",
       "lib/ui/ui.js",
       "lib/utils/urls.js",
@@ -46,7 +48,7 @@
       "lib/zzz_onload.js"
     ],
     "minify": {
-      "enabled": true,
+      "enabled": false,
       "commentMode": "all"
     }
   }

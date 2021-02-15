@@ -152,7 +152,7 @@ function addhighlight(idlist) {
 
             var highlight = new google.maps.Marker({
                 position: m.getPosition(),
-                icon: SITE_BASE_URL + "/images/e/e6/Starn_y.png",
+                icon: MARKER_USERLIST_HIGHLIGHT,
                 draggable: false,
                 clickable: false,
                 optimized: false,
@@ -169,5 +169,5 @@ function addhighlight(idlist) {
     var pinicons = document.getElementsByClassName('pinicon');
     for (var i = 0; i < pinicons.length; ++i)
         if (idlist.indexOf(pinicons[i].id) >= 0)
-            pinicons[i].style.backgroundImage = "url(" + SITE_BASE_URL + "/images/e/e6/Starn_y.png)";
+            pinicons[i].style.backgroundImage = "url(" + MARKER_USERLIST_HIGHLIGHT + ")";
 }

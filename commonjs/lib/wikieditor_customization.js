@@ -39,7 +39,7 @@ function initBasicEditor() {
 
             // add custom buttons
             mw.toolbar.addButton({
-                imageFile: SITE_BASE_URL + '/images/0/01/BulletlistIcon.png',
+                imageFile: BULLET_LIST_ICON,
                 speedTip: 'Bulleted list',
                 tagOpen: '* ',
                 tagClose: '',
@@ -47,7 +47,7 @@ function initBasicEditor() {
                 imageId: 'button-bullet'
             });
             mw.toolbar.addButton({
-                imageFile: SITE_BASE_URL + '/images/4/45/Galleryicon1.png',
+                imageFile: PHOTO_GALLERY_ICON,
                 speedTip: 'Insert a picture (.jpg .gif .png .pdf)',
                 tagOpen: '{{pic|',
                 tagClose: '}}',
@@ -55,7 +55,7 @@ function initBasicEditor() {
                 imageId: 'button-pic1'
             });
             mw.toolbar.addButton({
-                imageFile: SITE_BASE_URL + '/images/d/d4/Galleryiconn.png',
+                imageFile: MULTIPHOTO_GALLERY_ICON,
                 speedTip: 'Insert a picture gallery (.jpg .gif .png .pdf)',
                 tagOpen: '{{pic|',
                 tagClose: '}}',
@@ -63,7 +63,7 @@ function initBasicEditor() {
                 imageId: 'button-picn'
             });
             mw.toolbar.addButton({
-                imageFile: SITE_BASE_URL + '/images/c/ca/Galleryiconx.png',
+                imageFile: PHOTO_GALLERY_ICON2,
                 speedTip: 'Insert a large sketch or document (.pdf .gif .png .jpg)',
                 tagOpen: '{{pic|size=X|',
                 tagClose: '}}',
@@ -121,7 +121,7 @@ function customizeToolbar() {
             bullist: {
                 label: 'Bulleted list',
                 type: 'button',
-                icon: SITE_BASE_URL + '/images/0/01/BulletlistIcon.png',
+                icon: BULLET_LIST_ICON,
                 action: {
                     type: 'encapsulate',
                     options: {
@@ -140,7 +140,7 @@ function customizeToolbar() {
             pic1: {
                 label: 'Insert a picture (.jpg .gif .png .pdf)',
                 type: 'button',
-                icon: SITE_BASE_URL + '/images/4/45/Galleryicon1.png',
+                icon: PHOTO_GALLERY_ICON,
                 action: {
                     type: 'encapsulate',
                     options: {
@@ -159,7 +159,7 @@ function customizeToolbar() {
             picn: {
                 label: 'Insert a picture gallery (.jpg .gif .png .pdf)',
                 type: 'button',
-                icon: SITE_BASE_URL + '/images/d/d4/Galleryiconn.png',
+                icon: MULTIPHOTO_GALLERY_ICON,
                 action: {
                     type: 'encapsulate',
                     options: {
@@ -178,7 +178,7 @@ function customizeToolbar() {
             picx: {
                 label: 'Insert a large sketch or document (.pdf .gif .png .jpg)',
                 type: 'button',
-                icon: SITE_BASE_URL + '/images/c/ca/Galleryiconx.png',
+                icon: PHOTO_GALLERY_ICON2,
                 action: {
                     type: 'encapsulate',
                     options: {

@@ -75,10 +75,10 @@ function pictureinit() {
     picloading.innerHTML = picloadingmsg;
     piclist.parentNode.insertBefore(picloading, piclist);
 
-    piciconlist["Instagram.com"] = SITE_BASE_URL + "/images/c/c0/InstaIcon.png";
-    piciconlist["Facebook.com"] = SITE_BASE_URL + "/images/0/03/FacebIcon.png";
-    piciconlist["Flickr.com"] = SITE_BASE_URL + "/images/f/f7/FlickIcon.png";
-    piciconlist["Panoramio.com"] = SITE_BASE_URL + "/images/a/a4/PanorIcon.png";
+    piciconlist["Instagram.com"] = INSTAGRAM_ICON;
+    piciconlist["Facebook.com"] = FACEBOOK_ICON;
+    piciconlist["Flickr.com"] = FLICKR_ICON;
+    piciconlist["Panoramio.com"] = PANORAMIO_ICON;
 
     var local = window.location.href.toString().indexOf('debug=local') >= 0; // || url.indexOf('http')<0;
     var preurl = local ? SITE_BASE_URL + "/rwr?pictures=" : LUCA_BASE_URL + "/rwr?pictures=";

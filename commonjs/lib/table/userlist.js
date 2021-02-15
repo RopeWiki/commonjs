@@ -22,6 +22,23 @@ function isUserListTable() {
     return userListTable;
 }
 
+function setUserListGeneralComment(data) {
+
+    var comment = data.query.results[Object.keys(data.query.results)[0]].printouts[""][0]; //complicated, but works
+    if (comment === undefined) comment = "";
+    
+    var table = document.getElementById("loctable");
+    if (!table) return;
+
+    var control = document.createElement("div");
+    control.innerHTML = "<b>General Comment:</b> <span id='generalcomment'>" + comment + '</span><br><br>';
+
+    table.parentNode.insertBefore(control, table);
+
+    var commentElement = document.getElementById('generalcomment');
+    commentElement.contentEditable = true;
+}
+
 function setUserListInfo(data) {
     $.each(data.query.results,
         function (i, item) {
@@ -57,7 +74,7 @@ function getUserListTableHeaderRow() {
 
     const UserListTableEditColumn =
         '<th class="rwHdr">' +
-            '<form action="/Special:FormEdit/List/Lists:[ListUser]/List:[ListName]" method="get" class="popupformlink" target="_self"><button type="submit" value="General Comment">General Comment</button></form>' +
+            '<span class="rwTextNoSort ctranslate">Edit</span>' +
         '</th>';
 
     var header = UserListTableUserDateColumn + getStandardTableHeaderRow() + UserListTableCommentColumn;
@@ -83,9 +100,9 @@ function getUserListTableRow(item) {
 
     const EditDelete =
             '<td class="noprint">' +
-                '<input type="button" value="Edit" id="[LocationName]-edit" onclick="editComment(\'[LocationName]\')" class="plain"> ' +
-                '<input type="button" value="\u2716" id="[LocationName]-canceledit" onclick="cancelEditComment(\'[LocationName]\')" class="plain" style="display:none"> ' +
-                '<input type="button" value="Remove" id="[LocationName]-remove" onclick="removeLocationFromUserList(\'[LocationName]\')" class="plain"> ' +
+                '<input type="button" value="Edit"   id="[LocationName]-edit"       onclick="editComment(\'[LocationName]\')"                class="plain"> ' +
+                '<input type="button" value="\u2298" id="[LocationName]-canceledit" onclick="cancelEditComment(\'[LocationName]\')"          class="plain" style="display:none"> ' +
+                '<input type="button" value="\u2716" id="[LocationName]-remove"     onclick="removeLocationFromUserList(\'[LocationName]\')" class="plain"> ' +
             '</td>';
 
     var userDate = UserDate

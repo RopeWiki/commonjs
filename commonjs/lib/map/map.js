@@ -21,8 +21,7 @@ function displayinfowindow(marker) {
 }
 
 function pinicon(id, icon) {
-    if (!icon)
-        icon = SITE_BASE_URL + "/images/8/86/PinMap.png";
+    if (!icon) icon = PINMAP_ICON;
 
     return '<img src="' + icon + '" id="' + id + '" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick=\'pinmap(this.id)\'/>';
 }
@@ -259,7 +258,7 @@ function loadlist(list, fitbounds) {
             function(e) {
                 this.highlight = new google.maps.Marker({
                     position: this.getPosition(),
-                    icon: SITE_BASE_URL + "/images/3/39/Starn_b.png",
+                    icon: MARKER_MOUSEOVER_HIGHLIGHT,
                     draggable: false,
                     clickable: false,
                     optimized: false,
@@ -497,6 +496,14 @@ function loadMoreLocations() {
             
             //load user list - custom dates and comments
             if (isUserListTable()) {
+                //general comment
+                $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+                        '&query=' + urlencode('[[Lists:' + listUser + '/List:' + listName + ']]') +
+                        '|?Has comment=|mainlabel=-'),
+                    function (data) {
+                        setUserListGeneralComment(data);
+                    });
+                //individual list entries
                 $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
                         '&query=' + urlencode('[[Has user::' + listUser + ']][[Has list::~' + listName + '*]][[Has location::+]]') +
                         '|?Has location|?Has tentative date|?Has comment' +

@@ -39,7 +39,7 @@ function loadInlineWeather(enabled) {
 
                     w += startDate.getDate() + '-' + endDate.getDate() + ' ' + months[endDate.getMonth()];
 
-                    if (link) w += '&nbsp;&nbsp;<a rel="nofollow" class="external text" href="' + link + '"><img alt="Wforecast.png" src="/images/d/d5/Wforecast.png" width="13" height="22"> Extended forecast</a>';
+                    if (link) w += '&nbsp;&nbsp;<a rel="nofollow" class="external text" href="' + link + '"><img alt="Wforecast.png" src="' + WEATHER_MINI_ICON + '" width="13" height="22"> Extended forecast</a>';
 
                     w += '<span class="wstheader units" style="float:right;">' + (metric ? "&#176;C" : "&#7506;F") + '</span>';
 
@@ -49,7 +49,7 @@ function loadInlineWeather(enabled) {
 
                     w += '<table class="wikitable wst bst notranslate">';
 
-                    w += '<img class="wstlogo" src="http://ropewiki.com/images/f/f2/OpenWeatherLogo.png"/>';
+                    w += '<img class="wstlogo" src="' + OPENWEATHER_LOGO + '"/>';
 
                     for (var i = 0; i < periods.length; ++i) {
                         var date = new Date(periods[i].dt * 1000);
@@ -98,7 +98,7 @@ function loadInlineWeather(enabled) {
     } else {
         if (weatherdiv) {
             weatherdiv.innerHTML =
-                '<a rel="nofollow" class="external text" href="http://ropewiki.com/Weather?location=Lomatium+%26+Krill+Loop"><img alt="Wforecast.png" src="/images/d/d5/Wforecast.png" width="13" height="22"> Weather forecast</a>';
+                '<a rel="nofollow" class="external text" href="http://ropewiki.com/Weather?location=Lomatium+%26+Krill+Loop"><img alt="Wforecast.png" src="' + WEATHER_MINI_ICON + '" width="13" height="22"> Weather forecast</a>';
         }
     }
 }
