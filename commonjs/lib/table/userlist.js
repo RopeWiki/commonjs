@@ -24,7 +24,10 @@ function isUserListTable() {
 
 function setUserListGeneralComment(data) {
 
-    var comment = data.query.results[Object.keys(data.query.results)[0]].printouts[""][0]; //complicated, but works
+    var comment = Object.keys(data.query.results).length > 0
+        ? data.query.results[Object.keys(data.query.results)[0]].printouts[""][0]  //complicated, but works
+        : "";
+
     if (comment === undefined) comment = "";
     
     var table = document.getElementById("loctable");
@@ -138,15 +141,18 @@ function getTableUserDate(unix_timestamp) {
 
 // Edit/Remove functionality
 var editComment = function (elementId) {
+    var editingRowItem = elementId !== "generalcomment";
+
     var commentElement = document.getElementById(elementId + "-comment");
     var userDateElement = document.getElementById(elementId + "-userdate");
     var editButton = document.getElementById(elementId + "-edit");
     var canceleditButton = document.getElementById(elementId + "-canceledit");
+
     if (editButton.value === "Edit") {
         editButton.value = "\u2714"; //checkmark
         editButton.title = "Save the changes";
 
-        if (!!userDateElement) {
+        if (editingRowItem) {
             userDateElement.originalText = userDateElement.innerHTML;
             userDateElement.innerHTML = "<input type=\"date\" value=" + new Date(userDateElement.innerHTML).toLocaleDateString('en-CA') + ">";
         }
@@ -160,29 +166,39 @@ var editComment = function (elementId) {
         editButton.value = "Edit";
         editButton.title = "Edit date and comment";
 
-        var userDateElementHtml = !!userDateElement && userDateElement.firstChild.value !== undefined
-            ? getTableUserDate(new Date(userDateElement.firstChild.value).getTime() / 1000)
-            : "";
+        var newDate = null;
+        if (editingRowItem) {
+            //convert date to unix timestamp
+            newDate = parseInt(new Date(userDateElement.firstChild.value).getTime() / 1000);
 
-        if (!!userDateElement)
-            userDateElement.innerHTML = userDateElementHtml;
+            userDateElement.innerHTML = getTableUserDate(newDate);
+        }
 
         commentElement.contentEditable = false;
 
         canceleditButton.style.display = "none";
 
         //save the data to mediawiki
-        saveComment(elementId, commentElement.innerHTML, userDateElementHtml);
+        var state = {
+            elementId: elementId,
+            editingRowItem: editingRowItem,
+            newComment: commentElement.innerHTML,
+            newUserDate: newDate
+        };
+        
+        saveComment(state);
     }
 }
 
 var cancelEditComment = function (elementId) {
+    var editingRowItem = elementId !== "generalcomment";
+
     var commentElement = document.getElementById(elementId + "-comment");
     var userDateElement = document.getElementById(elementId + "-userdate");
     var editButton = document.getElementById(elementId + "-edit");
     var canceleditButton = document.getElementById(elementId + "-canceledit");
 
-    if (!!userDateElement)
+    if (editingRowItem)
         userDateElement.innerHTML = userDateElement.originalText;
 
     commentElement.contentEditable = false;
@@ -216,29 +232,16 @@ function getCsrfToken(callback, state) {
     getPageContent(callback, state);
 }
 
-function saveComment(elementId, newComment, newUserDate) {
-    //convert date to unix timestamp
-    var unixTime = newUserDate !== ""
-        ? parseInt((new Date(newUserDate).getTime() / 1000).toFixed(0))
-        : null;
-
-    var state = {
-        elementId: elementId,
-        newComment: newComment,
-        newUserDate: unixTime,
-        isGeneralComment: unixTime === null
-    };
-
+function saveComment(state) {
     getCsrfToken(editRequest, state);
 }
 
 function getPageContent(callback, state) {
 
-    state.pageTitle = state.isGeneralComment
-        ? "Lists:" + listUser + "/List:" + listName.replace(/\s/g, '_')
-        : "Lists:" + listUser + "/" + state.elementId.replace(/\s/g, '_');
+    state.pageTitle = state.editingRowItem
+        ? "Lists:" + listUser + "/" + state.elementId.replace(/\s/g, '_') //row item
+        : "Lists:" + listUser + "/List:" + listName.replace(/\s/g, '_'); //general comment
 
-    //$.getJSON(geturl(SITE_BASE_URL + '/api.php?action=query&prop=revisions&titles=' + pageTitle + '&rvprop=content&format=json'),
     $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=parse&page=' + state.pageTitle + '&prop=wikitext&format=json'),
         function (data) {
             var content = data.parse !== undefined
@@ -271,7 +274,7 @@ function editRequest(state) {
     var newPageContent = content.substring(0, startIndex) + commentMarker + state.newComment + commentEndMarker + content.substring(endIndex);
     
     //set user date
-    if (state.newUserDate !== null) {
+    if (state.editingRowItem) {
         content = newPageContent;
 
         const dateMarker = "|Date=";
