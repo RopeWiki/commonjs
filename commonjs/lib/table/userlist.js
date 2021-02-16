@@ -34,11 +34,19 @@ function setUserListGeneralComment(data) {
     if (!table) return;
 
     var control = document.createElement("div");
-    control.innerHTML = "<b>General Comment:</b> <span id='generalcomment-comment'>" + comment + '</span>&nbsp;&nbsp;' +
-        '<input type="button" value="Edit"   id="generalcomment-edit"       title="Edit general comment" onclick="editComment(\'generalcomment\')"                class="plain"> ' +
-        '<input type="button" value="\u2298" id="generalcomment-canceledit" title="Cancel the changes"   onclick="cancelEditComment(\'generalcomment\')"          class="plain" style="display:none"> ' +
-        '<br><br>';
 
+    var innerHtml = "<b>General Comment:</b> <span id='generalcomment-comment'>" + comment + '</span>';
+
+    if (listTableIsEditable) {
+        innerHtml +=
+            '&nbsp;&nbsp;' +
+            '<input type="button" value="Edit"   id="generalcomment-edit"       title="Edit general comment" onclick="editComment(\'generalcomment\')"                class="userlistbutton edit"> ' +
+            '<input type="button" value="\u2298" id="generalcomment-canceledit" title="Cancel the changes"   onclick="cancelEditComment(\'generalcomment\')"          class="userlistbutton cancel" style="display:none"> ';
+    }
+
+    innerHtml += '<br><br>';
+
+    control.innerHTML = innerHtml;
     table.parentNode.insertBefore(control, table);
 }
 
@@ -103,9 +111,9 @@ function getUserListTableRow(item) {
 
     const EditDelete =
             '<td class="noprint">' +
-                '<input type="button" value="Edit"   id="[LocationName]-edit"       title="Edit date and comment" onclick="editComment(\'[LocationName]\')"                class="plain"> ' +
-                '<input type="button" value="\u2298" id="[LocationName]-canceledit" title="Cancel the changes"    onclick="cancelEditComment(\'[LocationName]\')"          class="plain" style="display:none"> ' +
-                '<input type="button" value="\u2716" id="[LocationName]-remove"     title="Remove from this list" onclick="removeLocationFromUserList(\'[LocationName]\')" class="plain"> ' +
+                '<input type="button" value="Edit"   id="[LocationName]-edit"       title="Edit date and comment" onclick="editComment(\'[LocationName]\')"                class="userlistbutton edit"> ' +
+                '<input type="button" value="\u2298" id="[LocationName]-canceledit" title="Cancel the changes"    onclick="cancelEditComment(\'[LocationName]\')"          class="userlistbutton cancel" style="display:none"> ' +
+                '<input type="button" value="\u2716" id="[LocationName]-remove"     title="Remove from this list" onclick="removeLocationFromUserList(\'[LocationName]\')" class="userlistbutton remove"> ' +
             '</td>';
 
     var userDate = UserDate
@@ -151,7 +159,9 @@ var editComment = function (elementId) {
     if (editButton.value === "Edit") {
         editButton.value = "\u2714"; //checkmark
         editButton.title = "Save the changes";
-
+        editButton.classList.remove("edit");
+        editButton.classList.add("commit");
+        
         if (editingRowItem) {
             userDateElement.originalText = userDateElement.innerHTML;
             userDateElement.innerHTML = "<input type=\"date\" value=" + new Date(userDateElement.innerHTML).toLocaleDateString('en-CA') + ">";
@@ -164,7 +174,9 @@ var editComment = function (elementId) {
         canceleditButton.style.display = "inline-block";
     } else {
         editButton.value = "Edit";
-        editButton.title = "Edit date and comment";
+        editButton.title = elementId === "generalcomment" ? "Edit general comment" : "Edit date and comment";
+        editButton.classList.remove("commit");
+        editButton.classList.add("edit");
 
         var newDate = null;
         if (editingRowItem) {
@@ -205,7 +217,9 @@ var cancelEditComment = function (elementId) {
     commentElement.innerHTML = commentElement.originalText;
 
     editButton.value = "Edit";
-    editButton.title = "Edit date and comment";
+    editButton.title = elementId === "generalcomment" ? "Edit general comment" : "Edit date and comment";
+    editButton.classList.remove("commit");
+    editButton.classList.add("edit");
 
     canceleditButton.style.display = "none";
 }
