@@ -88,8 +88,8 @@ function searchMapButtonClicked() {
 
         createAndDisplaySearchRectangle(searchRectBounds);
 
-        if (searchRectBounds !== map.getBounds())
-            searchMapRectangleBoundsChanged();
+        //if (searchRectBounds !== map.getBounds()) //not sure why I had this here, but it was causing searchMapRun=true on initial display of the search rect
+        //    searchMapRectangleBoundsChanged();
         
         setLoadingInfoText();
     } else {

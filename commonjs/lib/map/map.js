@@ -561,9 +561,7 @@ function setLoadingInfoText() { //called at the end of updateTable()
 
     info += locationsLoadedWithinArea + " of ";
 
-    var regionOrSearchArea = searchMapRectangle === undefined ? "region" : "search area";
-
-    info += locationsTotalWithinArea + " locations in this " + regionOrSearchArea + " (highest rated locations are loaded first)";
+    info += locationsTotalWithinArea + " locations in this " + getRegionOrSearchAreaText() + " (highest rated locations are loaded first)";
 
     if (locationsLoadedWithinArea !== totalLoaded) info += ". " + totalLoaded + " total locations loaded";
 
@@ -583,20 +581,19 @@ function loadingFinished() {
 
     if (isNaN(locationsLoadedWithinArea)) return; //page is first loading -- return
 
-    var regionOrSearchArea = searchMapRectangle === undefined ? "region" : "search area";
     var info;
     switch (locationsLoadedWithinArea) {
         case 0:
-            info = "There are no locations within this " + regionOrSearchArea;
+            info = "There are no locations within this " + getRegionOrSearchAreaText();
             break;
         case 1:
-            info = "Loaded the single location in this " + regionOrSearchArea;
+            info = "Loaded the single location in this " + getRegionOrSearchAreaText();
             break;
         case 2:
-            info = "Loaded both locations in this " + regionOrSearchArea;
+            info = "Loaded both locations in this " + getRegionOrSearchAreaText();
             break;
         default:
-            info = "Loaded all " + locationsLoadedWithinArea + " locations in this " + regionOrSearchArea;
+            info = "Loaded all " + locationsLoadedWithinArea + " locations in this " + getRegionOrSearchAreaText();
             break;
     }
 
@@ -613,32 +610,81 @@ function loadingFinished() {
     loadingInfo.innerHTML = info;
 }
 
+function getRegionOrSearchAreaText() {
+    return !isUserListTable()
+        ? searchMapRectangle === undefined ? "region" : "search area"
+        : "list";
+}
+
 function setHeaderText() {
-    if (!searchWasRun) return; //don't change header unless custom search rectangle was run
-
-    var regions = [];
-    for (var i = 0; i < markers.length; i++) {
-        var marker = markers[i];
-        if (!marker.isVisible) continue;
-        
-        var parentRegions = marker.locationData.parentRegions;
-        var parentRegion = parentRegions && parentRegions.length !== 0
-            ? parentRegions[0]
-            : marker.locationData.region;
-
-        if (!regions.includes(parentRegion))
-                regions.push(parentRegion);
-    }
 
     var firstHeadingText = "";
-    if (regions.length > 0)
-        firstHeadingText = regions[0];
 
-    if (regions.length > 1)
-        firstHeadingText += ", " + regions[1];
+    if (isUserListTable()) {
+        firstHeadingText = listUser + "'s " + listName;
+        
+        // set browser tab title
+        document.title = listName;
+    } else {
+        if (searchWasRun) //don't change header unless custom search rectangle was run
+        {
+            var subRegions = {};
+            var parentRegions = {};
 
-    if (regions.length > 2)
-        firstHeadingText += ", and others";
+            for (var i = 0; i < markers.length; i++) {
+                var marker = markers[i];
+                if (!marker.isVisible) continue;
+
+                var sub = marker.locationData.region;
+                var parentRgn = marker.locationData.parentRegions;
+                var parent = parentRgn && parentRgn.length !== 0
+                    ? parentRgn[0]
+                    : null;
+
+                if (parent === null) { //the subregion is actually the parent in this case
+                    parent = sub;
+                    sub = null;
+                }
+
+                if (sub !== null) {
+                    if (subRegions[sub] === undefined) {
+                        subRegions[sub] = 0;
+                    }
+                    subRegions[sub] = subRegions[sub] + 1;
+                }
+
+                if (parent !== null) {
+                    if (parentRegions[parent] === undefined) {
+                        parentRegions[parent] = 0;
+                    }
+                    parentRegions[parent] = parentRegions[parent] + 1;
+                }
+            }
+
+            var regionsToSort = Object.keys(parentRegions).length > 1 || Object.keys(subRegions).length === 0
+                ? parentRegions
+                : subRegions;
+
+            // Create items array
+            var regions = Object.keys(regionsToSort).map(function (key) {
+                return [key, regionsToSort[key]];
+            });
+
+            // Sort the array based on the second element
+            regions.sort(function (first, second) {
+                return second[1] - first[1];
+            });
+
+            if (regions.length > 0)
+                firstHeadingText = regions[0][0];
+
+            if (regions.length > 1)
+                firstHeadingText += ", " + regions[1][0];
+
+            if (regions.length > 2)
+                firstHeadingText += ", and others";
+        }
+    }
 
     if (firstHeadingText !== "") {
         var header = document.getElementById("firstHeading");

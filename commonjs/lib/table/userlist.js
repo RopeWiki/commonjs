@@ -171,6 +171,19 @@ var editComment = function (elementId) {
         commentElement.contentEditable = true;
         commentElement.focus();
 
+        if (commentElement.getAttribute('keydown-listener') !== 'true') {
+            commentElement.addEventListener("keydown",
+                function(event) {
+                    if (event.keyCode === 13 && !event.getModifierState("Shift")) {
+                        //commit change
+                        editComment(elementId);
+                        return false;
+                    }
+                    return true;
+                });
+            commentElement.setAttribute('keydown-listener', 'true');
+        }
+
         canceleditButton.style.display = "inline-block";
     } else {
         editButton.value = "Edit";
@@ -226,7 +239,8 @@ var cancelEditComment = function (elementId) {
 
 var removeLocationFromUserList = function (elementId) {
     var state = {
-        elementId: elementId
+        elementId: elementId,
+        editingRowItem: true
     };
 
     getCsrfToken(deleteLocation, state);
