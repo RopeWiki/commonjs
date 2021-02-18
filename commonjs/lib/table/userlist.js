@@ -38,16 +38,16 @@ function setUserListGeneralComment(data) {
         control = document.createElement("div");
         control.id = 'generalcomment';
 
-        var innerHtml = "<b>General Comment:</b> <span id='generalcomment-comment'></span>";
+        var innerHtml = '<table><tbody><tr><td class="generalcomment-header"><b>General Comment:</b>';
 
         if (listTableIsEditable) {
             innerHtml +=
-                '&nbsp;&nbsp;' +
-                '<input type="button" value="Edit"   id="generalcomment-edit"       title="Edit general comment" onclick="editComment(\'generalcomment\')"                class="userlistbutton edit"> ' +
-                '<input type="button" value="\u2298" id="generalcomment-canceledit" title="Cancel the changes"   onclick="cancelEditComment(\'generalcomment\')"          class="userlistbutton cancel" style="display:none"> ';
+                '<br><input type="button" value="Edit"   id="generalcomment-edit" title="Edit general comment" onclick="editComment(\'generalcomment\')" class="userlistbutton edit"> ' +
+                '<input type="button" value="\u2298" id="generalcomment-canceledit" title="Cancel the changes"   onclick="cancelEditComment(\'generalcomment\')" class="userlistbutton cancel" style="display:none"> ';
+
         }
 
-        innerHtml += '<br><br>';
+        innerHtml += '</td><td class="generalcomment-cell"><span id="generalcomment-comment"></span></td></tr></tbody><table><br>';
 
         control.innerHTML = innerHtml;
         table.parentNode.insertBefore(control, table);
