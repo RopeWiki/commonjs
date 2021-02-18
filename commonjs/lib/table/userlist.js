@@ -448,14 +448,14 @@ function addToList(elementId) {
         '<p>Choose an existing list from the dropdown, or type in a name to create a new list. </p>' +
         '<p>You can add a date (such as proposed date in the future, or a date in the past when you completed it), and/or add a comment. Then click the "Save" button. ' +
         'These fields are also editable after the location has been added to the list; when viewing a list you can edit the individual entries from within the table itself.</p>' +
-        '<p>A Ropewiki location can only be in one user\'s list at a time. Correspondingly, it will only have one date and comment associated with it.</p>' +
+        '<p>You can only have a particular Ropewiki location included in one of your lists at a time. Correspondingly, each location can only have one date and comment associated with it.</p>' +
         '<p>A yellow highlight around a location marker on the map indicates that it is part of a list.</p>' +
-        '<p>To remove a location from a list, you can assign it a blank "List name", or when viewing the list use the \'X\' button on the far right of each row in the table to remove it.</p>' +
+        '<p>To remove a location from a list, you can assign it a blank "List name", or when viewing the list itself use the \'X\' button on the far right of each row in the table to remove it.</p>' +
         '<p>To view the lists you have created, click on the "Lists" link in the Ropewiki sidebar on the left.</p>' +
         '<p>To delete a list, when viewing it simply remove all entries from the table using the \'X\' buttons.</p>' +
         '</details>' +
         '<table class="formtable">' +
-        '<tr><td><b>List name:</b></td><td><input type="text" id="modal-listname" list="existing-lists" autocomplete="off" /><datalist id="existing-lists"><option>Favorites</option></datalist></td></tr>' +
+        '<tr><td><b>List name:</b></td><td><input type="text" id="modal-listname" list="existing-lists" autocomplete="off" onfocus="this.value=\'\'" /><datalist id="existing-lists"><option>Favorites</option></datalist></td></tr>' +
         '<tr><td><b>Date:</b></td><td><input type="date" id="modal-userdate" value="" /></td></tr>' +
         '<tr><td class="modal-comment-header"><b>Comment:</b></td><td id="modal-comment" contentEditable="true" class="modal-comment"></td></tr>' +
         '</table>' +
@@ -468,17 +468,26 @@ function addToList(elementId) {
 
     createModal(name, modalHtml);
     openModal(name);
-
-    //load existing lists
+    
     var curuser = document.getElementById("curuser");
     if (curuser) {
         var currentUser = curuser.innerHTML;
+
+        //load existing list names for this user
         var url = geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
             '&query=' + urlencode('[[Has user::' + currentUser + ']][[Has list::+]][[Has location::+]]') +
             '|?Has list=|mainlabel=-');
         $.getJSON(url, function(data) {
-                setUserListModalDropdown(data);
-            });
+            setUserListModalDropdown(data);
+        });
+
+        //load existing list values for this location
+        var url = geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+            '&query=' + urlencode('[[Has user::' + currentUser + ']][[Has location::' + elementId + ']]') +
+            '|?Has list|?Has tentative date|?Has comment');
+        $.getJSON(url, function (data) {
+            setUserListModalExistingInfo(data);
+        });
     }
 }
 
@@ -549,4 +558,27 @@ function setUserListModalDropdown(data) {
 
     var listdropdown = document.getElementById("existing-lists");
     listdropdown.innerHTML = html;
+}
+
+function setUserListModalExistingInfo(data) {
+    var item = data.query.results[Object.keys(data.query.results)[0]];
+
+    var listElement = document.getElementById("modal-listname");
+    var userDateElement = document.getElementById("modal-userdate");
+    var commentElement = document.getElementById("modal-comment");
+
+    var v = item.printouts["Has list"];
+    if (v && v.length > 0) {
+        listElement.value = v[0];
+    }
+
+    v = item.printouts["Has tentative date"];
+    if (v && v.length > 0) {
+        userDateElement.value = new Date(getTableUserDate(v[0])).toLocaleDateString('en-CA');
+    }
+
+    v = item.printouts["Has comment"];
+    if (v && v.length > 0) {
+        commentElement.innerHTML = v[0];
+    }
 }
