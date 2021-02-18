@@ -165,7 +165,7 @@ function loadlist(list, fitbounds) {
         // load addbutton
         var kmladdbutton = document.getElementById("kmladdbutton");
         if (kmladdbutton)
-            contentString += '<input class="submitoff addbutton" title="Add to List" type="submit" onclick="addToList(\'' + item.id.split("'").join("%27") + '\')" value="+">';
+            contentString += '<input class="submitoff addbutton" title="Add to a custom list" type="submit" onclick="addToList(\'' + item.id.split("'").join("%27") + '\')" value="+">';
 
         // add elevation
         //contentString += '<br><span id="infoelevation"></span>';
@@ -536,9 +536,12 @@ function setLoadingInfoText() { //called at the end of updateTable()
 
     setHeaderText();
 
-    locationsLoadedWithinArea = searchMapRectangle !== undefined //set this before possibly proceeding to loadingFinished() in the next line
+    locationsLoadedWithinArea =
+        searchMapRectangle !== undefined //set this before possibly proceeding to loadingFinished() in the next line
         ? countLocationsWithinSearchArea()
-        : Math.min(loadOffset, locationsTotalWithinArea);
+        //: Math.min(loadOffset, locationsTotalWithinArea);
+        //: countLocationsVisibleOnMap();
+        : markers.length;
 
     if (loadOffset >= locationsTotalWithinArea) {
         loadingFinished();
@@ -621,7 +624,7 @@ function setHeaderText() {
     var firstHeadingText = "";
 
     if (isUserListTable()) {
-        firstHeadingText = listUser + "'s " + listName;
+        firstHeadingText = listUser + "'s " + listName + ' list';
         
         // set browser tab title
         document.title = listName;
@@ -698,10 +701,7 @@ function getFilteringInfo() {
     var filterschk = document.getElementById('filterschk');
     if (filterschk != null && filterschk.checked) {
         filterInfo = " Filters match ";
-        var locationsDisplayed = 0;
-        for (var i = 0; i < markers.length; i++) {
-            if (markers[i].isVisible) locationsDisplayed++;
-        }
+        var locationsDisplayed = countLocationsVisibleOnMap();
 
         var totalLoaded = markers.length;
 
@@ -742,6 +742,14 @@ function countLocationsWithinSearchArea() {
     return numLocations;
 }
 
+function countLocationsVisibleOnMap() {
+    var locationsDisplayed = 0;
+    for (var i = 0; i < markers.length; i++) {
+        if (markers[i].isVisible) locationsDisplayed++;
+    }
+    return locationsDisplayed;
+}
+
 function nonamespace(label) {
     return label.replace("Events:", "");
 }
@@ -779,38 +787,6 @@ function centermap() {
     google.maps.event.trigger(map, 'resize');
 
     map.panTo(center);
-}
-
-function addToList(id) {
-    var oldid;
-
-    function reattribute(elem) {
-        var elems = elem.childNodes;
-        for (var e = 0; e < elems.length; ++e) {
-            elem = elems[e];
-            if (elem.attributes)
-                for (var a = 0; a < elem.attributes.length; ++a) {
-                    if (elem.attributes[a].value.indexOf(oldid) >= 0)
-                        elem.attributes[a].value = elem.attributes[a].value.split(oldid).join(id);
-                }
-            reattribute(elem);
-        }
-    }
-
-    var kmladdbutton = document.getElementById("kmladdbutton");
-    if (kmladdbutton) {
-        reattribute(kmladdbutton);
-        var kmlform = kmladdbutton.getElementsByTagName('BUTTON');
-        if (kmlform.length > 0)
-            kmlform[0].click();
-
-        if (lastinfowindow)
-            lastinfowindow.close();
-
-        var idlist = [id];
-        addhighlight(idlist);
-        oldid = id;
-    }
 }
 
 //function calculateRankRating(item) {

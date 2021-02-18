@@ -1,40 +1,42 @@
-﻿function createModal() {
-    var modal = document.getElementById("myModal");
+﻿function createModal(name, innerHtml) {
+    var modal = document.getElementById(name);
     if (!modal) {
-
         modal = document.createElement('div');
         modal.innerHTML =
-            '<div id="myModal" class="modal">' +
+            '<div id="' + name + '" class="modal">' +
             '<!-- Modal content -->' +
             '<div class="modal-content">' +
-            '<span class="close">&times;</span>' +
-            '<p>Some text in the Modal..</p>' +
+            '<span class="modal-close">&times;</span>' +
+            '<span id="modal-innerContent"></span>' +
             '</div>' +
             ' </div>';
 
         document.body.appendChild(modal);
 
-        // Get the modal
-        var modal = document.getElementById("myModal");
-
+        //reassign to the inner div
+        modal = document.getElementById(name);
 
         // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
+        var span = document.getElementsByClassName("modal-close")[0];
 
         // When the user clicks on <span> (x), close the modal
-        span.onclick = function () {
+        span.onclick = function() {
             modal.style.display = "none";
         }
 
         // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-            if (event.target == modal) {
+        window.onclick = function(event) {
+            if (event.target === modal) {
                 modal.style.display = "none";
             }
         }
     }
+
+    var modalInnerContent = document.getElementById("modal-innerContent");
+    modalInnerContent.innerHTML = innerHtml;
 }
 
-var openModal = function () {
-    document.getElementById("myModal").style.display = "block";
+var openModal = function (name) {
+    var modal = document.getElementById(name);
+    modal.style.display = "block";
 }

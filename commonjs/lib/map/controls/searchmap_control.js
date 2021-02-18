@@ -195,6 +195,7 @@ function getBoundsForSearchRectangle() {
 function clearLocationsOutside(bounds) {
     var newMarkers = [];
     var newBounds = new google.maps.LatLngBounds();
+
     for (var i = 0; i < markers.length; i++) {
         var marker = markers[i];
         if (bounds.contains(marker.position)) {

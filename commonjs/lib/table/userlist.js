@@ -29,25 +29,32 @@ function setUserListGeneralComment(data) {
         : "";
 
     if (comment === undefined) comment = "";
-    
+
     var table = document.getElementById("loctable");
     if (!table) return;
 
-    var control = document.createElement("div");
+    var control = document.getElementById("generalcomment");
+    if (!control) {
+        control = document.createElement("div");
+        control.id = 'generalcomment';
 
-    var innerHtml = "<b>General Comment:</b> <span id='generalcomment-comment'>" + comment + '</span>';
+        var innerHtml = "<b>General Comment:</b> <span id='generalcomment-comment'></span>";
 
-    if (listTableIsEditable) {
-        innerHtml +=
-            '&nbsp;&nbsp;' +
-            '<input type="button" value="Edit"   id="generalcomment-edit"       title="Edit general comment" onclick="editComment(\'generalcomment\')"                class="userlistbutton edit"> ' +
-            '<input type="button" value="\u2298" id="generalcomment-canceledit" title="Cancel the changes"   onclick="cancelEditComment(\'generalcomment\')"          class="userlistbutton cancel" style="display:none"> ';
+        if (listTableIsEditable) {
+            innerHtml +=
+                '&nbsp;&nbsp;' +
+                '<input type="button" value="Edit"   id="generalcomment-edit"       title="Edit general comment" onclick="editComment(\'generalcomment\')"                class="userlistbutton edit"> ' +
+                '<input type="button" value="\u2298" id="generalcomment-canceledit" title="Cancel the changes"   onclick="cancelEditComment(\'generalcomment\')"          class="userlistbutton cancel" style="display:none"> ';
+        }
+
+        innerHtml += '<br><br>';
+
+        control.innerHTML = innerHtml;
+        table.parentNode.insertBefore(control, table);
     }
 
-    innerHtml += '<br><br>';
-
-    control.innerHTML = innerHtml;
-    table.parentNode.insertBefore(control, table);
+    var commentElement = document.getElementById("generalcomment-comment");
+    commentElement.innerHTML = comment;
 }
 
 function setUserListInfo(data) {
@@ -211,7 +218,7 @@ var editComment = function (elementId) {
             newUserDate: newDate
         };
         
-        saveComment(state);
+        saveUserListEntry(state);
     }
 }
 
@@ -260,7 +267,7 @@ function getCsrfToken(callback, state) {
     getPageContent(callback, state);
 }
 
-function saveComment(state) {
+function saveUserListEntry(state) {
     getCsrfToken(editRequest, state);
 }
 
@@ -285,38 +292,71 @@ function getPageContent(callback, state) {
 function editRequest(state) {
 
     var content = state.pageContent;
+    const endMarker = "\n";
 
     //set comment
     const commentMarker = "|Comment=";
-    const commentEndMarker = "\n";
-
+    
     var startIndex = content.indexOf(commentMarker);
     var endIndex;
     if (startIndex > 0) {
-        endIndex = content.indexOf(commentEndMarker, startIndex) + commentEndMarker.length;
+        endIndex = content.indexOf(endMarker, startIndex) + endMarker.length;
     } else {
         startIndex = content.indexOf("}}");
         endIndex = startIndex;
     }
 
-    var newPageContent = content.substring(0, startIndex) + commentMarker + state.newComment + commentEndMarker + content.substring(endIndex);
+    var newPageContent = content.substring(0, startIndex) + commentMarker + state.newComment + endMarker + content.substring(endIndex);
     
     //set user date
     if (state.editingRowItem) {
         content = newPageContent;
 
         const dateMarker = "|Date=";
-        const dateEndMarker = "\n";
 
         startIndex = content.indexOf(dateMarker);
         if (startIndex > 0) {
-            endIndex = content.indexOf(dateEndMarker, startIndex) + dateEndMarker.length;
+            endIndex = content.indexOf(endMarker, startIndex) + endMarker.length;
         } else {
             startIndex = content.indexOf("}}");
             endIndex = startIndex;
         }
 
-        newPageContent = content.substring(0, startIndex) + dateMarker + state.newUserDate + dateEndMarker + content.substring(endIndex);
+        newPageContent = content.substring(0, startIndex) + dateMarker + state.newUserDate + endMarker + content.substring(endIndex);
+    }
+
+    //set list name
+    if (state.newList) {
+        content = newPageContent;
+
+        const listMarker = "|List=";
+
+        startIndex = content.indexOf(listMarker);
+        if (startIndex > 0) {
+            endIndex = content.indexOf(endMarker, startIndex) + endMarker.length;
+        } else {
+            startIndex = content.indexOf("}}");
+            endIndex = startIndex;
+        }
+
+        newPageContent = content.substring(0, startIndex) + listMarker + state.newList + endMarker + content.substring(endIndex);
+    }
+
+    //set location name
+    if (state.newLocation) {
+        content = newPageContent;
+
+        const locationMarker = "|Location=";
+
+        startIndex = content.indexOf(locationMarker);
+        if (startIndex > 0) {
+            endIndex = content.indexOf(endMarker, startIndex) + endMarker.length;
+        } else {
+            startIndex = content.indexOf("}}");
+            endIndex = startIndex;
+        }
+
+        newPageContent = content.substring(0, startIndex) + locationMarker + state.newLocation + endMarker + content.substring(endIndex);
     }
 
     //call to server
@@ -386,4 +426,132 @@ function GetBoilerPlatePageContent() {
         "|User=" + listUser +"\r\n" +
         "|List=" + listName + "\r\n" +
         "|Comment=\r\n}}\r\n";
+}
+
+
+function addToList(id) {
+
+    var name = 'modal-addToList';
+    var innerHtml =
+        '<p><font size="+2"><b>Add <span style="color:#0645AD;">' + id + '</span> to your own list</b></font></p>' +
+        '<hr>' +
+        '<details style="margin-top:20px;margin-bottom:10px;">' +
+        '<summary>Instructions for lists</summary>' +
+        '<p>Choose an existing list from the dropdown, or type in a name to create a new list. Lists can be used to plan an upcoming trip, or to record past accomplishments. ' +
+        'The link (url) for a list can be shared with others, but only you have the ability to edit lists that you created.<br>' +
+        'You can add a date (such as proposed date in the future, or a date in the past when you completed it), and/or add a comment. Then click the "Save" button.<br>' +
+        'These fields are also editable after the location has been added to the list.<br>' +
+        'A yellow highlight around a location indicates that it is part of a list.<br>' +
+        'Each Ropewiki location can only be part of one list at a time.<br>' +
+        '<br>' +
+        'To view the lists you have created, click on the "Lists" link in the Ropewiki sidebar on the left.<br>' +
+        'To delete a list, when viewing it simply remove all entries using the \'X\' buttons on the far right of each row.' +
+        '</p>' +
+        '</details>' +
+        '<table class="formtable">' +
+        '<tr><td><b>List name:</b></td><td><input type="text" id="modal-listname" list="existing-lists" autocomplete="off" /><datalist id="existing-lists"><option>Favorites</option></datalist></td></tr>' +
+        '<tr><td><b>Date:</b></td><td><input type="date" id="modal-userdate" value="" /></td></tr>' +
+        '<tr><td><b>Comment:</b></td><td id="modal-comment" contentEditable="true" style="border:1px solid #808080; padding:4px;border-radius:3px;"></td></tr>' +
+        '</table>' +
+        '<br>' +
+        '<input type="button" value="Save" id="add-to-list" onclick="commitAddToList(\'' + id + '\')" class="map-control dropdown selection">';
+
+    createModal(name, innerHtml);
+    openModal(name);
+
+    //load existing lists
+    var curuser = document.getElementById("curuser");
+    if (curuser) {
+        var currentUser = curuser.innerHTML;
+        var url = geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+            '&query=' + urlencode('[[Has user::' + currentUser + ']][[Has list::+]][[Has location::+]]') +
+            '|?Has list=|mainlabel=-');
+        $.getJSON(url, function(data) {
+                setUserListModalDropdown(data);
+            });
+    }
+    return;
+
+    var oldid;
+
+    function reattribute(elem) {
+        var elems = elem.childNodes;
+        for (var e = 0; e < elems.length; ++e) {
+            elem = elems[e];
+            if (elem.attributes)
+                for (var a = 0; a < elem.attributes.length; ++a) {
+                    if (elem.attributes[a].value.indexOf(oldid) >= 0)
+                        elem.attributes[a].value = elem.attributes[a].value.split(oldid).join(id);
+                }
+            reattribute(elem);
+        }
+    }
+
+    var kmladdbutton = document.getElementById("kmladdbutton");
+    if (kmladdbutton) {
+        reattribute(kmladdbutton);
+        var kmlform = kmladdbutton.getElementsByTagName('BUTTON');
+        if (kmlform.length > 0)
+            kmlform[0].click();
+
+        if (lastinfowindow)
+            lastinfowindow.close();
+
+        var idlist = [id];
+        addhighlight(idlist);
+        oldid = id;
+    }
+}
+
+function commitAddToList(elementId) {
+
+    if (!listUser) {
+        var curuser = document.getElementById("curuser");
+        if (curuser) listUser = curuser.innerHTML;
+    }
+
+    var listElement = document.getElementById("modal-listname");
+    var userDateElement = document.getElementById("modal-userdate");
+    var commentElement = document.getElementById("modal-comment");
+
+    var list = listElement.value;
+    var date = userDateElement.value !== "" ? parseInt(new Date(userDateElement.value).getTime() / 1000) : null;
+    var comment = commentElement.innerHTML;
+
+    //save the data to mediawiki
+    var state = {
+        elementId: elementId,
+        editingRowItem: true,
+        newLocation: elementId,
+        newList: list,
+        newComment: comment,
+        newUserDate: date
+    };
+
+    saveUserListEntry(state);
+
+    var modal = document.getElementById('modal-addToList');
+    modal.style.display = "none";
+}
+
+function setUserListModalDropdown(data) {
+    var arr = [];
+    arr.push("Favorites");
+
+    $.each(data.query.results, function (index, value) {
+        var val = value.printouts[""][0].trim();
+        if (arr.indexOf(val) === -1) {
+            arr.push(val);
+        }
+    });
+
+    arr.sort();
+    
+    var html = "";
+    for (var i = 0; i < arr.length; ++i) {
+        html += '<option>' + arr[i] + '</option>';
+    }
+
+    var listdropdown = document.getElementById("existing-lists");
+    listdropdown.innerHTML = html;
 }
