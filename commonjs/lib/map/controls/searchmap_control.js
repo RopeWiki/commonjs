@@ -202,9 +202,17 @@ function clearLocationsOutside(bounds) {
             newMarkers.push(marker);
             newBounds.extend(marker.position);
         } else {
+            if (marker.closedMarker) {
+                marker.closedMarker.setMap(null);
+                marker.closedMarker = null;
+            }
+            if (marker.highlight) {
+                marker.highlight.setMap(null);
+                marker.highlight = null;
+            }
+
             marker.setMap(null);
-            if (marker.closedMarker) marker.closedMarker.setMap(null);
-            if (marker.highlight) marker.highlight.setMap(null);
+            marker = null;
         }
     }
 

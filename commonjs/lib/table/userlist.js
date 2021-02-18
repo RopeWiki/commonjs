@@ -44,7 +44,6 @@ function setUserListGeneralComment(data) {
             innerHtml +=
                 '<br><input type="button" value="Edit"   id="generalcomment-edit" title="Edit general comment" onclick="editComment(\'generalcomment\')" class="userlistbutton edit"> ' +
                 '<input type="button" value="\u2298" id="generalcomment-canceledit" title="Cancel the changes"   onclick="cancelEditComment(\'generalcomment\')" class="userlistbutton cancel" style="display:none"> ';
-
         }
 
         innerHtml += '</td><td class="generalcomment-cell"><span id="generalcomment-comment"></span></td></tr></tbody><table><br>';
@@ -333,7 +332,7 @@ function editRequest(state) {
     }
 
     //set list name
-    if (state.newList) {
+    if (state.newList !== undefined) {
         content = newPageContent;
 
         const listMarker = "|List=";
@@ -350,7 +349,7 @@ function editRequest(state) {
     }
 
     //set location name
-    if (state.newLocation) {
+    if (state.newLocation !== undefined) {
         content = newPageContent;
 
         const locationMarker = "|Location=";
@@ -511,6 +510,20 @@ function commitAddToList(elementId) {
     };
 
     saveUserListEntry(state);
+
+    //set marker highlight
+    if (list !== "") {
+        addhighlight([elementId]);
+    } else {
+        var marker = markers.filter(function (x) {
+            return x.name === state.elementId;
+        })[0];
+
+        if (marker.highlight) {
+            marker.highlight.setMap(null);
+            marker.highlight = null;
+        }
+    }
 
     var modal = document.getElementById('modal-addToList');
     modal.style.display = "none";

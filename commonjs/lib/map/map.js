@@ -256,7 +256,7 @@ function loadlist(list, fitbounds) {
         google.maps.event.addListener(marker,
             "mouseover",
             function(e) {
-                this.highlight = new google.maps.Marker({
+                this.mouseoverhighlight = new google.maps.Marker({
                     position: this.getPosition(),
                     icon: MARKER_MOUSEOVER_HIGHLIGHT,
                     draggable: false,
@@ -265,7 +265,7 @@ function loadlist(list, fitbounds) {
                     zIndex: this.zIndex - 1
                 });
                 this.priority = 0;
-                this.highlight.setMap(map);
+                this.mouseoverhighlight.setMap(map);
                 tooltip.show(this.description, e, this);
             });
 
@@ -273,9 +273,9 @@ function loadlist(list, fitbounds) {
             "mouseout",
             function() {
                 tooltip.hide(this);
-                if (this.highlight != null) {
-                    this.highlight.setMap(null);
-                    this.highlight = null;
+                if (this.mouseoverhighlight != null) {
+                    this.mouseoverhighlight.setMap(null);
+                    this.mouseoverhighlight = null;
                 }
             });
 

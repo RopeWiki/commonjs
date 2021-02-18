@@ -18,17 +18,17 @@ var tooltip = function () {
                 return;
 
             if (highlight && lasthighlight)
-                if (highlight.highlight && lasthighlight.highlight)
+                if (highlight.mouseoverhighlight && lasthighlight.mouseoverhighlight)
                     if (highlight.priority > lasthighlight.priority) {
                         // do not override if less priority
-                        highlight.highlight.setMap(null);
-                        highlight.highlight = null;
+                        highlight.mouseoverhighlight.setMap(null);
+                        highlight.mouseoverhighlight = null;
                         return;
                     }
 
-            if (lasthighlight && highlight !== lasthighlight && lasthighlight.highlight) {
-                lasthighlight.highlight.setMap(null);
-                lasthighlight.highlight = null;
+            if (lasthighlight && highlight !== lasthighlight && lasthighlight.mouseoverhighlight) {
+                lasthighlight.mouseoverhighlight.setMap(null);
+                lasthighlight.mouseoverhighlight = null;
             }
 
             lasthighlight = highlight;
