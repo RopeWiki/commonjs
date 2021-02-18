@@ -118,9 +118,9 @@ function getUserListTableRow(item) {
 
     const EditDelete =
             '<td class="noprint">' +
-                '<input type="button" value="Edit"   id="[LocationName]-edit"       title="Edit date and comment" onclick="editComment(\'[LocationName]\')"                class="userlistbutton edit"> ' +
-                '<input type="button" value="\u2298" id="[LocationName]-canceledit" title="Cancel the changes"    onclick="cancelEditComment(\'[LocationName]\')"          class="userlistbutton cancel" style="display:none"> ' +
-                '<input type="button" value="\u2716" id="[LocationName]-remove"     title="Remove from this list" onclick="removeLocationFromUserList(\'[LocationName]\')" class="userlistbutton remove"> ' +
+                '<input type="button" value="Edit"   id="[LocationName]-edit"       title="Edit date and comment" onclick="editComment(\'[LocationNameWithoutApostrophe]\')"                class="userlistbutton edit"> ' +
+                '<input type="button" value="\u2298" id="[LocationName]-canceledit" title="Cancel the changes"    onclick="cancelEditComment(\'[LocationNameWithoutApostrophe]\')"          class="userlistbutton cancel" style="display:none"> ' +
+                '<input type="button" value="\u2716" id="[LocationName]-remove"     title="Remove from this list" onclick="removeLocationFromUserList(\'[LocationNameWithoutApostrophe]\')" class="userlistbutton remove"> ' +
             '</td>';
 
     var userDate = UserDate
@@ -139,7 +139,8 @@ function getUserListTableRow(item) {
     if (listTableIsEditable) {
 
         var editDelete = EditDelete
-            .replace(/\[LocationName]/g, item.id);
+            .replace(/\[LocationName]/g, item.id)
+            .replace(/\[LocationNameWithoutApostrophe]/g, item.id.split("'").join("%27"));
 
         html += editDelete;
     }
@@ -156,6 +157,8 @@ function getTableUserDate(unix_timestamp) {
 
 // Edit/Remove functionality
 var editComment = function (elementId) {
+    elementId = elementId.split("%27").join("'");
+
     var editingRowItem = elementId !== "generalcomment";
 
     var commentElement = document.getElementById(elementId + "-comment");
@@ -223,6 +226,8 @@ var editComment = function (elementId) {
 }
 
 var cancelEditComment = function (elementId) {
+    elementId = elementId.split("%27").join("'");
+
     var editingRowItem = elementId !== "generalcomment";
 
     var commentElement = document.getElementById(elementId + "-comment");
@@ -245,6 +250,8 @@ var cancelEditComment = function (elementId) {
 }
 
 var removeLocationFromUserList = function (elementId) {
+    elementId = elementId.split("%27").join("'");
+
     var state = {
         elementId: elementId,
         editingRowItem: true
@@ -369,7 +376,7 @@ function editRequest(state) {
     };
 
     $.post(geturl(SITE_BASE_URL + '/api.php'), params, function (response) {
-        if (response.edit.result !== "Success") {
+        if (response.error || response.edit.result !== "Success") {
             return;
         }
     });
@@ -428,35 +435,39 @@ function GetBoilerPlatePageContent() {
         "|Comment=\r\n}}\r\n";
 }
 
-
-function addToList(id) {
+function addToList(elementId) {
 
     var name = 'modal-addToList';
-    var innerHtml =
-        '<p><font size="+2"><b>Add <span style="color:#0645AD;">' + id + '</span> to your own list</b></font></p>' +
+
+    const ModalHtml =
+        '<p><font size="+2"><b>Add <span class="modal-locationname">[LocationNameWithApostrophe]</span> to your own list</b></font></p>' +
         '<hr>' +
-        '<details style="margin-top:20px;margin-bottom:10px;">' +
+        '<details class="modal-details">' +
         '<summary>Instructions for lists</summary>' +
-        '<p>Choose an existing list from the dropdown, or type in a name to create a new list. Lists can be used to plan an upcoming trip, or to record past accomplishments. ' +
-        'The link (url) for a list can be shared with others, but only you have the ability to edit lists that you created.<br>' +
-        'You can add a date (such as proposed date in the future, or a date in the past when you completed it), and/or add a comment. Then click the "Save" button.<br>' +
-        'These fields are also editable after the location has been added to the list.<br>' +
-        'A yellow highlight around a location indicates that it is part of a list.<br>' +
-        'Each Ropewiki location can only be part of one list at a time.<br>' +
-        '<br>' +
-        'To view the lists you have created, click on the "Lists" link in the Ropewiki sidebar on the left.<br>' +
-        'To delete a list, when viewing it simply remove all entries using the \'X\' buttons on the far right of each row.' +
-        '</p>' +
+        '<p>Lists can be used to plan an upcoming trip, or to record past accomplishments. ' +
+        'The link (url) for a list can be shared with others, but only you have the ability to edit lists that you created.</p>' +
+        '<p>Choose an existing list from the dropdown, or type in a name to create a new list. </p>' +
+        '<p>You can add a date (such as proposed date in the future, or a date in the past when you completed it), and/or add a comment. Then click the "Save" button. ' +
+        'These fields are also editable after the location has been added to the list; when viewing a list you can edit the individual entries from within the table itself.</p>' +
+        '<p>A Ropewiki location can only be in one user\'s list at a time. Correspondingly, it will only have one date and comment associated with it.</p>' +
+        '<p>A yellow highlight around a location marker on the map indicates that it is part of a list.</p>' +
+        '<p>To remove a location from a list, you can assign it a blank "List name", or when viewing the list use the \'X\' button on the far right of each row in the table to remove it.</p>' +
+        '<p>To view the lists you have created, click on the "Lists" link in the Ropewiki sidebar on the left.</p>' +
+        '<p>To delete a list, when viewing it simply remove all entries from the table using the \'X\' buttons.</p>' +
         '</details>' +
         '<table class="formtable">' +
         '<tr><td><b>List name:</b></td><td><input type="text" id="modal-listname" list="existing-lists" autocomplete="off" /><datalist id="existing-lists"><option>Favorites</option></datalist></td></tr>' +
         '<tr><td><b>Date:</b></td><td><input type="date" id="modal-userdate" value="" /></td></tr>' +
-        '<tr><td><b>Comment:</b></td><td id="modal-comment" contentEditable="true" style="border:1px solid #808080; padding:4px;border-radius:3px;"></td></tr>' +
+        '<tr><td class="modal-comment-header"><b>Comment:</b></td><td id="modal-comment" contentEditable="true" class="modal-comment"></td></tr>' +
         '</table>' +
         '<br>' +
-        '<input type="button" value="Save" id="add-to-list" onclick="commitAddToList(\'' + id + '\')" class="map-control dropdown selection">';
+        '<input type="button" value="Save" id="add-to-list" onclick="commitAddToList(\'[LocationName]\')" class="map-control dropdown selection">';
 
-    createModal(name, innerHtml);
+    var modalHtml = ModalHtml
+        .replace(/\[LocationNameWithApostrophe]/, elementId.split("%27").join("'"))
+        .replace(/\[LocationName]/, elementId);
+
+    createModal(name, modalHtml);
     openModal(name);
 
     //load existing lists
@@ -469,37 +480,6 @@ function addToList(id) {
         $.getJSON(url, function(data) {
                 setUserListModalDropdown(data);
             });
-    }
-    return;
-
-    var oldid;
-
-    function reattribute(elem) {
-        var elems = elem.childNodes;
-        for (var e = 0; e < elems.length; ++e) {
-            elem = elems[e];
-            if (elem.attributes)
-                for (var a = 0; a < elem.attributes.length; ++a) {
-                    if (elem.attributes[a].value.indexOf(oldid) >= 0)
-                        elem.attributes[a].value = elem.attributes[a].value.split(oldid).join(id);
-                }
-            reattribute(elem);
-        }
-    }
-
-    var kmladdbutton = document.getElementById("kmladdbutton");
-    if (kmladdbutton) {
-        reattribute(kmladdbutton);
-        var kmlform = kmladdbutton.getElementsByTagName('BUTTON');
-        if (kmlform.length > 0)
-            kmlform[0].click();
-
-        if (lastinfowindow)
-            lastinfowindow.close();
-
-        var idlist = [id];
-        addhighlight(idlist);
-        oldid = id;
     }
 }
 
@@ -515,10 +495,12 @@ function commitAddToList(elementId) {
     var commentElement = document.getElementById("modal-comment");
 
     var list = listElement.value;
-    var date = userDateElement.value !== "" ? parseInt(new Date(userDateElement.value).getTime() / 1000) : null;
+    var date = userDateElement.value !== "" ? parseInt(new Date(userDateElement.value).getTime() / 1000) : "";
     var comment = commentElement.innerHTML;
 
     //save the data to mediawiki
+    elementId = elementId.split("%27").join("'"); //such as for Hades (Dante's Variation)
+
     var state = {
         elementId: elementId,
         editingRowItem: true,
