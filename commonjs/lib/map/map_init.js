@@ -574,6 +574,10 @@ function loadInteractiveMap() {
         handlekeys = true;
     });
     
+    $('#mapbox').mouseout(function(event) {
+        handlekeys = false;
+    });
+    
     $('#mapbox').mousedown(function(event) {
         // prevent text selection on doubleclick
         event.preventDefault();
