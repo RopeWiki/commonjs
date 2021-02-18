@@ -10,11 +10,9 @@ function isUserListTable() {
             listName = lstName.innerHTML;
             userListTable = true;
 
-            var curuser = document.getElementById("curuser");
-            if (curuser) {
-                var currentUser = curuser.innerHTML;
-                listTableIsEditable = currentUser === listUser;
-            }
+            var currentUser = mw.config.get("wgUserName");
+            listTableIsEditable = currentUser === listUser;
+            
         } else
             userListTable = false;
     }
@@ -460,7 +458,7 @@ function addToList(elementId) {
         '<tr><td class="modal-comment-header"><b>Comment:</b></td><td id="modal-comment" contentEditable="true" class="modal-comment"></td></tr>' +
         '</table>' +
         '<br>' +
-        '<input type="button" value="Save" id="add-to-list" onclick="commitAddToList(\'[LocationName]\')" class="map-control dropdown selection">';
+        '<input type="button" value="Save" onclick="commitAddToList(\'[LocationName]\')" class="map-control dropdown selection">';
 
     var modalHtml = ModalHtml
         .replace(/\[LocationNameWithApostrophe]/, elementId.split("%27").join("'"))
@@ -468,11 +466,9 @@ function addToList(elementId) {
 
     createModal(name, modalHtml);
     openModal(name);
-    
-    var curuser = document.getElementById("curuser");
-    if (curuser) {
-        var currentUser = curuser.innerHTML;
 
+    var currentUser = mw.config.get("wgUserName");
+    if (currentUser !== "null") {
         //load existing list names for this user
         var url = geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
             '&query=' + urlencode('[[Has user::' + currentUser + ']][[Has list::+]][[Has location::+]]') +
@@ -494,8 +490,8 @@ function addToList(elementId) {
 function commitAddToList(elementId) {
 
     if (!listUser) {
-        var curuser = document.getElementById("curuser");
-        if (curuser) listUser = curuser.innerHTML;
+        var currentUser = mw.config.get("wgUserName");
+        if (currentUser !== "null") listUser = currentUser;
     }
 
     var listElement = document.getElementById("modal-listname");

@@ -88,6 +88,18 @@ function loadUserInterface(document) {
             sections[i].innerHTML = "";
     }
 
+    // add to list button
+    var currentUser = mw.config.get("wgUserName");
+
+    var addToListElement = document.getElementById("add-to-list");
+    if (currentUser !== "null" && addToListElement) {
+        var pageName = mw.config.get("wgPageName");
+        pageName = pageName.split("_").join(" ");
+        pageName = pageName.split("'").join("%27");
+
+        addToListElement.innerHTML = '<input class="" title="Add to a custom list" type="submit" onclick="addToList(\'' + pageName + '\')" value="+ List">';
+    }
+
     // javascriptlink
     var jslink = document.getElementsByClassName('jslink');
     for (var i = 0; i < jslink.length; i++)

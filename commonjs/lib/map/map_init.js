@@ -128,7 +128,7 @@ function loadInteractiveMap() {
     map = new google.maps.Map(mapbox, mapOptions);
 
     map.panTo(new google.maps.LatLng(30, -40)); //default location in middle of Atlantic Ocean
-    map.setZoom(2);
+    map.setZoom(2); //default zoom
     
     SetupMapLayers();
     
