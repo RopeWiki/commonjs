@@ -127,6 +127,9 @@ function loadInteractiveMap() {
 
     map = new google.maps.Map(mapbox, mapOptions);
 
+    map.panTo(new google.maps.LatLng(30, -40)); //default location in middle of Atlantic Ocean
+    map.setZoom(2);
+    
     SetupMapLayers();
     
     boundslist = new google.maps.LatLngBounds();
@@ -139,7 +142,7 @@ function loadInteractiveMap() {
     var kmlmarker = document.getElementById("kmlmarker");
     if (kmlmarker != null) {
         console.log('kmlmarker');
-        var coords = kmlmarker.innerHTML.split(",");
+        coords = kmlmarker.innerHTML.split(",");
         if (coords != null && coords.length > 1) {
             kmlmap = "kmlmarker";
             var pageName = mw.config.get("wgPageName");
