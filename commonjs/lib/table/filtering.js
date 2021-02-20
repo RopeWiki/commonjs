@@ -217,7 +217,7 @@ function setTableSortLinks() {
         tableDiv.appendChild(tableRef);
 
         //set default sort
-        setTableSortProperty("rankRating");
+        setTableSortProperty(!isUserListTable() ? "rankRating" : "userDate");
     }
 
     var tableNewHeader = document.createElement('thead');
