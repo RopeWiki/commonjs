@@ -141,6 +141,9 @@ function filterMarkers(refreshTable) {
     if (refreshTable) updateTable();
 }
 
+
+var maxTableRows = 100;
+
 function updateTable() {
 
     var tableCurrentBody = document.getElementById("loctablebody");
@@ -150,7 +153,6 @@ function updateTable() {
 
     markers.sort(predicateBy(sortProp, sortDirection));
 
-    const maxTableRows = 100;
     var numDisplayed = 0;
     
     //delete all rows, keep header, replace with new rows:
@@ -169,9 +171,19 @@ function updateTable() {
         newRow.innerHTML = html;
 
         numDisplayed++;
+
         if (numDisplayed >= maxTableRows) {
-            newRow = tableNewBody.insertRow(tableNewBody.rows.length);
-            newRow.innerHTML = "&nbsp;&nbsp;Table limited to " + maxTableRows + " rows";
+            var totalRows = countLocationsVisibleOnMap();
+
+            if (totalRows > maxTableRows) {
+                newRow = tableNewBody.insertRow(tableNewBody.rows.length);
+                var innerHTML = "<td colspan=\"9\">&nbsp;&nbsp;Displaying " + maxTableRows + " of " + totalRows + " rows";
+
+                innerHTML += '&nbsp;<input type="button" value="Show all" title="Show all table rows" onclick="showAllTableRows()" class="userlistbutton showmore"></td>';
+
+                newRow.innerHTML = innerHTML;
+            }
+
             break;
         }
     }
@@ -202,6 +214,11 @@ function updateTable() {
     metricCheckbox[0].firstChild.firstChild.checked = metric;
 
     setLoadingInfoText();
+}
+
+function showAllTableRows() {
+    maxTableRows = 99999;
+    updateTable();
 }
 
 var sortby = "";
