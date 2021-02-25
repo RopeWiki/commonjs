@@ -77,12 +77,15 @@ var searchmapn = -1;
 var searchWasRun = false;
 var searchMapRectangle;
 var searchMapLoader;
+var regionQuery; //used to store regionQuery if search map is opened but then cancelled before running search
 
 function searchMapButtonClicked() {
     
     if (searchmapn < 0) {
 
         //events that the shapes send: https://developers.google.com/maps/documentation/javascript/shapes#editable_events
+
+        if (!regionQuery) regionQuery = locationsQuery;
 
         var searchRectBounds = getBoundsForSearchRectangle();
 
@@ -92,6 +95,7 @@ function searchMapButtonClicked() {
             setSearchMapRectangleBounds(true);
         
         setLoadingInfoText();
+
     } else {
         closeSearchMapRectangle();
     }
@@ -139,7 +143,16 @@ function closeSearchMapRectangle() {
 
     searchmapn = -1;
     if (!searchWasRun) {
-        locationsTotalWithinArea = markers.length;
+        if (locationsTotalWithinArea === undefined) {
+            locationsTotalWithinArea = markers.length;
+        }
+
+        if (!!regionQuery) {
+            locationsTotalWithinArea = undefined;
+            locationsQuery = regionQuery; //set back to the original query if search wasn't run
+            loadMoreLocations(true);
+            return;
+        }
     }
 
     setLoadingInfoText();

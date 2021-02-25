@@ -486,6 +486,12 @@ function loadMoreLocations(checkCountOnly) {
         searchWasRun = true;
     }
 
+    if (!!checkCountOnly) {
+        hideSearchMapLoader();
+        setLoadingInfoText();
+        return;
+    }
+
     var numberToLoad = locationsTotalWithinArea - (loadOffset + loadLimit * 2) > 0
         ? loadLimit
         : loadLimit * 2; //if it's less than twice the load number to load all of them, then just load all of them.
