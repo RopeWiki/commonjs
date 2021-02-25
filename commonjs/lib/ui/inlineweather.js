@@ -7,6 +7,14 @@ function loadInlineWeather(enabled) {
         coords = kmlmarker.innerHTML.toString().split(',').map(function (item) { return item.trim(); });
 
     var weatherdiv = document.getElementById('weatherdiv');
+
+    var link;
+    if (weatherdiv) {
+        var a = weatherdiv.getElementsByTagName('A');
+        if (a && a.length > 0 && a[0].href)
+            link = a[0].href;
+    }
+
     if (coords.length >= 2 && weatherdiv && enabled) {
 
         //May2018 WUnderground API was shutdown
@@ -22,12 +30,7 @@ function loadInlineWeather(enabled) {
                     data.daily &&
                     data.daily.length > 0) {
                     weatherdiv.classList.add('wst');
-
-                    var link;
-                    var a = weatherdiv.getElementsByTagName('A');
-                    if (a && a.length > 0 && a[0].href)
-                        link = a[0].href;
-
+                    
                     var periods = data.daily;
                     var w = '<div class="wstheader noprint">';
 
@@ -97,9 +100,10 @@ function loadInlineWeather(enabled) {
             });
     } else {
         if (weatherdiv) {
-            var pageName = mw.config.get("wgPageName");
-            weatherdiv.innerHTML =
-                '<a rel="nofollow" class="external text" href="http://ropewiki.com/Weather?location=' + pageName + '"><img alt="Wforecast.png" src="' + WEATHER_MINI_ICON + '" width="13" height="22"> Weather forecast</a>';
+            if (link)
+                weatherdiv.innerHTML =
+                    '<a rel="nofollow" class="external text" href="' + link + '">' +
+                    '<img alt="Wforecast.png" src="' + WEATHER_MINI_ICON + '" width="13" height="22"> Weather forecast</a>';
         }
     }
 }
