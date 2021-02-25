@@ -74,6 +74,9 @@ function validateIconUrl(href) {
         if (href.includes("nps-parking"))
             href = 'http://maps.google.com/mapfiles/kml/shapes/parking_lot.png';
 
+        if (href.includes("nps-info"))
+            href = 'http://maps.google.com/mapfiles/kml/shapes/info.png';
+
         if (href.includes("camera.png") ||
             href.includes("nps-camera"))
             href = 'http://maps.google.com/mapfiles/kml/pal4/icon46.png';

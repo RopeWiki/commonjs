@@ -412,14 +412,20 @@ function deleteLocation(state) {
         }
 
         //remove row from table
-        var marker = markers.filter(function (x) {
-            return x.name === state.elementId;
-        })[0];
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            if (marker.name !== state.elementId) continue;
 
-        marker.isVisible = false;
-        marker.setMap(null);
-        if (marker.closedMarker) marker.closedMarker.setMap(null);
-        if (marker.highlight) marker.highlight.setMap(null);
+            marker.isVisible = false;
+            marker.setMap(null);
+            if (marker.closedMarker) marker.closedMarker.setMap(null);
+            if (marker.highlight) marker.highlight.setMap(null);
+
+            //remove marker altogether from list, primarily so that the "Loaded all x locations" updates correctly with the new shorter length
+            markers.splice(i, 1);
+            locationsTotalWithinArea--;
+            break;
+        }
 
         updateTable();
     });
@@ -443,7 +449,7 @@ function addToList(elementId) {
         '<summary>Instructions for lists</summary>' +
         '<p>Lists can be used to plan an upcoming trip, or to record past accomplishments. ' +
         'The link (url) for a list can be shared with others, but only you have the ability to edit lists that you created.</p>' +
-        '<p>Choose an existing list from the dropdown, or type in a name to create a new list. </p>' +
+        '<p>Choose one of your existing lists from the dropdown, or type in a name to create a new list.</p>' +
         '<p>You can add a date (such as proposed date in the future, or a date in the past when you completed it), and/or add a comment. Then click the "Save" button. ' +
         'These fields are also editable after the location has been added to the list; when viewing a list you can edit the individual entries from within the table itself.</p>' +
         '<p>You can only have a particular Ropewiki location included in one of your lists at a time. Correspondingly, each location can only have one date and comment associated with it.</p>' +

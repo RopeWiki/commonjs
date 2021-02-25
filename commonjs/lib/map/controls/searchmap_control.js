@@ -88,8 +88,8 @@ function searchMapButtonClicked() {
 
         createAndDisplaySearchRectangle(searchRectBounds);
 
-        //if (searchRectBounds !== map.getBounds()) //not sure why I had this here, but it was causing searchMapRun=true on initial display of the search rect
-        //    searchMapRectangleBoundsChanged();
+        if (searchRectBounds !== map.getBounds())
+            setSearchMapRectangleBounds(true);
         
         setLoadingInfoText();
     } else {
@@ -138,13 +138,21 @@ function closeSearchMapRectangle() {
     searchButton.classList.remove("cancel");
 
     searchmapn = -1;
-    if (searchWasRun) {
-        locationsAlreadyLoadedWithinQuery = 0;
+    if (!searchWasRun) {
+        locationsTotalWithinArea = markers.length;
     }
+
     setLoadingInfoText();
 }
 
 function searchMapRectangleBoundsChanged() {
+    searchWasRun = true;
+
+    setSearchMapRectangleBounds(false);
+}
+
+function setSearchMapRectangleBounds(checkCountOnly) {
+
     var bounds = searchMapRectangle.bounds;
     var sw = bounds.getSouthWest();
     var ne = bounds.getNorthEast();
@@ -155,14 +163,11 @@ function searchMapRectangleBoundsChanged() {
         '[[Has latitude::<' + ne.lat().toFixed(3) + ']]' +
         '[[Has longitude::<' + ne.lng().toFixed(3) + ']]';
 
-    searchWasRun = true;
     locationsQuery = query;
     locationsTotalWithinArea = undefined; //let loadMoreLocations retrieve the total
     loadOffset = 0;
 
-    displaySearchMapLoader();
-    
-    loadMoreLocations();
+    loadMoreLocations(checkCountOnly);
 }
 
 function getBoundsForSearchRectangle() {

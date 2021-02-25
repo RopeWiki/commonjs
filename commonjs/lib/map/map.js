@@ -447,7 +447,7 @@ var locationsTotalWithinArea;
 var locationsLoadedWithinArea = 0;
 var userStarRatingsLoaded = false;
 
-function loadMoreLocations() {
+function loadMoreLocations(checkCountOnly) {
     
     displaySearchMapLoader();
 
@@ -461,7 +461,7 @@ function loadMoreLocations() {
         $.get(geturl(urlCount), function (data) {
             if (data !== undefined) {
                 locationsTotalWithinArea = Number(data);
-                loadMoreLocations(); //self callback
+                loadMoreLocations(checkCountOnly); //self callback
             }
         });
 
@@ -472,13 +472,18 @@ function loadMoreLocations() {
     if (searchMapRectangle !== undefined) {
         locationsLoadedWithinArea = countLocationsWithinSearchArea();
 
+        if (!searchWasRun)
+            loadOffset = 0;
+
         var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
-        if (!moreToLoad) {
+        if (!!checkCountOnly || !moreToLoad) {
             hideSearchMapLoader();
             loadOffset = locationsLoadedWithinArea;
             setLoadingInfoText();
             return;
         }
+
+        searchWasRun = true;
     }
 
     var numberToLoad = locationsTotalWithinArea - (loadOffset + loadLimit * 2) > 0
@@ -536,6 +541,13 @@ function setLoadingInfoText() { //called at the end of updateTable()
 
     setHeaderText();
 
+    var loadingInfo = document.getElementById("loadinginfo");
+
+    if (locationsTotalWithinArea === undefined) {
+        loadingInfo.innerHTML = "Please wait, loading from server...";
+        return;
+    }
+
     locationsLoadedWithinArea =
         searchMapRectangle !== undefined //set this before possibly proceeding to loadingFinished() in the next line
         ? countLocationsWithinSearchArea()
@@ -571,7 +583,6 @@ function setLoadingInfoText() { //called at the end of updateTable()
     var filterInfo = getFilteringInfo();
     if (filterInfo) info += "." + filterInfo;
 
-    var loadingInfo = document.getElementById("loadinginfo");
     loadingInfo.innerHTML = info;
 }
 
