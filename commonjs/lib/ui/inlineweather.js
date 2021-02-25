@@ -97,8 +97,9 @@ function loadInlineWeather(enabled) {
             });
     } else {
         if (weatherdiv) {
+            var pageName = mw.config.get("wgPageName");
             weatherdiv.innerHTML =
-                '<a rel="nofollow" class="external text" href="http://ropewiki.com/Weather?location=Lomatium+%26+Krill+Loop"><img alt="Wforecast.png" src="' + WEATHER_MINI_ICON + '" width="13" height="22"> Weather forecast</a>';
+                '<a rel="nofollow" class="external text" href="http://ropewiki.com/Weather?location=' + pageName + '"><img alt="Wforecast.png" src="' + WEATHER_MINI_ICON + '" width="13" height="22"> Weather forecast</a>';
         }
     }
 }
