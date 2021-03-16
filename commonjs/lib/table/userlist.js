@@ -1,46 +1,77 @@
-﻿var listUser, listName, userListTable, listTableIsEditable;
+﻿var listUser, listName, isUserListTableVar;
 
 function isUserListTable() {
-    if (userListTable === undefined) {
+    if (isUserListTableVar === undefined) {
         var lstUser = document.getElementById("user");
         var lstName = document.getElementById("list");
 
         if (lstUser && lstName) {
             listUser = lstUser.innerHTML;
             listName = lstName.innerHTML;
-            userListTable = true;
-
-            var currentUser = mw.config.get("wgUserName");
-            listTableIsEditable = currentUser === listUser;
-            
+            isUserListTableVar = true;
         } else
-            userListTable = false;
+            isUserListTableVar = false;
     }
 
-    return userListTable;
+    return isUserListTableVar;
+}
+
+function isUserListIsOwned() {
+
+    var currentUser = mw.config.get("wgUserName");
+
+    return currentUser === listUser;
+}
+
+function isUserListTableEditable() {
+    
+    var chk = document.getElementById("listTableEnableEditing");
+    var enableChecked = !!chk && chk.checked;
+
+    return isUserListIsOwned() && enableChecked;
 }
 
 function setUserListGeneralComment(data) {
 
     var comment = Object.keys(data.query.results).length > 0
-        ? data.query.results[Object.keys(data.query.results)[0]].printouts[""][0]  //complicated, but works
+        ? data.query.results[Object.keys(data.query.results)[0]].printouts[""][0] //complicated, but works
         : "";
 
     if (comment === undefined) comment = "";
 
+    drawUserListGeneralComment(comment);
+}
+
+function drawUserListGeneralComment(comment) {
+
     var table = document.getElementById("loctable");
     if (!table) return;
+
+    var enabledSlider = document.getElementById("userListEditableEnabled");
+    if (!enabledSlider && isUserListIsOwned()) {
+        enabledSlider = document.createElement("div");
+        enabledSlider.id = 'userListEditableEnabled';
+
+        //add editable toggle
+        enabledSlider.innerHTML = '<span>Edit this list:&nbsp;&nbsp;&nbsp;</span><label class="toggleswitch"><input type="checkbox" id="listTableEnableEditing" onclick="toggleUserListEnableEditing()" ><span class="toggleslider round"></span></label>';
+        table.parentNode.insertBefore(enabledSlider, table);
+    }
 
     var control = document.getElementById("generalcomment");
     if (!control) {
         control = document.createElement("div");
         control.id = 'generalcomment';
 
-        var innerHtml = '<table><tbody><tr><td class="generalcomment-header"><b>General Comment:</b>';
+        var innerHtml = '<table><tbody>';
+        
+        //add comment line
+        innerHtml += '<tr><td class="generalcomment-header"><b>General Comment:</b>';
 
-        if (listTableIsEditable) {
+        //add edit button
+        if (isUserListTableEditable()) {
             innerHtml +=
-                '<br><input type="button" value="Edit"   id="generalcomment-edit" title="Edit general comment" onclick="editComment(\'generalcomment\')" class="userlistbutton edit"> ' +
+                '<br>' +
+                '<input type="button" value="Edit"   id="generalcomment-edit"       title="Edit general comment" onclick="editComment(\'generalcomment\')"       class="userlistbutton edit"> ' +
                 '<input type="button" value="\u2298" id="generalcomment-canceledit" title="Cancel the changes"   onclick="cancelEditComment(\'generalcomment\')" class="userlistbutton cancel" style="display:none"> ';
         }
 
@@ -94,7 +125,7 @@ function getUserListTableHeaderRow() {
 
     var header = UserListTableUserDateColumn + getStandardTableHeaderRow() + UserListTableCommentColumn;
 
-    if (listTableIsEditable) {
+    if (isUserListTableEditable()) {
         var userListTableEditColumn = UserListTableEditColumn
             .replace(/\[ListUser]/g, listUser)
             .replace(/\[ListName]/g, listName);
@@ -133,7 +164,7 @@ function getUserListTableRow(item) {
         getStandardTableRow(item) +
         comment;
 
-    if (listTableIsEditable) {
+    if (isUserListTableEditable()) {
 
         var editDelete = EditDelete
             .replace(/\[LocationName]/g, item.id)
@@ -207,14 +238,24 @@ var editComment = function (elementId) {
         }
 
         commentElement.contentEditable = false;
+        var newComment = commentElement.innerHTML;
 
         canceleditButton.style.display = "none";
+
+        //update item with new comment
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            if (marker.name !== elementId) continue;
+
+            marker.locationData.comment = newComment;
+            break;
+        }
 
         //save the data to mediawiki
         var state = {
             elementId: elementId,
             editingRowItem: editingRowItem,
-            newComment: commentElement.innerHTML,
+            newComment: newComment,
             newUserDate: newDate
         };
         
@@ -583,4 +624,17 @@ function setUserListModalExistingInfo(data) {
     if (v && v.length > 0) {
         commentElement.innerHTML = v[0];
     }
+}
+
+function toggleUserListEnableEditing() {
+
+    var commentElement = document.getElementById("generalcomment-comment");
+    var comment = commentElement.innerHTML;
+
+    var control = document.getElementById("generalcomment");
+    control.parentElement.removeChild(control);
+
+    drawUserListGeneralComment(comment);
+
+    updateTable();
 }
