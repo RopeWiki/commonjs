@@ -242,12 +242,13 @@ var editComment = function (elementId) {
 
         canceleditButton.style.display = "none";
 
-        //update item with new comment
+        //update item with new comment and date
         for (var i = 0; i < markers.length; i++) {
             var marker = markers[i];
             if (marker.name !== elementId) continue;
 
             marker.locationData.comment = newComment;
+            marker.locationData.userDate = newDate;
             break;
         }
 
