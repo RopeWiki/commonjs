@@ -92,12 +92,12 @@ function loadUserInterface(document) {
     var currentUser = mw.config.get("wgUserName");
 
     var addToListElement = document.getElementById("add-to-list");
-    if (currentUser !== "null" && addToListElement) {
+    if (currentUser !== null && currentUser !== "null" && addToListElement) {
         var pageName = mw.config.get("wgPageName");
         pageName = pageName.split("_").join(" ");
         pageName = pageName.split("'").join("%27");
 
-        addToListElement.innerHTML = '<input class="" title="Add to a custom list" type="submit" onclick="addToList(\'' + pageName + '\')" value="+ List">';
+        addToListElement.innerHTML = '<input class="add-list-button" title="Add to a custom list" type="submit" onclick="addToList(\'' + pageName + '\')" value="Add&nbsp;to List">';
     }
 
     // javascriptlink
