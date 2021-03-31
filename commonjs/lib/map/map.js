@@ -545,7 +545,7 @@ function loadMoreLocations(checkCountOnly) {
 
 function setLoadingInfoText() { //called at the end of updateTable()
 
-    setHeaderText();
+    setHeaderTextForRegion();
 
     var loadingInfo = document.getElementById("loadinginfo");
 
@@ -636,7 +636,7 @@ function getRegionOrSearchAreaText() {
         : "list";
 }
 
-function setHeaderText() {
+function setHeaderTextForRegion() {
 
     var firstHeadingText = "";
 

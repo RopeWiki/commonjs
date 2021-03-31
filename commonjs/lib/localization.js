@@ -186,10 +186,10 @@ function rap(raps, space) {
  *                  "1.5&nbsp;mi \u21951000&nbsp;ft")
  */
 function uconv(str, cnv) {
-    if (str == null || str == "")
+    if (str == null || str === "")
         return "";
 
-    var sep = "\u2195";
+    var sep = ", ";
     var vstr = str.split(sep);
 
     vstr[0] = cnv(vstr[0], str.indexOf('&nbsp;') > 0);
@@ -197,7 +197,7 @@ function uconv(str, cnv) {
     if (vstr.length > 1)
         vstr[1] = ftStr(vstr[1], str.indexOf('&nbsp;') > 0);
 
-    return vstr.join(" " + sep);
+    return vstr.join(sep);
 }
 
 function acaconv(str, more) {
