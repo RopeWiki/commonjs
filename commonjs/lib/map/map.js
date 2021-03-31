@@ -545,7 +545,7 @@ function loadMoreLocations(checkCountOnly) {
 
 function setLoadingInfoText() { //called at the end of updateTable()
 
-    setHeaderTextForRegion();
+    setHeadingTextForRegion();
 
     var loadingInfo = document.getElementById("loadinginfo");
 
@@ -636,7 +636,7 @@ function getRegionOrSearchAreaText() {
         : "list";
 }
 
-function setHeaderTextForRegion() {
+function setHeadingTextForRegion() {
 
     var firstHeadingText = "";
 
@@ -646,7 +646,7 @@ function setHeaderTextForRegion() {
         // set browser tab title
         document.title = listName;
     } else {
-        if (searchWasRun) //don't change header unless custom search rectangle was run
+        if (searchWasRun) //don't change heading unless custom search rectangle was run
         {
             var subRegions = {};
             var parentRegions = {};
@@ -707,8 +707,8 @@ function setHeaderTextForRegion() {
     }
 
     if (firstHeadingText !== "") {
-        var header = document.getElementById("firstHeading");
-        header.children[header.children.length - 1].innerHTML = firstHeadingText;
+        var heading = document.getElementById("firstHeading");
+        heading.children[heading.children.length - 1].innerHTML = firstHeadingText;
     }
 }
 

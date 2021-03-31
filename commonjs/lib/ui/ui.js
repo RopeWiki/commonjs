@@ -666,3 +666,44 @@ function findtag(children, tag, f) {
     for (var i = 0; i < list.length; ++i)
         f(list[i]);
 }
+
+function setHeadingText() {
+
+    var header = document.getElementById("firstHeading");
+    var headingText = header.children[header.children.length - 1].innerHTML;
+
+    var isConditionReports = false;
+    var name = "";
+
+    //change wording of condition reports and format date
+    if (headingText.startsWith("Conditions:")) {
+        isConditionReports = true;
+
+        //get date
+        var dateIndex = headingText.lastIndexOf("-") + 1;
+        
+        //get name
+        var nameIndex = headingText.indexOf(":") + 1;
+        name = headingText.substring(nameIndex, dateIndex - 1);
+
+        //set text
+        headingText = name;
+    }
+
+    //add spans to de-emphasize text in parenthesis
+    var index = headingText.indexOf("(");
+    var endIndex = headingText.indexOf(")");
+    if (endIndex < 0) endIndex = headingText.length;
+
+    if (index >= 0) {
+        headingText = headingText.substring(0, index) + '<span class="understate">' + headingText.substring(index, endIndex + 1) + '</span>' + headingText.substring(endIndex + 1);
+    }
+
+    if (isConditionReports) {
+        //linkify name
+        headingText = '<a href="/' + name + '" title="' + name + '">' + headingText + '</a> Condition Reports';
+    }
+
+    //set text
+    header.children[header.children.length - 1].innerHTML = headingText;
+}

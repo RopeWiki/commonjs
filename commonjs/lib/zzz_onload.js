@@ -11,6 +11,9 @@ addUACAStyle();
 //console.log("started");
 $('head').prepend('<meta name="viewport" content="width=320, initial-scale=1.0">');
 
+//first heading text
+setHeadingText();
+
 loadSkin();
 
 adjustFaviconElements();
