@@ -20,7 +20,8 @@ function toGeoJSON(buffer) {
         refpoint: new Int32Array(4)
     }, features = []; taStruct.cursor < taStruct.bufferLength;)
     {
-        var res = readBuffer(taStruct, Number.MAX_VALUE);
+        var res = readBuffer(taStruct);
+
         res.geoms
             ? features = features.concat(transforms[res.type](res.geoms, res.ids, taStruct.ndims))
             : features.push({
@@ -62,16 +63,15 @@ function toCoords(coordinates, ndims) {
         for (pos = [], c = 0; ndims > c; ++c) pos.push(coordinates[i + c]);
         coords.push(pos);
     }
+
     return coords;
 }
 
 function base64ToUint8Array(t) {
-    return new Uint8Array(atob(t).split("").map(function(t) {
-        return t.charCodeAt(0);
-    }));
+    return new Uint8Array(atob(t).split("").map(function(t) { return t.charCodeAt(0); }));
 }
 
-function readBuffer(taStruct, howMany) {
+function readBuffer(taStruct) {
     var flag, hasZ = 0, hasM = 0;
 
     flag = taStruct.buffer[taStruct.cursor], taStruct.cursor++;
@@ -94,26 +94,31 @@ function readBuffer(taStruct, howMany) {
             (taStruct.factors[2 + hasZ] = Math.pow(10, precisionM)), taStruct.has_z = hasZ, taStruct.has_m =
             hasM;
     }
+
     var ndims = 2 + hasZ + hasM;
     if (taStruct.ndims = ndims, taStruct.has_size && (taStruct.size = ReadVarInt64(taStruct)), taStruct.has_bbox) {
         var bbox, i;
-        for (bbox = [], i = 0; ndims - 1 >= i; i++) {
+        for (bbox = [], i = 0; i <= ndims - 1; i++) {
             var min = ReadVarSInt64(taStruct),
                 max = min + ReadVarSInt64(taStruct);
             bbox[i] = min, bbox[i + ndims] = max;
         }
         taStruct.bbox = bbox;
     }
-    return readObjects(taStruct, howMany);
+    return readObjects(taStruct);
 }
 
 function unzigzag(nVal) {
-    return 0 === (1 & nVal) ? nVal >> 1 : -(nVal >> 1) - 1;
+    return (1 & nVal) === 0 ? nVal >> 1 : -(nVal >> 1) - 1;
 }
 
-function readObjects(taStruct, howMany) {
+function readObjects(taStruct) {
     var type, i;
-    for (type = taStruct.type, i = 0; i < taStruct.ndims; i++) taStruct.refpoint[i] = 0;
+
+    for (type = taStruct.type, i = 0; i < taStruct.ndims; i++) {
+        taStruct.refpoint[i] = 0;
+    }
+
     //if (type === constants.POINT) return parse_point(ta_struct);
     if (type === constants.LINESTRING) return parse_line(taStruct);
     //if (type === constants.POLYGON) return parse_polygon(ta_struct);
@@ -121,9 +126,9 @@ function readObjects(taStruct, howMany) {
     //if (type === constants.MULTILINESTRING) return parse_multi(ta_struct, parse_line);
     //if (type === constants.MULTIPOLYGON) return parse_multi(ta_struct, parse_polygon);
     //if (type === constants.COLLECTION) return parse_collection(ta_struct, howMany);
+
     throw new Error("Unknown type: " + type);
 }
-
 
 function parse_line(taStruct) {
     var npoints = ReadVarInt64(taStruct);
@@ -137,7 +142,9 @@ function ReadVarSInt64(taStruct) {
 
 function ReadVarInt64(taStruct) {
     for (var nByte, cursor = taStruct.cursor, nVal = 0, nShift = 0; ;) {
-        if (nByte = taStruct.buffer[cursor], 0 === (128 & nByte)) return cursor++ , taStruct.cursor = cursor, nVal | nByte << nShift;
+        if (nByte = taStruct.buffer[cursor], 0 === (128 & nByte))
+            return cursor++, taStruct.cursor = cursor, nVal | nByte << nShift;
+
         nVal |= (127 & nByte) << nShift, cursor++, nShift += 7;
     }
 }
@@ -146,14 +153,18 @@ function read_pa(taStruct, npoints) {
     var i, j, ndims = taStruct.ndims,
         factors = taStruct.factors,
         coords = new Array(npoints * ndims);
+
     for (i = 0; npoints > i; i++)
-        for (j = 0; ndims > j; j++) taStruct.refpoint[j] += ReadVarSInt64(taStruct), coords[ndims * i + j] = taStruct.refpoint[j] / factors[j];
+        for (j = 0; ndims > j; j++) {
+            taStruct.refpoint[j] += ReadVarSInt64(taStruct), coords[ndims * i + j] = taStruct.refpoint[j] / factors[j];
+        }
+
     if (taStruct.include_bbox && !taStruct.has_bbox)
         for (i = 0; npoints > i; i++)
             for (j = 0; ndims > j; j++) {
                 var c = coords[j * ndims + i];
-                c < taStruct.bbox.min[j] && (taStruct.bbox.min[j] = c), c > taStruct.bbox.max[j] &&
-                    (taStruct.bbox.max[j] = c);
+                c < taStruct.bbox.min[j] && (taStruct.bbox.min[j] = c),
+                c > taStruct.bbox.max[j] && (taStruct.bbox.max[j] = c);
             }
     return coords;
 }
