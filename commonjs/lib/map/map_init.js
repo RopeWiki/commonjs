@@ -4,7 +4,7 @@
 
 function loadmapScript() {
 
-    smallstyle();
+    setViewForAndroid();
 
     loadSkin();
 
@@ -621,7 +621,7 @@ function loadInteractiveMap() {
 
         centermap();
 
-        smallstyle();
+        setViewForAndroid();
 
         if (isFullscreen(null) && !iOS()) { //this is set to the inverse until after window is drawn, so use inverse logic
             map.set('gestureHandling', 'cooperative');
@@ -669,39 +669,4 @@ function getGoogleMapsStaticUrl() {
     url += "?center=" + lat + "," + lon + "&zoom=" + zoom + "&scale=" + scale + "&size=" + wmap + "x" + hmap + markers + "&maptype=" + maptype + "&key=" + GOOGLE_MAPS_APIKEY;
 
     return url;
-}
-
-function smallstyle() {
-    WebViewStyle();
-    $("#p-logo a").attr("href", "#");
-
-    /* DISABLED! USING CSS
-    // set meta viewport (not used)
-    // $('head').append('<meta name="viewport" content="width=device-width; initial-scale=1.0;">');
-     // set style based on screen size
-     var width = $(window).width();
-     if (screen)
-        if (screen.width<width)
-         width = screen.width;
-     var e = document.getElementById('p-navigation-label');
-     if (e) e.innerHTML = width;
-     if (width<970)
-      {
-      // small screen
-       var sheet = document.createElement('style')
-       sheet.id = 'smallstyle';
-       sheet.innerHTML = " .floatright { float: none !important; } .tablecanyon { width: 100% !important; float: none !important; } .tableregion { width: 100% !important; float: none !important; } .bigdisplay { display: none !important; }";
-       document.body.appendChild(sheet);
-      }
-     else
-      {
-       // large screen
-      var sheetToBeRemoved = document.getElementById('smallstyle');
-      if (sheetToBeRemoved)
-        {
-        var sheetParent = sheetToBeRemoved.parentNode;
-        sheetParent.removeChild(sheetToBeRemoved);
-        }
-      }
-    */
 }

@@ -55,7 +55,7 @@ function ILabel(pos, txt, map, scale, color) {
 function validateIconUrl(href) {
 
     // patch default marker icons for CalTopo
-    if (href.includes("caltopo.com")) {
+    if (href.includes("caltopo.com") || href.includes("sartopo.com")) {
 
         if (href.includes("circle/FF0000.png") ||
             href.includes("circle/000000.png") ||

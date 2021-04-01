@@ -6,10 +6,7 @@ addPopOutLinkSupport();
 addUACAStyle();
 
 // required for CSS for small screens
-//$('head').prepend('<meta name="viewport" content="width=device-width, initial-scale=0.6,">');
-// fix for firefox bug and a autozoomin chrome bug on android as well as improved readibility in iphone
-//console.log("started");
-$('head').prepend('<meta name="viewport" content="width=320, initial-scale=1.0">');
+$('head').prepend('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
 
 //first heading text
 setHeadingText();

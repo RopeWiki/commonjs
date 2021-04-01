@@ -20,16 +20,8 @@ function iOS() {
         (navigator.userAgent.includes("Mac") && "ontouchend" in document);
 }
 
-// TODO: It seems unlikely this function is correct; seems like it's a holdover from debugging.
-function kmlurl(url) {
-    if (typeof Android != "undefined")
-        return Android.kmlurl(url);
-    var summaryurl = "query=%5B%5BCategory%3ACanyons%5D%5D%5B%5BLocated%20in%20region.Located%20in%20regions%3A%3AX%7C%7CSan%20Diego%5D%5D&sort=&order=ascending";
-    return LUCA_BASE_URL + "/rwr?gpx=off&kml=" + SITE_BASE_URL + "/KMLList?action=raw&templates=expand&ctype=application/x-zope-edit&group=link&" + summaryurl + "&more=&num=on&ext=.kml";
-}
-
 // TODO: It seems like this function should only be called once per page load, but it's ultimately referenced in two places; check logic accuracy.
-function WebViewStyle() {
+function setViewForAndroid() {
     if (!isAndroid())
         return;
 
@@ -100,6 +92,14 @@ function WebViewStyle() {
     sheet.id = 'androidstyle';
     sheet.innerHTML = style;
     document.body.appendChild(sheet);
+}
+
+// TODO: It seems unlikely this function is correct; seems like it's a holdover from debugging.
+function kmlurl(url) {
+    if (typeof Android != "undefined")
+        return Android.kmlurl(url);
+    var summaryurl = "query=%5B%5BCategory%3ACanyons%5D%5D%5B%5BLocated%20in%20region.Located%20in%20regions%3A%3AX%7C%7CSan%20Diego%5D%5D&sort=&order=ascending";
+    return LUCA_BASE_URL + "/rwr?gpx=off&kml=" + SITE_BASE_URL + "/KMLList?action=raw&templates=expand&ctype=application/x-zope-edit&group=link&" + summaryurl + "&more=&num=on&ext=.kml";
 }
 
 function viewsize() {

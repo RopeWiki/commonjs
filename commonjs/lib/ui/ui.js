@@ -671,23 +671,10 @@ function setHeadingText() {
 
     var header = document.getElementById("firstHeading");
     var headingText = header.children[header.children.length - 1].innerHTML;
-
-    var isConditionReports = false;
-    var name = "";
-
+    
     //change wording of condition reports and format date
     if (headingText.startsWith("Conditions:")) {
-        isConditionReports = true;
-
-        //get date
-        var dateIndex = headingText.lastIndexOf("-") + 1;
-        
-        //get name
-        var nameIndex = headingText.indexOf(":") + 1;
-        name = headingText.substring(nameIndex, dateIndex - 1);
-
-        //set text
-        headingText = name;
+        headingText = "Condition Reports";
     }
 
     //add spans to de-emphasize text in parenthesis
@@ -697,11 +684,6 @@ function setHeadingText() {
 
     if (index >= 0) {
         headingText = headingText.substring(0, index) + '<span class="understate">' + headingText.substring(index, endIndex + 1) + '</span>' + headingText.substring(endIndex + 1);
-    }
-
-    if (isConditionReports) {
-        //linkify name
-        headingText = '<a href="/' + name + '" title="' + name + '">' + headingText + '</a> Condition Reports';
     }
 
     //set text
