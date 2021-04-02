@@ -19,32 +19,63 @@ function initResizeControl() {
     map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(resizeControl);
 
     google.maps.event.addDomListener(resizeControl,
-        'mousedown', function () {
+        'mousedown', function() {
+            var ghostbar = createGhostbar();
 
-        dragging = true;
-        var mapbox = $('#mapbox');
-        var ghostbar = $('<div>',
-            {
-                id: 'ghostbar',
-                css: {
-                    width: mapbox.outerWidth(),
-                    top: mapbox.offset().top,
-                    left: mapbox.offset().left
-                }
-            }).appendTo('body');
-
-        $(document).mousemove(function (e) {
-            ghostbar.css("top", e.pageY + 2);
+            $(document).mousemove(function(e) {
+                ghostbar.css("top", e.pageY + 2);
+            });
         });
-    });
 
-    $(document).mouseup(function(e) {
+    google.maps.event.addDomListener(resizeControl,
+        'touchstart', function (e) {
+            var ghostbar = createGhostbar();
+
+            $(document).bind('touchmove', function (e) {
+                var y = (e.originalEvent.touches[0] || e.originalEvent.changedTouches[0]).pageY;
+                ghostbar.css("top", y + 2);
+            });
+
+            e.preventDefault();
+        });
+
+    $(document).mouseup(function (e) {
         if (dragging) {
-            var mapbox = $('#mapbox');
-            mapbox.css("height", e.pageY + 2 - mapbox.offset().top);
-            $('#ghostbar').remove();
+            finalizeGhostbar(e.pageY);
+
             $(document).unbind('mousemove');
-            dragging = false;
         }
     });
+
+    $(document).on("touchend", function (e) {
+        if (dragging) {
+            var ypos = (e.originalEvent.touches[0] || e.originalEvent.changedTouches[0]).pageY;
+            finalizeGhostbar(ypos);
+
+            $(document).unbind('touchmove');
+        }
+    });
+}
+
+function createGhostbar() {
+    dragging = true;
+    var mapbox = $('#mapbox');
+    var ghostbar = $('<div>',
+        {
+            id: 'ghostbar',
+            css: {
+                width: mapbox.outerWidth(),
+                top: mapbox.offset().top,
+                left: mapbox.offset().left
+            }
+        }).appendTo('body');
+
+    return ghostbar;
+}
+
+function finalizeGhostbar(ypos) {
+    var mapbox = $('#mapbox');
+    mapbox.css("height", ypos + 2 - mapbox.offset().top);
+    $('#ghostbar').remove();
+    dragging = false;
 }
