@@ -20,6 +20,11 @@ function toggleOption(id, forcechecked) {
     for (i = 0; i < elems.length; i++)
         elems[i].style.display = !checked ? "" : "none";
 
+    if (id ==="filterschk" && checked) { //expand the aca/french filters
+        toggleDisplayTechnicalFilters("filterdisplay-aca", true);
+        toggleDisplayTechnicalFilters("filterdisplay-french", true);
+    }
+
     return checked;
 }
 
@@ -75,4 +80,19 @@ function toggleDisabledChk(id) {
             }
         }
     }
+}
+
+function toggleDisplayTechnicalFilters(id, toggled) {
+    var span = document.getElementById(id);
+
+    if (toggled === undefined)
+        toggled = span.innerHTML !== String.fromCharCode('9660');
+
+    span.innerHTML = toggled ? '&#9660;' : '&#9658;';
+
+    var type = id.split('-')[1];
+
+    var elems = document.getElementsByClassName("filterson " + type);
+    for (var i = 0; i < elems.length; i++)
+        elems[i].style.display = toggled ? "" : "none";
 }

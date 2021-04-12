@@ -319,9 +319,11 @@ function setOptionCheckboxes() {
 
 function setFilterCheckboxes() {
     var url = window.location.href.toString();
+    var i, id;
 
     var chks = document.getElementsByClassName('filterchk');
-    for (var i = 0; i < chks.length; i++) {
+    
+    for (i = 0; i < chks.length; i++) {
         var mid = chks[i].id + '_chk';
         var list = chks[i].innerHTML.split(',');
         var icons = document.getElementById(chks[i].id + 'icons');
@@ -329,7 +331,7 @@ function setFilterCheckboxes() {
         // get value from url
         var param = urlget(url, chks[i].id + '=', '').split(',');
         for (var l = 0; l < list.length; ++l) {
-            var id = mid + '-' + list[l];
+            id = mid + '-' + list[l];
 
             // set checked if cookie or url said so
             var checked = getCookie(id) !== "";
@@ -349,6 +351,13 @@ function setFilterCheckboxes() {
         chks[i].innerHTML = str;
 
         toggleDisabledChk(mid);
+    }
+    
+    chks = document.getElementsByClassName('filterchk-technical');
+    for (i = 0; i < chks.length; i++) {
+        id = chks[i].id;
+
+        chks[i].outerHTML = '<span id=' + "'" + id + "'" + ' class="filterchk-technical" style="cursor:pointer;" onclick="toggleDisplayTechnicalFilters(' + "'" + id + "'" + ')">&#9660;</span>';
     }
 }
 

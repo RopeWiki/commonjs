@@ -606,6 +606,7 @@ function setUserListModalDropdown(data) {
 
 function setUserListModalExistingInfo(data) {
     var item = data.query.results[Object.keys(data.query.results)[0]];
+    if (!item) return;
 
     var listElement = document.getElementById("modal-listname");
     var userDateElement = document.getElementById("modal-userdate");
