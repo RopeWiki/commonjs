@@ -60,7 +60,10 @@ function initLegendControl() {
 
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legendBox);
 
-    legendSizeObserver = new ResizeObserver(legendSizeChanged).observe(legendBox);
+    try { //not supported in Internet Explorer
+        legendSizeObserver = new ResizeObserver(legendSizeChanged).observe(legendBox);
+    } catch (error) {
+    }
 }
 
 var legendSizeObserver;

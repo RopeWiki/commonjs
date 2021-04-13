@@ -44,6 +44,7 @@
       "lib/ui/modal.js",
       "lib/ui/toggle.js",
       "lib/ui/ui.js",
+      "lib/utils/internetexplorer.js",
       "lib/utils/urls.js",
       "lib/wikieditor_customization.js",
       "lib/zzz_onload.js"
