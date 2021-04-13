@@ -1,8 +1,11 @@
-﻿//google maps custom control to display current position
+﻿// google maps custom control to display current position
+// https://www.codemag.com/Article/2011031/Using-Geolocation-and-Google-Maps
 
 function initCurrentPositionControl() {
     if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(createCurrentPositionButton);
+
+    //navigator.geolocation.getCurrentPosition(createCurrentPositionButton, handleCurrentPositionError);
+    createCurrentPositionButton();
 }
 
 function createCurrentPositionButton() {
@@ -24,26 +27,32 @@ function createCurrentPositionButton() {
 var showingcurrentposition = false;
 var userMarker, id;
 
-function toggleCurrentPosition() {
+var currentPositionOptions = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0
+};
 
-    showingcurrentposition = !showingcurrentposition;
 
-    var button = document.getElementById('currentPositionCustom');
+function toggleCurrentPosition(force) {
+
+    if (!!force) showingcurrentposition = force;
+    else
+        showingcurrentposition = !showingcurrentposition;
 
     if (showingcurrentposition) {
 
         if (navigator.geolocation) {
             if (userMarker === undefined || userMarker === null) {
-                navigator.geolocation.getCurrentPosition(initializeCurrentPosition);
+
+                navigator.geolocation.getCurrentPosition(initializeCurrentPosition, handleCurrentPositionError, currentPositionOptions);
             }
-
-            id = navigator.geolocation.watchPosition(updateCurrentPosition);
-
-            button.classList.add("enabled");
         }
     } else {
         navigator.geolocation.clearWatch(id);
-        
+
+        var button = document.getElementById('currentPositionCustom');
+
         if (button.classList.contains("enabled")) {
             button.classList.remove("enabled");
         }
@@ -55,7 +64,15 @@ function toggleCurrentPosition() {
     }
 }
 
+function handleCurrentPositionError() {
+    toggleCurrentPosition(false);
+}
+
 function initializeCurrentPosition(position) {
+
+    var button = document.getElementById('currentPositionCustom');
+
+    button.classList.add("enabled");
 
     var currentPos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
@@ -75,8 +92,11 @@ function initializeCurrentPosition(position) {
         map.fitBounds(newBounds);
         map.panToBounds(newBounds);
     }
-}
 
-function updateCurrentPosition(position) {
-    userMarker.setPosition(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+    id = navigator.geolocation.watchPosition(
+        function (position) {
+            userMarker.setPosition(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+        },
+        handleCurrentPositionError,
+        currentPositionOptions);
 }
