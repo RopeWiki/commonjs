@@ -20,6 +20,7 @@
       "lib/map/map.js",
       "lib/map/map_init.js",
       "lib/map/tooltip.js",
+      "lib/map/controls/currentposition_control.js",
       "lib/map/controls/dropdown_control.js",
       "lib/map/controls/fullscreen_control.js",
       "lib/map/controls/legend_control.js",

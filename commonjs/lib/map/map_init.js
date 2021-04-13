@@ -631,6 +631,7 @@ function loadInteractiveMap() {
     initMapLayerControl();
     initFullscreenControl();
     initResizeControl();
+    initCurrentPositionControl();
 }
 
 function waterflowinit() {

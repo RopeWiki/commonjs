@@ -80,3 +80,5 @@ const BULLET_LIST_ICON = SITE_BASE_URL + "/images/0/01/BulletlistIcon.png";
 const PHOTO_GALLERY_ICON = SITE_BASE_URL + "/images/4/45/Galleryicon1.png";
 const PHOTO_GALLERY_ICON2 = SITE_BASE_URL + "/images/c/ca/Galleryiconx.png";
 const MULTIPHOTO_GALLERY_ICON = SITE_BASE_URL + "/images/d/d4/Galleryiconn.png";
+
+const CURRENT_POSITION_ICON = SITE_BASE_URL + "/images/3/33/Current_position.png";
