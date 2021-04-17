@@ -20,7 +20,8 @@ function pdfselect(elem) {
     else if (opt == "KM")
         file = id + ".kml", url = $('#kmlfilep').html(), count = 1; //url = $('a:contains("Extract KML")').href()
     else if (opt == "GM")
-        file = id + ".gpx", url = $('#kmlfilep').html().split("gpx%3Doff").join("gpx%3Don"), count = 1; //url = $('a:contains("Extract KML")').href()
+        //file = id + ".gpx", url = $('#kmlfilep').html().split("gpx%3Doff").join("gpx%3Don"), count = 1; //url = $('a:contains("Extract KML")').href()
+        file = id + ".gpx", url = base + "gpx=on" + "filename=" + file.split('.')[0] + "&url=" + $('#kmlfilep').html(), count = 1;
     else if (opt == "ZPM")
         file = id + ".zip", url = base + "filename=" + file + "&zipx=" + id + "&ext=.rw", opts = "bslinks=off&trlinks=off&summary=off";
     else if (opt == "ZALL")
