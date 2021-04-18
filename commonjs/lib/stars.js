@@ -110,15 +110,22 @@ function starVote(elem) {
     }
 }
 
+var userStarRatings = [];
+
 function setUserStarRatings(data) {
     $.each(data.query.results,
-        function(i, item) {
-            var name = item.printouts["Has page rating page"][0].fulltext;
-            var stars = item.printouts["Has page rating"][0];
+        function (pagename, item) {
+            var startIndex = pagename.indexOf(':');
+            var endIndex = pagename.indexOf('/');
+            if (startIndex < 0 || endIndex < 0) return;
+            var name = pagename.substring(startIndex + 1, endIndex);
+            var stars = item.printouts[""][0];
 
-            var marker = markers.filter(function (x) {
-                return x.name === name;
-            })[0];
+            var newRating = { name: name, stars: stars };
+            var index = userStarRatings.findIndex(function(x) { return x.location === name; });
+            index === -1 ? userStarRatings.push(newRating) : userStarRatings[index] = newRating;
+
+            var marker = markers.filter(function (x) { return x.name === name; })[0];
 
             if (marker != undefined)
                 marker.locationData.userStars = stars;

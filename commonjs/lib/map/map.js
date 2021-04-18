@@ -427,6 +427,11 @@ function getrwlist(data) {
                     obj.conditionDate = parseConditionDate(obj.conditionSummary);
                 }
 
+                if (userStarRatings != undefined) {
+                    var index = userStarRatings.findIndex(function (x) { return x.name === obj.id; });
+                    if (index >= 0) obj.userStars = userStarRatings[index].stars;
+                }
+
                 list.push(obj);
             }
         });
@@ -532,9 +537,9 @@ function loadMoreLocations(checkCountOnly) {
         userStarRatingsLoaded = true;
 
         $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
-                '&query=' + urlencode('[[Has page rating::+]][[Has page rating user::' + currentUser + ']][[Has page rating page::<q>' + locationsQuery + '</q>]]') +
-                '|?Has_page_rating_page|?Has_page_rating|mainlabel=-' +
-                '|limit=' + 1000), //load all ratings the user has made
+                '&query=' + urlencode('[[Has page rating::+]][[Has page rating user::' + currentUser + ']]') +
+                '|?Has_page_rating_page=|?Has_page_rating=|mainlabel=-' +
+                '|limit=' + 2000), //load all ratings the user has made
             function (data) {
                 setUserStarRatings(data);
             });
