@@ -48,10 +48,6 @@ function convertUnitElements(element) {
     texts = element.getElementsByClassName('umi-ex'); //extended miles, may have text other than the miles
     for (i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, miExStr);
-
-    texts = element.getElementsByClassName('urap');
-    for (i = 0; i < texts.length; i++)
-        texts[i].innerHTML = uconv(texts[i].innerHTML, rap);
 }
 
 function adjustHtmlStringForMetric(txt) {

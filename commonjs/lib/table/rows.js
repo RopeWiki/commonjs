@@ -44,6 +44,11 @@ function getStandardTableHeaderRow() {
             '<span id="sort-technicalRating" title="Sort by technical rating" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
         '<th class="rwHdr">' +
+            '<span class="rwText ctranslate">Raps</span>' +
+            '<span id="sort-rappelsNum" title="Sort by number of rappels" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '<span id="sort-longestRappel" title="Sort by highest rappel" class="rwSortIcon gmnoprint notranslate"></span>' +
+        '</th>' +
+        '<th class="rwHdr">' +
             '<span class="rwText ctranslate">Time</span>' +
             '<span id="sort-averageTime" title="Sort by typical time" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
@@ -56,11 +61,6 @@ function getStandardTableHeaderRow() {
             '<span class="rwText ctranslate">Descent</span>' +
             '<span id="sort-descentLength" title="Sort by length of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
             '<span id="sort-descentDepth" title="Sort by depth of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
-        '</th>' +
-        '<th class="rwHdr">' +
-            '<span class="rwText ctranslate">Raps</span>' +
-            '<span id="sort-rappelsNum" title="Sort by number of rappels" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '<span id="sort-longestRappel" title="Sort by highest rappel" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
         '<th class="rwHdr">' +
             '<span class="rwTextNoSort"><a href="/Extra_info" title="Extra info">Info</a></span>' +
@@ -88,17 +88,17 @@ function getStandardTableRow(item) {
     const TechnicalRating =
         '<td class="uaca">[Technical Rating]</td>';
     
-    const Time =
-        '<td class="utime">[Time]</td>';
-    
-    const HikeLength =
-        '<td class="umi">[Hike]</td>';
-    
-    const Descent =
-        '<td class="umi">[Descent display]</td>';
-    
     const Raps =
         '<td class="urap">[Rap display]</td>';
+
+    const Time =
+        '<td class="tablestat-single utime">[Time]</td>';
+    
+    const HikeLength =
+        '<td class="tablestat-single umi">[Hike]</td>';
+    
+    const Descent =
+        '<td>[Descent display]</td>';
     
     const Info =
         '<td class="itable">[InfoSummary]</td>';
@@ -123,6 +123,9 @@ function getStandardTableRow(item) {
     var technicalRating = TechnicalRating
         .replace(/\[Technical Rating]/, getTableTechnicalRating(item.technicalRating));
 
+    var raps = Raps
+        .replace(/\[Rap display]/, getTableRaps(item.rappels, item.longestRappel));
+
     var time = Time
         .replace(/\[Time]/, !!item.typicalTime ? item.typicalTime : "");
 
@@ -131,9 +134,6 @@ function getStandardTableRow(item) {
 
     var descent = Descent
         .replace(/\[Descent display]/, getDescentDisplay(item.descentLength, item.descentDepth));
-
-    var raps = Raps
-        .replace(/\[Rap display]/, getTableRaps(item.rappels, item.longestRappel));
 
     var info = Info
         .replace(/\[InfoSummary]/, getTableInfoSummaryDisplay(item.infoSummary));
@@ -145,10 +145,10 @@ function getStandardTableRow(item) {
         location +
         quality +
         technicalRating +
+        raps +
         time +
         hikeLength +
         descent +
-        raps +
         info +
         conditions;
 
@@ -209,29 +209,37 @@ function getTableTechnicalRating(rating) {
 }
 
 function getTableRaps(rapSummary, longestRap) {
-    var rapDisplay = "";
 
-    if (!!rapSummary) rapDisplay = rapSummary;
+    var hasSummary = (!!rapSummary);
+    var hasLongest = (!!longestRap);
+    
+    var rapSummaryDisplay = '<span class="tablestat rap-num">' +
+        ((hasSummary) ? rapSummary : "") +
+        ((hasSummary && hasLongest) ? "," : "&nbsp;") +
+        '</span>';
 
-    if (!!longestRap && longestRap.value > 0) {
-        if (rapDisplay.trim()) rapDisplay += ", ";
-        rapDisplay += '\u21A8' + getTableValueUnit(longestRap);
-    }
+    var longestRapDisplay = '<span class="tablestat rap-longest uft">' +
+        ((hasLongest) ? '\u21A8' + getTableValueUnit(longestRap) : "") +
+        '</span>';
 
-    return rapDisplay;
+    return rapSummaryDisplay + longestRapDisplay;
 }
 
 function getDescentDisplay(length, depth) {
-    var descentDisplay = "";
+    
+    var hasLength = (!!length);
+    var hasDepth = (!!depth);
 
-    if (!!length) descentDisplay = '\u27F7' + getTableValueUnit(length);
+    var lengthDisplay = '<span class="tablestat descent-length umi">' +
+        ((hasLength) ? '\u27F7' + getTableValueUnit(length) : "") +
+        ((hasLength && hasDepth) ? "," : "&nbsp;") +
+        '</span>';
 
-    if (!!depth) {
-        if (descentDisplay.trim()) descentDisplay += ", ";
-        descentDisplay += '\u2193' + getTableValueUnit(depth);
-    }
-
-    return descentDisplay;
+    var depthDisplay = '<span class="tablestat descent-depth umi">' +
+        ((hasDepth) ? '\u2193' + getTableValueUnit(depth) : "") +
+        '</span>';
+    
+    return lengthDisplay + depthDisplay;
 }
 
 function getTableInfoSummaryDisplay(summary) {

@@ -427,6 +427,15 @@ function getrwlist(data) {
                     obj.conditionDate = parseConditionDate(obj.conditionSummary);
                 }
 
+                v = item.printouts["Has vehicle type"];
+                if (v && v.length > 0) {
+                    obj.vehicleType = v[0];
+                }
+                v = item.printouts["Has shuttle length"];
+                if (v && v.length > 0) {
+                    obj.shuttleLength = v[0];
+                }
+
                 if (userStarRatings != undefined) {
                     var index = userStarRatings.findIndex(function (x) { return x.name === obj.id; });
                     if (index >= 0) obj.userStars = userStarRatings[index].stars;

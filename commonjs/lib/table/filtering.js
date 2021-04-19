@@ -22,6 +22,8 @@ function getLocationParameters(loadLimit) {
         '|%3FHas_longest_rappel' +
         '|%3FHas_info' +
         '|%3FHas_condition_summary' +
+        '|%3FHas_vehicle_type' +
+        '|%3FHas_shuttle_length' +
         '|%3FHas_best_season_parsed' + //remove this, included in 'has condition summary' 
 
         '|limit=' + loadLimit;
@@ -82,6 +84,26 @@ function filterMarkers(refreshTable) {
             var permits = filters["permits"];
             if (!!permits && permits.length > 0 && !(permits.includes(p.permits)))
                 display = false;
+
+            //shuttle
+            var shuttle = filters["shuttle"];
+            if (!!shuttle && shuttle.length > 0) {
+                if (shuttle.includes("No Shuttle") && (p.shuttleLength != undefined && (p.shuttleLength.value > 0 && p.shuttleLength.value !== 0.5))) //Luca sets it to 0.5 for optional shuttles
+                    display = false;
+                if (shuttle.includes("Shuttle") && (p.shuttleLength == undefined || p.shuttleLength.value === 0))
+                    display = false;
+                if (shuttle.includes("No Shuttle") && shuttle.includes("Shuttle")) display = true;
+            }
+
+            //vehicle
+            var vehicle = filters["vehicle"];
+            if (!!vehicle && vehicle.length > 0) {
+                if (vehicle.includes("2wd") && (p.vehicleType != undefined && p.vehicleType !== "Passenger"))
+                    display = false;
+                if (vehicle.includes("4wd") && (p.vehicleType == undefined || p.vehicleType === "Passenger"))
+                    display = false;
+                if (vehicle.includes("2wd") && vehicle.includes("4wd")) display = true;
+            }
 
             //best season
             var bestSeason = filters["best_month"];
