@@ -88,21 +88,24 @@ function filterMarkers(refreshTable) {
             //shuttle
             var shuttle = filters["shuttle"];
             if (!!shuttle && shuttle.length > 0) {
-                if (shuttle.includes("No Shuttle") && (p.shuttleLength != undefined && (p.shuttleLength.value > 0 && p.shuttleLength.value !== 0.5))) //Luca sets it to 0.5 for optional shuttles
-                    display = false;
-                if (shuttle.includes("Shuttle") && (p.shuttleLength == undefined || p.shuttleLength.value === 0))
-                    display = false;
-                if (shuttle.includes("No Shuttle") && shuttle.includes("Shuttle")) display = true;
+                if (!(shuttle.includes("No Shuttle") && shuttle.includes("Shuttle"))) { //if filter includes both, don't run check
+                    if (shuttle.includes("No Shuttle") &&
+                        (p.shuttleLength != undefined && (p.shuttleLength.value > 0 && p.shuttleLength.value !== 0.5))) //Luca sets it to 0.5 for optional shuttles
+                        display = false;
+                    if (shuttle.includes("Shuttle") && (p.shuttleLength == undefined || p.shuttleLength.value === 0))
+                        display = false;
+                }
             }
 
-            //vehicle
+            //vehicle type
             var vehicle = filters["vehicle"];
             if (!!vehicle && vehicle.length > 0) {
-                if (vehicle.includes("2wd") && (p.vehicleType != undefined && p.vehicleType !== "Passenger"))
-                    display = false;
-                if (vehicle.includes("4wd") && (p.vehicleType == undefined || p.vehicleType === "Passenger"))
-                    display = false;
-                if (vehicle.includes("2wd") && vehicle.includes("4wd")) display = true;
+                if (!(vehicle.includes("2wd") && vehicle.includes("4wd"))) { //if filter includes both, don't run check
+                    if (vehicle.includes("2wd") && (p.vehicleType != undefined && p.vehicleType !== "Passenger"))
+                        display = false;
+                    if (vehicle.includes("4wd") && (p.vehicleType == undefined || p.vehicleType === "Passenger"))
+                        display = false;
+                }
             }
 
             //best season
