@@ -321,8 +321,8 @@ for (var rd=0; rd<refalt.length && !refcnt; ++rd)
  //
  // USGS 
  //
- var usgsurl = [    
-    "https://waterdata.usgs.gov/nwis/nwisman/?site_no=%id", 
+ var usgsurl = [
+    "https://waterdata.usgs.gov/monitoring-location/%id", 
     "https://nwis.waterdata.usgs.gov/nwis/uv/?format=img_stats&site_no=%id&begin_date=%YYYY1%MM1%DD1&end_date=%YYYY2%MM2%DD2", 
     "https://waterdata.usgs.gov/nwis/dv/?format=img_stats&site_no=%id&begin_date=%YYYY1%MM1%DD1&end_date=%YYYY2%MM2%DD2", 
     //"https://nwis.waterdata.usgs.gov/nwis/uv?cb_00060=on&format=gif_mult_parms&site_no="+id+"&referred_module=sw&period=7";

@@ -6,7 +6,7 @@
       "lib/waterflow.js"
     ],
     "minify": {
-      "enabled": true,
+      "enabled": false,
       "commentMode": "all"
     }
   }
