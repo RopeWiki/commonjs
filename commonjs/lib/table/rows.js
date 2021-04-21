@@ -74,13 +74,16 @@ function getStandardTableHeaderRow() {
 }
 
 function getStandardTableRow(item) {
-
     const Location =
-        '<td><table><tbody><tr><td rowspan="2" class="pinmap" id="[LocationName]">' +
-        '<img src="[Star Icon png]" id="[LocationName]" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick="pinmap(this.id)"></td>' +
-        '<td class="loc"><a href="/[LocationNameLink]" title="[LocationName]">[LocationName]</a></td></tr>' +
-        '<tr><td class="reg"><strong><a href="/[RegionLink]" title="[Region]">[Region]</a></strong> [ParentRegionLinks]' +
-        '</td></tr></tbody></table></td>';
+        '<td><table><tbody>' +
+            '<tr>' +
+                '<td rowspan="2" class="pinmap" id="[LocationName]"><img src="[Star Icon png]" id="[LocationName]" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick="pinmap(this.id)"></td>' +
+                '<td class="loc"><a href="/[LocationNameLink]" title="[LocationName]">[LocationName]</a></td>' +
+            '</tr>' +
+            '<tr>' +
+                '<td class="reg"><strong><a href="/[RegionLink]" title="[Region]">[Region]</a></strong> [ParentRegionLinks]</td>' +
+            '</tr>' +
+        '</tbody></table></td>';
 
     const Stars =
         '<td class="[StarsClassname]" title="[StarsTitle]">[StarsIcons]</td >';
