@@ -139,17 +139,34 @@ function loadInteractiveMap() {
     var coords;
 
     // set marker (if any) from "kmlmarker"
+    var pageName = mw.config.get("wgPageName");
     var kmlmarker = document.getElementById("kmlmarker");
     if (kmlmarker != null) {
-        console.log('kmlmarker');
         coords = kmlmarker.innerHTML.split(",");
         if (coords != null && coords.length > 1) {
-            kmlmap = "kmlmarker";
-            var pageName = mw.config.get("wgPageName");
-            setPrimaryMarker(pageName, coords[0], coords[1], 0);
+            kmlmap = "kmlmarker";            
+            setPrimaryMarker(pageName, coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/ms/icons/red-dot.png');
             map.setZoom(13);
             var latlng = new google.maps.LatLng(coords[0], coords[1]);
             map.panTo(latlng);
+        }
+    }
+
+    // set marker (if any) from "kmlmarkerparking"
+    var kmlmarkerparking = document.getElementById("kmlmarkerparking");
+    if (kmlmarkerparking != null) {
+        coords = kmlmarkerparking.innerHTML.split(",");
+        if (coords != null && coords.length > 1) {
+            setPrimaryMarker(pageName, coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/kml/paddle/P.png');
+        }
+    }
+
+    // set marker (if any) from "kmlmarkershuttle"
+    var kmlmarkershuttle = document.getElementById("kmlmarkershuttle");
+    if (kmlmarkershuttle != null) {
+        coords = kmlmarkershuttle.innerHTML.split(",");
+        if (coords != null && coords.length > 1) {
+            setPrimaryMarker(pageName, coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/kml/paddle/S.png');
         }
     }
 

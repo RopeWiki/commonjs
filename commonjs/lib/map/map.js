@@ -785,7 +785,7 @@ function nonamespace(label) {
     return label.replace("Events:", "");
 }
 
-function setPrimaryMarker(name, lat, lng, zIndex) {
+function setPrimaryMarker(name, lat, lng, zIndex, iconurl) {
     var titleStyle = 'style = "font-family: arial, sans-serif;font-size: medium;font-weight:bold;"';
     var html = "<div " + titleStyle + ">" + name.replaceAll("_", " ") + "</div>";
     html += "<br/>";
@@ -796,6 +796,7 @@ function setPrimaryMarker(name, lat, lng, zIndex) {
     var marker = new google.maps.Marker({
         position: latLng,
         map: map,
+        icon: { url: iconurl, scaledSize: new google.maps.Size(40, 40)},
         infowindow: new google.maps.InfoWindow({ content: html }),
         optimized: false,
         zIndex: zIndex

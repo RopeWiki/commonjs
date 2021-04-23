@@ -67,7 +67,8 @@ function validateIconUrl(href) {
 
         // replace known bad icon urls:
 
-        //google maps icons list: 
+        //google maps icons list:
+        //https://sites.google.com/site/gmapsdevelopment/
         //http://kml4earth.appspot.com/icons.html
         //http://miftyisbored.com/a-complete-list-of-standard-google-maps-marker-icons/
 
