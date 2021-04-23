@@ -157,7 +157,7 @@ function loadInteractiveMap() {
     if (kmlmarkerparking != null) {
         coords = kmlmarkerparking.innerHTML.split(",");
         if (coords != null && coords.length > 1) {
-            setPrimaryMarker(pageName, coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/kml/paddle/P.png');
+            setPrimaryMarker(pageName + '<br>parking', coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/kml/paddle/P.png');
         }
     }
 
@@ -166,7 +166,7 @@ function loadInteractiveMap() {
     if (kmlmarkershuttle != null) {
         coords = kmlmarkershuttle.innerHTML.split(",");
         if (coords != null && coords.length > 1) {
-            setPrimaryMarker(pageName, coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/kml/paddle/S.png');
+            setPrimaryMarker(pageName + '<br>shuttle parking', coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/kml/paddle/S.png');
         }
     }
 
