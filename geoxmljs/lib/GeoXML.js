@@ -3035,7 +3035,11 @@ GeoXml.prototype.makeIcon = function (currstyle, href, id, myscale, hotspot) {
 
     scale *= globalIconScaleFactor;
 
-    scaledSize = new google.maps.Size(iconsize * scale, iconsize * scale);
+    var scaledSizeRaw = (!id.startsWith("parking"))
+        ? iconsize * scale
+        : parkingiconsize;
+
+    scaledSize = new google.maps.Size(scaledSizeRaw, scaledSizeRaw);
 
     //anchor is set based on the final 'scale size' of the image. if the anchorscale is set to 'fraction', then we can set the
     //anchor now. but if it is set to 'pixels', we can't set it until we know the size of the image, which needs to be an async call

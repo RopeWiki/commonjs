@@ -1,6 +1,7 @@
 
 var mapid = '#mapbox';
 var iconsize = 16;
+var parkingiconsize = 40;
 var globalIconScaleFactor = 1.5; //global override to make waypoint icons a bit bigger
 var checkbox = false;
 var zI = 0;
