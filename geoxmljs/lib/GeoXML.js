@@ -327,7 +327,7 @@ GeoXml.addSidebar = function (myvar, type, name, e, graphic, ckd, i, snippet) {
     case "polyline":
         h = '<li id="' + mid + '" onmouseout="' + myvar + '.overlayman.markers[' + e + '].onOut(null)" onmouseover="' + myvar + '.overlayman.markers[' + e + '].onOver(null)" >' +
             (checkbox ? '<input id="' + myvar + '' + e + 'CB" type="checkbox" ' + check + ' onclick="' + myvar + '.showHide(null,this.checked,' + i + ')">' : '') +
-            '<span style="margin-top:6px;"><a href="javascript:void(0);" onclick="' + myvar + '.onClick(' + e + ');">' + graphic + '&nbsp;' + name + '</a></span>' + snippet + '</li>';
+            '<span><a href="javascript:void(0);" onclick="' + myvar + '.onClick(' + e + ');">' + graphic + name + '</a></span>' + snippet + '</li>';
         break;
     }
 
@@ -797,7 +797,7 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
     var parm;
     if (this.opts.sidebarid) {
         var n = this.overlayman.markers.length;
-        var blob = "&nbsp;<img style=\"vertical-align:text-top;padding:0;margin:0;height:" + this.sidebariconheight + "px;\"  border=\"0\" src=\"" + href + "\">&nbsp;";
+        var blob = '<img class="legend-icon" border="0" src="' + href + '">';
         if (this.sidebarsnippet) {
             var desc2 = GeoXml.stripHTML(desc);
             desc2 = desc2.substring(0, 40);
