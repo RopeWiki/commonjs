@@ -226,6 +226,20 @@ function getOverallDisplay(time, length) {
 function getTableInfoSummaryDisplay(summary) {
     if (summary == undefined || !summary) return "";
 
+    //remove superfluous icon clutter. just show 4wd or shuttle
+    var newSummary = "";
+    if (summary.includes('id="vx4"')) newSummary += '<hr id="vx4">';
+    if (summary.includes('id="vxc"')) newSummary += '<hr id="vxc">';
+    if (summary.includes('id="vxw"')) newSummary += '<hr id="vxw">';
+    //var div = document.createElement('div'); <-this is if we also want to show best season info
+    //div.innerHTML = summary;
+    //var season = div.getElementsByClassName('monthv');
+    //if (season[0]) {
+    //    season[0].title = "Best season: " + season[0].title;
+    //    newSummary += season[0].outerHTML;
+    //}
+    summary = newSummary;
+
     //add tooltips to icons
     summary = summary.replace('id="vxx"', 'id="vxx" title="Precise coordinates unknown"');
     summary = summary.replace('id="vxi"', 'id="vxi" title="Detailed info on Ropewiki"');
@@ -279,6 +293,28 @@ function getTableInfoSummaryDisplay(summary) {
 
 function getTableConditionDisplay(summary) {
     if (summary == undefined || !summary) return "";
+
+    //remove superfluous icon clutter. just show smiley face and extra precautions
+    var div = document.createElement('div');
+    div.innerHTML = summary;
+    var icons = div.getElementsByClassName('cicons');
+    for (var i = 0; i < icons.length; ++i) {
+        if (icons[i].nodeName !== "SPAN") continue;
+
+        var iconsSummary = icons[i].innerHTML;
+
+        var newSummary = "";
+        var index = 0;
+
+        index = iconsSummary.indexOf('id="cs');
+        if (index >= 0) newSummary += '<hr class="cicons" ' + iconsSummary.substr(index, 8) + '>';
+
+        index = iconsSummary.indexOf('id="cd');
+        if (index >= 0) newSummary += '<hr class="cicons" ' + iconsSummary.substr(index, 8) + '>';
+
+        icons[i].innerHTML = newSummary;
+    }
+    summary = div.innerHTML;
 
     //add tooltips to icons
     summary = summary.replace('id="cs0"', 'id="cs0" title="The conditions are not from a descent of the canyon"');
