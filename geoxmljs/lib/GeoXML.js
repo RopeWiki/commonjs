@@ -3035,7 +3035,7 @@ GeoXml.prototype.makeIcon = function (currstyle, href, id, myscale, hotspot) {
 
     scale *= globalIconScaleFactor;
 
-    var scaledSizeRaw = (!id.startsWith("parking"))
+    var scaledSizeRaw = (id === undefined || id === null || !id.startsWith("parking"))
         ? iconsize * scale
         : parkingiconsize;
 
