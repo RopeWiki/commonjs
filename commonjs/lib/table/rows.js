@@ -26,41 +26,33 @@ function assembleTableRow(item) {
 function getStandardTableHeaderRow() {    
     const Header =
         '<th class="rwHdr">' +
-            '<div class="gmnoprint toption locateicon"">↓ Click on icon to locate on map</div>' +
+            '<div class="gmnoprint toption locateicon">↓ Click on icon to locate on map</div>' +
             '<span class="rwText">Location Name</span>' +
             '<span id="sort-id" title="Sort by name of location" class="rwSortIcon gmnoprint notranslate"></span>' +
             '<span id="sort-region" title="Sort by name of region" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
         '<th class="rwHdr">' +
-            '<div id="starrate" class="schk gmnoprint toption notranslate"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My ratings</label></div>' +
+            '<div id="starrate" class="schk gmnoprint toption notranslate" title="Show star ratings you have given"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My ratings</label></div>' +
             '<span id="sort-rankRating" title="Sort by combined Quality & Popularity formula" class="rwSortIcon gmnoprint notranslate"></span>' +
             '<span class="rwText"><a href="/StarRank" title="StarRank">Quality</a></span>' +
             '<span id="sort-totalRating" title="Sort by raw user rating" class="rwSortIcon gmnoprint notranslate"></span>' +
             '<span id="sort-totalCounter" title="Sort by number of ratings" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
         '<th class="rwHdr">' +
-            '<div class="fchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French rating</label></div>' +
-            '<span class="rwText"><a href="/Rating" title="Rating">Rating</a></span>' +
-            '<span id="sort-technicalRating" title="Sort by technical rating" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '<div class="fchk gmnoprint toption notranslate" title="Use French grading system"><label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()">French</label></div>' +
+            '<span class="rwText"><a href="/Rating" title="Difficulty rating">Difficulty</a></span>' +
+            '<span id="sort-technicalRating" title="Sort by technical difficulty" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
         '<th class="rwHdr">' +
+            '<div class="uchk gmnoprint toption notranslate" title="Show metric units"><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></div>' +
             '<span class="rwText ctranslate">Raps</span>' +
             '<span id="sort-rappelsNum" title="Sort by number of rappels" class="rwSortIcon gmnoprint notranslate"></span>' +
             '<span id="sort-longestRappel" title="Sort by highest rappel" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
         '<th class="rwHdr">' +
-            '<span class="rwText ctranslate">Time</span>' +
-            '<span id="sort-averageTime" title="Sort by typical time" class="rwSortIcon gmnoprint notranslate"></span>' +
-        '</th>' +
-        '<th class="rwHdr">' +
-            '<div class="uchk gmnoprint toption notranslate""><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></div>' +
-            '<span class="rwText ctranslate">Hike</span>' +
-            '<span id="sort-hikeLength" title="Sort by length of hike" class="rwSortIcon gmnoprint notranslate"></span>' +
-        '</th>' +
-        '<th class="rwHdr">' +
-            '<span class="rwText ctranslate">Descent</span>' +
-            '<span id="sort-descentLength" title="Sort by length of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '<span id="sort-descentDepth" title="Sort by depth of descent" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '<span class="rwText ctranslate">Overall</span>' +
+            '<span id="sort-averageTime" title="Sort by overall time" class="rwSortIcon gmnoprint notranslate"></span>' +
+            '<span id="sort-hikeLength" title="Sort by overall length" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
         '<th class="rwHdr">' +
             '<span class="rwTextNoSort"><a href="/Extra_info" title="Extra info">Info</a></span>' +
@@ -94,14 +86,8 @@ function getStandardTableRow(item) {
     const Raps =
         '<td class="urap">[Rap display]</td>';
 
-    const Time =
-        '<td class="tablestat-single utime">[Time]</td>';
-    
-    const HikeLength =
-        '<td class="tablestat-single umi">[Hike]</td>';
-    
-    const Descent =
-        '<td>[Descent display]</td>';
+    const Overall =
+        '<td>[Overall display]</td>';
     
     const Info =
         '<td class="itable">[InfoSummary]</td>';
@@ -129,14 +115,8 @@ function getStandardTableRow(item) {
     var raps = Raps
         .replace(/\[Rap display]/, getTableRaps(item.rappels, item.longestRappel));
 
-    var time = Time
-        .replace(/\[Time]/, !!item.typicalTime ? item.typicalTime : "");
-
-    var hikeLength = HikeLength
-        .replace(/\[Hike]/, getTableValueUnit(item.hikeLength));
-
-    var descent = Descent
-        .replace(/\[Descent display]/, getDescentDisplay(item.descentLength, item.descentDepth));
+    var overall = Overall
+        .replace(/\[Overall display]/, getOverallDisplay(item.typicalTime, item.hikeLength));
 
     var info = Info
         .replace(/\[InfoSummary]/, getTableInfoSummaryDisplay(item.infoSummary));
@@ -149,9 +129,7 @@ function getStandardTableRow(item) {
         quality +
         technicalRating +
         raps +
-        time +
-        hikeLength +
-        descent +
+        overall +
         info +
         conditions;
 
@@ -228,21 +206,21 @@ function getTableRaps(rapSummary, longestRap) {
     return rapSummaryDisplay + longestRapDisplay;
 }
 
-function getDescentDisplay(length, depth) {
+function getOverallDisplay(time, length) {
     
+    var hasTime = (!!time);
     var hasLength = (!!length);
-    var hasDepth = (!!depth);
 
-    var lengthDisplay = '<span class="tablestat descent-length umi">' +
-        ((hasLength) ? '\u27F7' + getTableValueUnit(length) : "") +
-        ((hasLength && hasDepth) ? "," : "&nbsp;") +
+    var timeDisplay = '<span class="tablestat overall-time utime">' +
+        ((hasTime) ? time : "") +
+        ((hasTime && hasLength) ? "," : "&nbsp;") +
         '</span>';
 
-    var depthDisplay = '<span class="tablestat descent-depth umi">' +
-        ((hasDepth) ? '\u2193' + getTableValueUnit(depth) : "") +
+    var lengthDisplay = '<span class="tablestat overall-length umi">' +
+        ((hasLength) ? getTableValueUnit(length) : "") +
         '</span>';
     
-    return lengthDisplay + depthDisplay;
+    return timeDisplay + lengthDisplay;
 }
 
 function getTableInfoSummaryDisplay(summary) {
