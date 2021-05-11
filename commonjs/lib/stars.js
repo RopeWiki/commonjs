@@ -13,7 +13,7 @@ function getStarFraction(num) {
 }
 
 function getStars(num, numRatings, size) {
-    var line = '<span style="white-space: nowrap;">';
+    var line = '<span class="tablestars">';
     for (var i = 0; i < 5; ++i) {
         line += '<img width="' + size + 'px" height="' + size + 'px" src="' + STARLIST[getStarFraction(num)] + '"/>';
         num -= 1;
@@ -25,7 +25,7 @@ function getStars(num, numRatings, size) {
 }
 
 function getStarsVote(num, unum, ratings) {
-    var line = '<span class="starRate" style="white-space: nowrap;">';
+    var line = '<span class="tablestars starRate">';
     var text = ['Delete', 'Not worth doing', 'Worthwhile', 'Ok', 'Great', 'Among the best'];
     var i;
     if (!document.getElementById('curuser'))

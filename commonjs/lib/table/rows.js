@@ -34,7 +34,7 @@ function getStandardTableHeaderRow() {
         '<th class="rwHdr">' +
             '<div id="starrate" class="schk gmnoprint toption notranslate" title="Show star ratings you have given"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">My ratings</label></div>' +
             '<span id="sort-rankRating" title="Sort by combined Quality & Popularity formula" class="rwSortIcon gmnoprint notranslate"></span>' +
-            '<span class="rwText"><a href="/StarRank" title="StarRank">Quality</a></span>' +
+            '<span class="rwText"><a href="/StarRank" title="Star ratings">Quality</a></span>' +
             '<span id="sort-totalRating" title="Sort by raw user rating" class="rwSortIcon gmnoprint notranslate"></span>' +
             '<span id="sort-totalCounter" title="Sort by number of ratings" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
@@ -200,10 +200,10 @@ function getTableRaps(rapSummary, longestRap) {
         '</span>';
 
     var longestRapDisplay = '<span class="tablestat rap-longest uft">' +
-        ((hasLongest) ? '\u21A8' + getTableValueUnit(longestRap) : "") +
+        ((hasLongest) ? '\u21A8' + getTableValueUnit(longestRap) : "&nbsp;") +
         '</span>';
 
-    return rapSummaryDisplay + longestRapDisplay;
+    return '<div class="tablestat dual-stat">' + rapSummaryDisplay + longestRapDisplay + '</div>';
 }
 
 function getOverallDisplay(time, length) {
@@ -217,10 +217,10 @@ function getOverallDisplay(time, length) {
         '</span>';
 
     var lengthDisplay = '<span class="tablestat overall-length umi">' +
-        ((hasLength) ? getTableValueUnit(length) : "") +
+        ((hasLength) ? getTableValueUnit(length) : "&nbsp;") +
         '</span>';
-    
-    return timeDisplay + lengthDisplay;
+
+    return '<div class="tablestat dual-stat">' + timeDisplay + lengthDisplay + '</div>';
 }
 
 function getTableInfoSummaryDisplay(summary) {
@@ -228,6 +228,7 @@ function getTableInfoSummaryDisplay(summary) {
 
     //remove superfluous icon clutter. just show 4wd or shuttle
     var newSummary = "";
+    if (summary.includes('id="vxH"')) newSummary += '<hr id="vxH">';
     if (summary.includes('id="vx4"')) newSummary += '<hr id="vx4">';
     if (summary.includes('id="vxc"')) newSummary += '<hr id="vxc">';
     if (summary.includes('id="vxw"')) newSummary += '<hr id="vxw">';
@@ -250,6 +251,7 @@ function getTableInfoSummaryDisplay(summary) {
     summary = summary.replace('id="vxd"', 'id="vxd" title="Has a PDF"');
     summary = summary.replace('id="vxp"', 'id="vxp" title="Has main photo"');
     summary = summary.replace('id="vx2"', 'id="vx2" title="Passable with normal car"');
+    summary = summary.replace('id="vxH"', 'id="vxH" title="Requires High Clearance vehicle"');
     summary = summary.replace('id="vx4"', 'id="vx4" title="Requires 4wd vehicle"');
     summary = summary.replace('id="vxc"', 'id="vxc" title="Requires a shuttle"');
     summary = summary.replace('id="vxw"', 'id="vxw" title="Requires a watercraft"');
