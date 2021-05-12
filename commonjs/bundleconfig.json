@@ -50,7 +50,7 @@
       "lib/zzz_onload.js"
     ],
     "minify": {
-      "enabled": false,
+      "enabled": true,
       "commentMode": "all"
     }
   }
