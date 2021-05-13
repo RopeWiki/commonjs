@@ -309,7 +309,7 @@ function waterflow() {
         // USGS 
         //
         var usgsurl = [
-            "https://waterdata.usgs.gov/monitoring-location/%id",
+            "https://waterdata.usgs.gov/monitoring-location/%id/#parameterCode=00060",
             "https://nwis.waterdata.usgs.gov/nwis/uv/?format=img_stats&site_no=%id&begin_date=%YYYY1%MM1%DD1&end_date=%YYYY2%MM2%DD2",
             "https://waterdata.usgs.gov/nwis/dv/?format=img_stats&site_no=%id&begin_date=%YYYY1%MM1%DD1&end_date=%YYYY2%MM2%DD2"
         ];
