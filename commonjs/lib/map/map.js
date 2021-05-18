@@ -178,10 +178,10 @@ function loadlist(list, fitbounds) {
                 permitStatusString += "<br>*permit required*";
                 break;
             case "Restricted":
-                permitStatusString += "<br>*access restricted*";
+                permitStatusString += "<br>*access is restricted*";
                 break;
             case "Closed":
-                permitStatusString += "<br>*closed to access*";
+                permitStatusString += "<br>*closed to entry*";
                 break;
             }
         }

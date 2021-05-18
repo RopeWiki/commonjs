@@ -70,7 +70,7 @@ function getStandardTableRow(item) {
         '<td><table><tbody>' +
             '<tr>' +
                 '<td rowspan="2" class="pinmap" id="[LocationName]"><img src="[Star Icon png]" id="[LocationName]" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick="pinmap(this.id)"></td>' +
-                '<td class="loc"><a href="/[LocationNameLink]" title="[LocationName]">[LocationName]</a></td>' +
+                '<td class="loc">[PermitStatusIcon]<a href="/[LocationNameLink]" title="[LocationName]">[LocationName]</a></td>' +
             '</tr>' +
             '<tr>' +
                 '<td class="reg"><strong><a href="/[RegionLink]" title="[Region]">[Region]</a></strong> [ParentRegionLinks]</td>' +
@@ -99,6 +99,7 @@ function getStandardTableRow(item) {
         .replace(/\[LocationName]/g, item.id)
         .replace(/\[LocationNameLink]/g, linkify(item.id))
         .replace(/\[Star Icon png]/, item.icon)
+        .replace(/\[PermitStatusIcon]/, getTablePermitStatusIcon(item.permits))
         .replace(/\[Region]/g, item.region)
         .replace(/\[RegionLink]/, linkify(item.region))
         .replace(/\[ParentRegionLinks]/, getTableParentRegionLinks(item.parentRegions));
@@ -152,6 +153,34 @@ function addNewItemsToTable(list) {
     }
 
     filterMarkers();
+}
+
+function getTablePermitStatusIcon(permitStatus) {
+    var img = "";
+
+    if (!!permitStatus) {
+        var iconUrl = "", tooltipText = "";
+
+        switch (permitStatus) {
+        case "Yes":
+            iconUrl = ICON_PERMIT_YES;
+            tooltipText = "Permit required";
+            break;
+        case "Restricted":
+            iconUrl = ICON_RESTRICTED;
+            tooltipText = "Access is restricted";
+            break;
+        case "Closed":
+            iconUrl = ICON_CLOSED;
+            tooltipText = "Closed to entry";
+            break;
+        }
+
+        if (iconUrl !== "")
+            img = '<img src="' + iconUrl + '" class="permiticon" title="' + tooltipText + '">';
+    }
+
+    return img;
 }
 
 function getTableParentRegionLinks(regions) {
