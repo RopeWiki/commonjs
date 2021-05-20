@@ -96,7 +96,7 @@ function getStandardTableRow(item) {
         '<td class="ctable">[ConditionsSummary]</td>';
     
     var location = Location
-        .replace(/\[LocationName]/g, item.id)
+        .replace(/\[LocationName]/g, getLocationName(item))
         .replace(/\[LocationNameLink]/g, linkify(item.id))
         .replace(/\[Star Icon png]/, item.icon)
         .replace(/\[PermitStatusIcon]/, getTablePermitStatusIcon(item.permits))
@@ -153,6 +153,12 @@ function addNewItemsToTable(list) {
     }
 
     filterMarkers();
+}
+
+function getLocationName(item) {
+    //remove the region if it's in the table row as it is redundant
+    var regionParenthetical = ' (' + item.region + ')';
+    return item.id.replace(regionParenthetical, '');
 }
 
 function getTablePermitStatusIcon(permitStatus) {
