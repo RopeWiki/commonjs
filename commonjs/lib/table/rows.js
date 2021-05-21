@@ -157,8 +157,16 @@ function addNewItemsToTable(list) {
 
 function getLocationName(item) {
     //remove the region if it's in the table row as it is redundant
-    var regionParenthetical = ' (' + item.region + ')';
-    return item.id.replace(regionParenthetical, '');
+    var parsedName = item.id;
+    var start = parsedName.indexOf(' (');
+    var end = parsedName.indexOf(')');
+    if (start > 0 && end > 0) {
+        var extractedRegion = parsedName.substring(start + 2, end);
+        if (item.regionList.includes(extractedRegion))
+            parsedName = parsedName.replace(' (' + extractedRegion + ')', '');
+    }
+
+    return parsedName;
 }
 
 function getTablePermitStatusIcon(permitStatus) {

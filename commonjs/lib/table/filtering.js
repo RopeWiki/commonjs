@@ -8,9 +8,8 @@ function getLocationParameters(loadLimit) {
         '|%3FHas_location_class' +
         '|%3FHas_KML_file' +
         '|%3FRequires_permits' +
-        '|%3FLocated_in_region' + //remove this, included in 'has info major region'
-
-        '|%3FHas_info_major_region' +
+        '|%3FHas_info_regions' +
+        '|%3FHas_info_major_region' + //need to do this as well because no way to know which is a major region
         '|%3FHas_rank_rating' + //weighted rating taking into consideration the number of votes
         '|%3FHas_total_rating' +
         '|%3FHas_total_counter' +

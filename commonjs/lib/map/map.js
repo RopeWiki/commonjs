@@ -375,9 +375,15 @@ function getrwlist(data) {
                 v = item.printouts["Has KML file"];
                 if (v && v.length > 0)
                     obj.kmlfile = v[0];
-                v = item.printouts["Located in region"];
-                if (v && v.length > 0)
-                    obj.region = v[0].fulltext;
+                v = item.printouts["Has info regions"];
+                if (v && v.length > 0) {
+                    obj.regionList = v[0].split(';');
+                    obj.region = obj.regionList[obj.regionList.length - 1];
+                }
+                v = item.printouts["Has info major region"];
+                if (v && v.length > 0) {
+                    obj.parentRegions = parseMajorRegion(v[0]);
+                }
                 v = item.printouts["Requires permits"];
                 if (v && v.length > 0) {
                     obj.permits = v[0];
@@ -386,11 +392,6 @@ function getrwlist(data) {
                 v = item.printouts["Has best season parsed"];
                 if (v && v.length > 0)
                     obj.bestMonths = parseBestMonths(v[0].fulltext);
-
-                v = item.printouts["Has info major region"];
-                if (v && v.length > 0) {
-                    obj.parentRegions = parseMajorRegion(v[0]);
-                }
                 v = item.printouts["Has info typical time"];
                 if (v && v.length > 0) {
                     obj.typicalTime = v[0];
@@ -980,7 +981,7 @@ function parseTechnicalRating(description) {
 }
 
 function parseMajorRegion(majorRegion) {
-    const regex = /\|(.*?)\]\]]*/g; //matches the pattern: | match ]]
+    const regex = /\|(.*?)\]\]]*/g; //matches the pattern: | match ]]  ex: [[Sierra National Forest]] ([[:California|California]])
     
     var regions = [];
     var match = regex.exec(majorRegion);
