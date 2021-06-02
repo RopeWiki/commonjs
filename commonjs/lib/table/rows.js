@@ -73,7 +73,7 @@ function getStandardTableRow(item) {
                 '<td class="loc">[PermitStatusIcon]<a href="/[LocationNameLink]" title="[LocationName]">[LocationName]</a></td>' +
             '</tr>' +
             '<tr>' +
-                '<td class="reg"><strong><a href="/[RegionLink]" title="[Region]">[Region]</a></strong> [ParentRegionLinks]</td>' +
+                '<td class="reg"><strong>[RegionLink]</strong> [ParentRegionLinks]</td>' +
             '</tr>' +
         '</tbody></table></td>';
 
@@ -100,8 +100,7 @@ function getStandardTableRow(item) {
         .replace(/\[LocationNameLink]/g, linkify(item.id))
         .replace(/\[Star Icon png]/, item.icon)
         .replace(/\[PermitStatusIcon]/, getTablePermitStatusIcon(item.permits))
-        .replace(/\[Region]/g, item.region)
-        .replace(/\[RegionLink]/, linkify(item.region))
+        .replace(/\[RegionLink]/g, getTableRegionLink(item.region))
         .replace(/\[ParentRegionLinks]/, getTableParentRegionLinks(item.parentRegions));
 
     var starDisplay = getUserStarDisplay(item.id, item.totalRating, item.userStars, item.totalCounter, 16);
@@ -195,6 +194,14 @@ function getTablePermitStatusIcon(permitStatus) {
     }
 
     return img;
+}
+
+function getTableRegionLink(region) {
+    if (!region) return "no region specified";
+
+    return '<a href="/[RegionLink]" title="[Region]">[Region]</a>'
+        .replace(/\[Region]/g, region)
+        .replace(/\[RegionLink]/, linkify(region));
 }
 
 function getTableParentRegionLinks(regions) {

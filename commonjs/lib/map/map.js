@@ -676,6 +676,8 @@ function setHeadingTextForRegion() {
                     ? parentRgn[0]
                     : null;
 
+                if (sub == undefined && parent == undefined) continue;
+
                 if (parent === null) { //the subregion is actually the parent in this case
                     parent = sub;
                     sub = null;
