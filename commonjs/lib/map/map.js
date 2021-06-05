@@ -377,8 +377,9 @@ function getrwlist(data) {
                     obj.kmlfile = v[0];
                 v = item.printouts["Has info regions"];
                 if (v && v.length > 0) {
-                    obj.regionList = v[0].split(';');
+                    obj.regionList = v[0].split(/[;/]+/); //split on both ; and /
                     obj.region = obj.regionList[obj.regionList.length - 1];
+                    obj.nameWithoutRegion = parseLocationNameWithoutRegion(obj);
                 }
                 v = item.printouts["Has info major region"];
                 if (v && v.length > 0) {
@@ -832,6 +833,34 @@ function centermap() {
 //    const Q = 2.8;
 //    return 2.5 * item.totalRating / 5 + 2.5 * (1 - Math.pow(2.71828183, (-1 * item.totalCounter / Q)));
 //}
+
+function parseLocationNameWithoutRegion(item) {
+    //remove the region if it's in the table row as it is redundant
+    var parsedName = item.id;
+    var start, end = 0;
+
+    while (true) {
+        start = parsedName.indexOf(' (', end + 1);
+        end = parsedName.indexOf(')', start);
+        if (start < 0 || end < 0) break;
+
+        //split and reassemble with any items that are not in the region list
+        var newParenthetical = "";
+        var extractedRegions = parsedName.substring(start + 2, end).split(',').map(function (item) { return item.trim(); });
+        for (var i = 0; i < extractedRegions.length; ++i) {
+            if (!item.regionList.includes(extractedRegions[i]) &&
+                !item.regionList.includes(extractedRegions[i] + " National Park")) { //special case, i.e. Death Valley because it's such a long name
+                if (i > 0) newParenthetical += ', ';
+                newParenthetical += extractedRegions[i]; //not a region so add it
+            }
+        }
+        if (newParenthetical !== "") newParenthetical = ' (' + newParenthetical + ')';
+        parsedName = parsedName.substring(0, start) + newParenthetical + parsedName.substring(end + 1);
+        end = end + newParenthetical.length - (end - start + 1); //adjust for new length of parenthetical
+    }
+
+    return parsedName;
+}
 
 function parseBestMonths(bestSeasonRaw) {
     var parsed = bestSeasonRaw.replace(/,/g, '');
