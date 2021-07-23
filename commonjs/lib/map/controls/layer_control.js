@@ -26,8 +26,11 @@ function initMapLayerControl() {
             case google.maps.MapTypeId.HYBRID:
                 addLayerHybrid(entries);
                 break;
-            case "topousa":
-                addLayerTopoUsa(entries);
+            case "topousa1":
+                addLayerTopoUsa1(entries);
+                break;
+            case "topousa2":
+                addLayerTopoUsa2(entries);
                 break;
             case "topoworld":
                 addLayerTopoWorld(entries);
@@ -107,12 +110,22 @@ function addLayerHybrid(entries) {
     // return "https://mt.google.com/vt/lyrs=y&hl=en&x=" + slippyClip(p.x, z) + "&y=" + slippyClip(p.y, z) + "&z=" + z;
 }
 
-function addLayerTopoUsa(entries) {
+function addLayerTopoUsa1(entries) {
     var options = {
         basename: mapLayerControlBasename,
-        type: "topousa",
-        text: "TopoUSA",
-        tooltip: "Show USA specific topo"
+        type: "topousa1",
+        text: "TopoUSA 1",
+        tooltip: "Show USGS paper topo maps"
+    }
+    entries.push(new mapLayerDropdownItem(options));
+}
+
+function addLayerTopoUsa2(entries) {
+    var options = {
+        basename: mapLayerControlBasename,
+        type: "topousa2",
+        text: "TopoUSA 2",
+        tooltip: "Show USGS vector topo maps"
     }
     entries.push(new mapLayerDropdownItem(options));
 }

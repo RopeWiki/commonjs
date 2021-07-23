@@ -15,108 +15,132 @@ function SetupMapLayers() {
 
     for (var i = 0; i < mapLayerIds.length; i++) {
         switch (mapLayerIds[i]) {
-        case google.maps.MapTypeId.TERRAIN:
-            credits[google.maps.MapTypeId.TERRAIN] = " ";
-            break;
+            case google.maps.MapTypeId.TERRAIN:
+                credits[google.maps.MapTypeId.TERRAIN] = " ";
+                break;
 
-        case google.maps.MapTypeId.ROADMAP:
-            credits[google.maps.MapTypeId.ROADMAP] = " ";
-            break;
+            case google.maps.MapTypeId.ROADMAP:
+                credits[google.maps.MapTypeId.ROADMAP] = " ";
+                break;
 
-        case google.maps.MapTypeId.HYBRID:
-            credits[google.maps.MapTypeId.HYBRID] = " ";
-            break;
+            case google.maps.MapTypeId.HYBRID:
+                credits[google.maps.MapTypeId.HYBRID] = " ";
+                break;
 
-        case "topousa":
-            map.mapTypes.set("topousa",
-                new google.maps.ImageMapType({
-                    getTileUrl: function(p, z) {
-                        return "http://s3-us-west-1.amazonaws.com/caltopo/topo/" +
-                            z + "/" + slippyClip(p.x, z) + "/" + slippyClip(p.y, z) + ".png";
-                    },
-                    maxZoom: 16,
-                    minZoom: 5,
-                    name: "TopoUSA",
-                    opacity: 1,
-                    tileSize: new google.maps.Size(256, 256)
-                }));
-            credits["topo"] = "<a href='https://caltopo.com' target='_blank'>Topo map by CalTopo</a>";
-            break;
+            case "topousa1":
+                map.mapTypes.set("topousa1", //usgs scanned
+                    new google.maps.ImageMapType({
+                        getTileUrl: function (p, z) {
 
-        case "topoworld":
-            map.mapTypes.set("topoworld",
-                new google.maps.ImageMapType({
-                    getTileUrl: function(p, z) {
-                        return "http://tile.thunderforest.com/outdoors/" +
-                            z + "/" + slippyClip(p.x, z) + "/" + slippyClip(p.y, z) + ".png?apikey=bdbb04f2d5df40cbb86e9e6e1acff6f7";
-                    },
-                    maxZoom: 18,
-                    minZoom: 3,
-                    name: "TopoWorld",
-                    opacity: 1,
-                    tileSize: new google.maps.Size(256, 256)
-                }));
-            credits["topoworld"] = "<a href='http://thunderforest.com' target='_blank'>Topo map by Thunderforest</a>";
-            break;
+                            //return "http://s3-us-west-1.amazonaws.com/caltopo/topo/" + //caltopo (retired)
+                            //    z + "/" + slippyClip(p.x, z) + "/" + slippyClip(p.y, z) + ".png";
 
-        case "estopo":
-            map.mapTypes.set("estopo",
-                new google.maps.ImageMapType({
-                    getTileUrl: function(p, z) {
-                        return "http://www.ign.es/wmts/mapa-raster?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX=" +
-                            z + "&TILEROW=" + slippyClip(p.y, z) + "&TILECOL=" + slippyClip(p.x, z) + "&FORMAT=image%2Fjpeg";
-                    },
-                    maxZoom: 18,
-                    minZoom: 6,
-                    name: "TopoSpain",
-                    opacity: 1,
-                    tileSize: new google.maps.Size(256, 256)
-                }));
-            credits["estopo"] = "<a href='http://sigpac.mapa.es/fega/visor/' target='_blank'>Topo map by IGN</a>";
-            break;
+                            return "https://services.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/" +
+                                z + "/" + slippyClip(p.y, z) + "/" + slippyClip(p.x, z);
+                        },
+                        maxZoom: 15,
+                        minZoom: 5,
+                        name: "TopoUSA1",
+                        opacity: 1,
+                        tileSize: new google.maps.Size(256, 256)
+                    }));
+                credits["topo"] = "<a href='https://caltopo.com' target='_blank'>Topo map by CalTopo</a>";
+                    break;
+
+            case "topousa2":
+                map.mapTypes.set("topousa2", //usgs vector
+                    new google.maps.ImageMapType({
+                        getTileUrl: function(p, z) {
+                            return "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/" +
+                                z + "/" + slippyClip(p.y, z) + "/" + slippyClip(p.x, z);
+                        },
+                        maxZoom: 16,
+                        minZoom: 5,
+                        name: "TopoUSA2",
+                        opacity: 1,
+                        tileSize: new google.maps.Size(256, 256)
+                    }));
+                credits["topo"] = "<a href='https://caltopo.com' target='_blank'>Topo map by CalTopo</a>";
+                break;
+
+            case "topoworld":
+                map.mapTypes.set("topoworld",
+                    new google.maps.ImageMapType({
+                        getTileUrl: function(p, z) {
+                            return "http://tile.thunderforest.com/outdoors/" +
+                                z + "/" + slippyClip(p.x, z) + "/" + slippyClip(p.y, z) + ".png?apikey=bdbb04f2d5df40cbb86e9e6e1acff6f7";
+                        },
+                        maxZoom: 18,
+                        minZoom: 3,
+                        name: "TopoWorld",
+                        opacity: 1,
+                        tileSize: new google.maps.Size(256, 256)
+                    }));
+                credits["topoworld"] = "<a href='http://thunderforest.com' target='_blank'>Topo map by Thunderforest</a>";
+                break;
+
+            case "estopo":
+                map.mapTypes.set("estopo",
+                    new google.maps.ImageMapType({
+                        getTileUrl: function(p, z) {
+                            return "http://www.ign.es/wmts/mapa-raster?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX=" +
+                                z + "&TILEROW=" + slippyClip(p.y, z) + "&TILECOL=" + slippyClip(p.x, z) + "&FORMAT=image%2Fjpeg";
+                        },
+                        maxZoom: 18,
+                        minZoom: 6,
+                        name: "TopoSpain",
+                        opacity: 1,
+                        tileSize: new google.maps.Size(256, 256)
+                    }));
+                credits["estopo"] = "<a href='http://sigpac.mapa.es/fega/visor/' target='_blank'>Topo map by IGN</a>";
+                break;
         }
     }
 
-    // relief is used in conjuction with TopoUSA to provide relief shading
-    var relief = new google.maps.ImageMapType({
-        getTileUrl: function (p, z) {
-            return "http://s3-us-west-1.amazonaws.com/ctrelief/relief/" +
-                z +
-                "/" +
-                slippyClip(p.x, z) +
-                "/" +
-                slippyClip(p.y, z) +
-                ".png";
-        },
-        name: "relief",
-        opacity: 0.25,
-        tileSize: new google.maps.Size(256, 256)
-    });
+    //keeping this code if we get access to CalTopo shaded relief layer back
 
-    // Map Change
-    google.maps.event.addListener(map,
-        "maptypeid_changed",
-        function () {
-            if (map.getMapTypeId() == "topousa") {
-                relief.setOpacity(0.60);
-                map.overlayMapTypes.insertAt(0, relief);
-            } else {
-                if (map.overlayMapTypes.length > 0 && map.overlayMapTypes.getAt(0).name === 'relief')
-                    map.overlayMapTypes.removeAt(0);
-            }
+    //// relief is used in conjuction with TopoUSA to provide relief shading
+    //var relief = new google.maps.ImageMapType({
+    //    getTileUrl: function (p, z) {
+    //        return "http://s3-us-west-1.amazonaws.com/ctrelief/relief/" +
+    //            z +
+    //            "/" +
+    //            slippyClip(p.x, z) +
+    //            "/" +
+    //            slippyClip(p.y, z) +
+    //            ".png";
+    //    },
+    //    name: "relief",
+    //    opacity: 0.25,
+    //    tileSize: new google.maps.Size(256, 256)
+    //});
 
-            var credit = credits[map.getMapTypeId()];
-            if (!!credit && !!creditDiv)
-                creditDiv.innerHTML = credit;
-        });
+    //// Map Change
+    //google.maps.event.addListener(map,
+    //    "maptypeid_changed",
+    //    function () {
+    //        if (map.getMapTypeId() == "topousa") {
+    //            relief.setOpacity(0.60);
+    //            map.overlayMapTypes.insertAt(0, relief);
+    //        } else {
+    //            if (map.overlayMapTypes.length > 0 && map.overlayMapTypes.getAt(0).name === 'relief')
+    //                map.overlayMapTypes.removeAt(0);
+    //        }
+
+    //        var credit = credits[map.getMapTypeId()];
+    //        if (!!credit && !!creditDiv)
+    //            creditDiv.innerHTML = credit;
+    //    });
 }
 
 // set map type layers to include in the dropdown
 function GetMapLayerIds() {
     var mapLayerIds = [google.maps.MapTypeId.TERRAIN];
 
-    if (isUSAorCanada())
-        mapLayerIds.push("topousa");
+    if (isUSAorCanada()) {
+        mapLayerIds.push("topousa1");
+        mapLayerIds.push("topousa2");
+    }
 
     if (isSpain())
         mapLayerIds.push("estopo");
