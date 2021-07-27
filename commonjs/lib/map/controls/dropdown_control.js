@@ -210,8 +210,8 @@ function setDropdownSelection(basename, selected) {
 function setArrow(dropdown) {
     var expanded = dropdown.style.display === "block";
     dropdown.arrowElement.src = !!(dropdown.bottomUp) === expanded
-        ? "http://maps.gstatic.com/mapfiles/arrow-down.png"
-        : "http://maps.gstatic.com/mapfiles/arrow-up.png";
+        ? PROTOCOL + "maps.gstatic.com/mapfiles/arrow-down.png"
+        : PROTOCOL + "maps.gstatic.com/mapfiles/arrow-up.png";
 }
 
 function dropdownCssBasename(basename) {

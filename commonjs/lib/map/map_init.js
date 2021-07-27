@@ -145,7 +145,7 @@ function loadInteractiveMap() {
         coords = kmlmarker.innerHTML.split(",");
         if (coords != null && coords.length > 1) {
             kmlmap = "kmlmarker";            
-            setPrimaryMarker(pageName, coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/ms/icons/red-dot.png');
+            setPrimaryMarker(pageName, coords[0], coords[1], 0, PROTOCOL + 'maps.google.com/mapfiles/ms/icons/red-dot.png');
             map.setZoom(13);
             var latlng = new google.maps.LatLng(coords[0], coords[1]);
             map.panTo(latlng);
@@ -157,7 +157,7 @@ function loadInteractiveMap() {
     if (kmlmarkerparking != null) {
         coords = kmlmarkerparking.innerHTML.split(",");
         if (coords != null && coords.length > 1) {
-            setPrimaryMarker(pageName + '<br>parking', coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/kml/paddle/P.png');
+            setPrimaryMarker(pageName + '<br>parking', coords[0], coords[1], 0, PROTOCOL + 'maps.google.com/mapfiles/kml/paddle/P.png');
         }
     }
 
@@ -166,7 +166,7 @@ function loadInteractiveMap() {
     if (kmlmarkershuttle != null) {
         coords = kmlmarkershuttle.innerHTML.split(",");
         if (coords != null && coords.length > 1) {
-            setPrimaryMarker(pageName + '<br>shuttle parking', coords[0], coords[1], 0, 'http://maps.google.com/mapfiles/kml/paddle/S.png');
+            setPrimaryMarker(pageName + '<br>shuttle parking', coords[0], coords[1], 0, PROTOCOL + 'maps.google.com/mapfiles/kml/paddle/S.png');
         }
     }
 
@@ -556,22 +556,15 @@ function loadInteractiveMap() {
                     map,
                     "",
                     {
-                        //sidebarid:mapsidebar,
-                        //publishdirectory:"http://www.dyasdesigns.com/tntmap/",
-                        //iwwidth:280,
-                        //iwmethod:"mouseover",
-                        //nolegend:false,
                         nozoom: true,
                         simplelegend: true,
                         suppressallfolders: true,
-                        //sidebarsnippet:true,
                         showArrows: false,
                         showLabels: false,
                         patchIcons: true,
                         showRouteLabels: false,
                         directions: false,
                         dohilite: false,
-                        //allfoldersopen:true,
                         hilite: { color: "#aaffff", opacity: 0.8, width: 10, textcolor: "#000000" } //, c0c0ff
                     });
                 gxml.load(file, file);

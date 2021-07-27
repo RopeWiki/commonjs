@@ -49,7 +49,6 @@ function adjustFaviconElements() {
     var fav = document.getElementById('favlinks');
     if (fav)
         fav.innerHTML = '<a href="javascript:openfavlinks();">' + fav.innerHTML + '</a>';
-//'<a href="javascript:window.open('+"'"+'http://www.hp.com'+"'"+','+"'"+'_blank'+"'"+');window.open('+"'"+'http://www.google.com'+"'"+','+"'"+'_blank'+"'"+');alert();">'+fav.innerHTML+'</a>'
     var fav = document.getElementById('allfavlinks');
     if (fav)
         openfavlinks();

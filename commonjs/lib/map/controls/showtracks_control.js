@@ -47,22 +47,15 @@ function toggleRoutes(kmlfile, kmlgroup) {
                     map,
                     "",
                     {
-                        //sidebarid:mapsidebar,
-                        //publishdirectory:"http://www.dyasdesigns.com/tntmap/",
-                        //iwwidth:280,
-                        //iwmethod:"mouseover",
-                        //nolegend:false,
                         nozoom: true,
                         simplelegend: true,
                         suppressallfolders: true,
-                        //sidebarsnippet:true,
                         showArrows: false,
                         showLabels: false,
                         patchIcons: true,
                         showRouteLabels: false,
                         directions: true,
                         dohilite: true,
-                        //allfoldersopen:true,
                         hilite: { color: "#aaffff", opacity: 0.8, width: 10, textcolor: "#000000" } //, c0c0ff
                     });
             var file = kmlfile ? kmlfile : url;

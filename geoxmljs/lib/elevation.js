@@ -80,7 +80,7 @@ function plotelevation(results, ticks, conv) {
             mousemarker = new google.maps.Marker({
                 position: results[e.row].location,
                 map: map,
-                icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                icon: PROTOCOL + "maps.google.com/mapfiles/ms/icons/blue-dot.png"
             });
 
             mousemarker.infowindow = new google.maps.InfoWindow({ content: "" });

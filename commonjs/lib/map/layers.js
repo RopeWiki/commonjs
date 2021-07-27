@@ -32,10 +32,10 @@ function SetupMapLayers() {
                     new google.maps.ImageMapType({
                         getTileUrl: function (p, z) {
 
-                            //return "http://s3-us-west-1.amazonaws.com/caltopo/topo/" + //caltopo (retired)
+                            //return PROTOCOL + "s3-us-west-1.amazonaws.com/caltopo/topo/" + //caltopo (retired)
                             //    z + "/" + slippyClip(p.x, z) + "/" + slippyClip(p.y, z) + ".png";
 
-                            return "https://services.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/" +
+                            return PROTOCOL + "services.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/" +
                                 z + "/" + slippyClip(p.y, z) + "/" + slippyClip(p.x, z);
                         },
                         maxZoom: 15,
@@ -44,14 +44,14 @@ function SetupMapLayers() {
                         opacity: 1,
                         tileSize: new google.maps.Size(256, 256)
                     }));
-                credits["topo"] = "<a href='https://caltopo.com' target='_blank'>Topo map by CalTopo</a>";
+                credits["topo"] = "<a href='" + PROTOCOL + "caltopo.com' target='_blank'>Topo map by CalTopo</a>";
                     break;
 
             case "topousa2":
                 map.mapTypes.set("topousa2", //usgs vector
                     new google.maps.ImageMapType({
                         getTileUrl: function(p, z) {
-                            return "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/" +
+                            return PROTOCOL + "basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/" +
                                 z + "/" + slippyClip(p.y, z) + "/" + slippyClip(p.x, z);
                         },
                         maxZoom: 16,
@@ -60,14 +60,14 @@ function SetupMapLayers() {
                         opacity: 1,
                         tileSize: new google.maps.Size(256, 256)
                     }));
-                credits["topo"] = "<a href='https://caltopo.com' target='_blank'>Topo map by CalTopo</a>";
+                credits["topo"] = "<a href='" + PROTOCOL + "caltopo.com' target='_blank'>Topo map by CalTopo</a>";
                 break;
 
             case "topoworld":
                 map.mapTypes.set("topoworld",
                     new google.maps.ImageMapType({
                         getTileUrl: function(p, z) {
-                            return "http://tile.thunderforest.com/outdoors/" +
+                            return PROTOCOL + "tile.thunderforest.com/outdoors/" +
                                 z + "/" + slippyClip(p.x, z) + "/" + slippyClip(p.y, z) + ".png?apikey=bdbb04f2d5df40cbb86e9e6e1acff6f7";
                         },
                         maxZoom: 18,
@@ -76,14 +76,14 @@ function SetupMapLayers() {
                         opacity: 1,
                         tileSize: new google.maps.Size(256, 256)
                     }));
-                credits["topoworld"] = "<a href='http://thunderforest.com' target='_blank'>Topo map by Thunderforest</a>";
+                credits["topoworld"] = "<a href='" + PROTOCOL + "thunderforest.com' target='_blank'>Topo map by Thunderforest</a>";
                 break;
 
             case "estopo":
                 map.mapTypes.set("estopo",
                     new google.maps.ImageMapType({
                         getTileUrl: function(p, z) {
-                            return "http://www.ign.es/wmts/mapa-raster?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX=" +
+                            return PROTOCOL + "www.ign.es/wmts/mapa-raster?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX=" +
                                 z + "&TILEROW=" + slippyClip(p.y, z) + "&TILECOL=" + slippyClip(p.x, z) + "&FORMAT=image%2Fjpeg";
                         },
                         maxZoom: 18,
@@ -92,7 +92,7 @@ function SetupMapLayers() {
                         opacity: 1,
                         tileSize: new google.maps.Size(256, 256)
                     }));
-                credits["estopo"] = "<a href='http://sigpac.mapa.es/fega/visor/' target='_blank'>Topo map by IGN</a>";
+                credits["estopo"] = "<a href='" + PROTOCOL + "sigpac.mapa.es/fega/visor/' target='_blank'>Topo map by IGN</a>";
                 break;
         }
     }
@@ -102,7 +102,7 @@ function SetupMapLayers() {
     //// relief is used in conjuction with TopoUSA to provide relief shading
     //var relief = new google.maps.ImageMapType({
     //    getTileUrl: function (p, z) {
-    //        return "http://s3-us-west-1.amazonaws.com/ctrelief/relief/" +
+    //        return PROTOCOL + "s3-us-west-1.amazonaws.com/ctrelief/relief/" +
     //            z +
     //            "/" +
     //            slippyClip(p.x, z) +

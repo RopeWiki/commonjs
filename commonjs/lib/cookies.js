@@ -27,7 +27,7 @@ function initializeCookies() {
      {
          //freegeoip.net is down (parked domain) as of 2020-06-27
          //ipstack.com is the replacement, has free API key for up to 10,000 requests per month
-         var url = "http://freegeoip.net/json/";
+         var url = PROTOCOL + "freegeoip.net/json/";
 
          //$.getJSON(geturl(url), function( data ) {
          //    if (data && data.country_code)

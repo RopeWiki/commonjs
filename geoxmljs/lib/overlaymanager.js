@@ -25,7 +25,7 @@ OverlayManager = function (map, paren, opts) {
     this.defaultClusterZoom = 'dblclick';
     this.defaultClusterInfoWindow = 'click';
     this.defaultClusterMarkerZoom = 16;
-    this.defaultIcon = new google.maps.MarkerImage('http://maps.google.com/mapfiles/kml/paddle/blu-circle.png',
+    this.defaultIcon = new google.maps.MarkerImage(PROTOCOL + 'maps.google.com/mapfiles/kml/paddle/blu-circle.png',
         new google.maps.Size(iconsize, iconsize), //size
         new google.maps.Point(0, 0), //origin
         new google.maps.Point(iconsize / 2, iconsize / 2), //anchor
@@ -39,7 +39,7 @@ OverlayManager = function (map, paren, opts) {
     this.ClusterZoom = opts.ClusterZoom || this.defaultClusterZoom;
     this.ClusterInfoWindow = opts.ClusterInfoWindow || this.defaultClusterInfoWindow;
     this.ClusterMarkerZoom = opts.ClusterMarkerZoom || this.defaultClusterMarkerZoom;
-    this.ClusterIconUrl = opts.ClusterIconUrl || 'http://www.dyasdesigns.com/tntmap/images/m';
+    this.ClusterIconUrl = opts.ClusterIconUrl || PROTOCOL + 'www.dyasdesigns.com/tntmap/images/m';
     this.lang = { txtzoomin: "", txtclustercount1: "...and", txtclustercount2: "more" };
     if (typeof opts.lang != "undefined") {
         this.lang.txtzoomin = opts.lang.txtzoomin;

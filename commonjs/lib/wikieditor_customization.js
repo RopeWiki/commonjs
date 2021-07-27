@@ -72,7 +72,7 @@ function initBasicEditor() {
             });
 
             mw.toolbar.addButton(false, "Internal link", "[[", "]]", "Link title", "mw-editbutton-link");
-            mw.toolbar.addButton(false, "External link (remember http:// prefix)", "[", "]", "http://www.example.com link title", "mw-editbutton-extlink");
+            mw.toolbar.addButton(false, "External link (remember http:// prefix)", "[", "]", PROTOCOL + "www.example.com link title", "mw-editbutton-extlink");
             mw.toolbar.addButton(false, "Level 2 headline", "\n=== ", " ===\n", "Headline text", "mw-editbutton-headline");
             mw.toolbar.addButton(false, "Ignore wiki formatting", "\u003Cnowiki\u003E", "\u003C/nowiki\u003E", "Insert non-formatted text here", "mw-editbutton-nowiki");
             mw.toolbar.addButton(false, "Your signature with timestamp", "--[[User:BetaRobot2|BetaRobot2]] ([[User talk:BetaRobot2|talk]]) 17:01, 11 June 2016 (EDT)", "", "", "mw-editbutton-signature");

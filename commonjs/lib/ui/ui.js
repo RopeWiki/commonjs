@@ -281,7 +281,7 @@ function loadUserInterface(document) {
             var ourl = link.href;
             ourl.replace("&", "%26");
             div = document.createElement("SPAN");
-            div.innerHTML = ' <a rel="nofollow" class="external text" style="display:none" href="http://translate.google.com/translate?' + '&hl=' + to + '&sl=' + from + '&tl=' + to + '&u=' + ourl + '">' + '[Translated]</a>';
+            div.innerHTML = ' <a rel="nofollow" class="external text" style="display:none" href="' + PROTOCOL + 'translate.google.com/translate?' + '&hl=' + to + '&sl=' + from + '&tl=' + to + '&u=' + ourl + '">' + '[Translated]</a>';
             link.parentNode.insertBefore(div, link.nextSibling);
         }
     }

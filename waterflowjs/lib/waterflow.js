@@ -202,7 +202,7 @@ function waterflow() {
 
     function isloading(str) { return str.indexOf('img') >= 0; }
 
-    var loading = "<img height=12 src='http://ropewiki.com/extensions/SemanticForms/skins/loading.gif'/>";
+    var loading = "<img height=12 src='" + SITE_BASE_URL + "/extensions/SemanticForms/skins/loading.gif'/>";
     var firstcoldate = 3;
 
     var table = document.getElementById('waterflow-table');
@@ -291,7 +291,7 @@ function waterflow() {
             if (th[i].title.substr(0, 5) == 'http:') {
                 var str = th[i].innerHTML;
                 th[i].innerHTML = aref(th[i].title,
-                    str /*+'<img src="http://ropewiki.com/images/8/80/Camera.png" style="vertical-align:middle"/>'*/,
+                    str /*+'<img src="'+SITE_BASE_URL+'/images/8/80/Camera.png" style="vertical-align:middle"/>'*/,
                     th[i].title,
                     ' target="_blank"');
             }
@@ -508,11 +508,11 @@ function waterflow() {
         // MISC PROVIDERS
         //
         //sitecountdown(-1);
-        //url = LUCA_BASE_URL + "/rwwf?html=http://cdec.water.ca.gov/cgi-progs/staSearch?staid=sensor_chk=on&sensor=20&active_chk=on&active=Y&loc_chk=on&lon1=-119.24328&lon2=-118.34252&lat1=36.191&lat2=36.9146&elev1=-5&elev2=99000&ext=.json";
+        //url = LUCA_BASE_URL + "/rwwf?html=https://cdec.water.ca.gov/cgi-progs/staSearch?staid=sensor_chk=on&sensor=20&active_chk=on&active=Y&loc_chk=on&lon1=-119.24328&lon2=-118.34252&lat1=36.191&lat2=36.9146&elev1=-5&elev2=99000&ext=.json";
         var misc = { counter: 0, name: "OTHER", error: true };
         //var preurl = LUCA_BASE_URL + "/rwwf?waterflow=";
         var location = urlget(window.location.href.toString(), "location=", "");
-        var preurl = wflocal ? "http://localhost/rwr?waterflow=" : LUCA_BASE_URL + "/rwr?waterflow=";
+        var preurl = wflocal ? PROTOCOL + "localhost/rwr?waterflow=" : LUCA_BASE_URL + "/rwr?waterflow=";
         if (wftest) preurl += "&wftest=on";
         if (wflog) preurl += "&wflog=on";
         var preurld = preurl;
@@ -1030,9 +1030,9 @@ function waterflow() {
         var msg = document.getElementById(site.name);
         if (msg) {
             msg.innerHTML = (site.counter > 0)
-                ? '<img height=12 src="http://ropewiki.com/extensions/SemanticForms/skins/loading.gif"/>' + site.name
+                ? '<img height=12 src="' + SITE_BASE_URL + '/extensions/SemanticForms/skins/loading.gif"/>' + site.name
                 : (site.error
-                    ? '<img height=12 src="http://ropewiki.com/images/8/87/Vxx.png"/>' +
+                    ? '<img height=12 src="' + SITE_BASE_URL +'/images/8/87/Vxx.png"/>' +
                     '<span style="color:red">' +
                     site.name +
                     '</span>'

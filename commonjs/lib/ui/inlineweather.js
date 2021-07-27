@@ -21,7 +21,7 @@ function loadInlineWeather(enabled) {
         //Aug2020 DarkSky API was shutdown (purchased by Apple)
         //so use OpenWeather (limit with free account 60 calls/minute)
 
-        var url = "http://api.openweathermap.org/data/2.5/onecall?lat=" + coords[0] + "&lon=" + coords[1] + "&exclude=current,minutely,hourly&appid=" + OPENWEATHER_APIKEY;
+        var url = PROTOCOL + "api.openweathermap.org/data/2.5/onecall?lat=" + coords[0] + "&lon=" + coords[1] + "&exclude=current,minutely,hourly&appid=" + OPENWEATHER_APIKEY;
 
         $.getJSON(geturl(url),
             function (data) {
@@ -74,7 +74,7 @@ function loadInlineWeather(enabled) {
 
                         w += '<td title="' + date.getDate() + ' ' + months[date.getMonth()] + ' : &quot;' + periods[i].weather[0].description + '&quot; Max ' + h + (metric ? 'C' : 'F') + ' Min ' + l + (metric ? 'C' : 'F') + '">';
                         var weatherIconSize = periods[i].weather[0].icon === "01d" ? "30" : "40"; //if it's the sun, shrink the size down a little more 
-                        w += '<div class="weatherimg" style="background-image: url(&#39;http://openweathermap.org/img/wn/' + periods[i].weather[0].icon + '.png&#39;);  background-size: ' + weatherIconSize + 'px ' + weatherIconSize + 'px;"/></div>';
+                        w += '<div class="weatherimg" style="background-image: url(&#39;' + PROTOCOL + 'openweathermap.org/img/wn/' + periods[i].weather[0].icon + '.png&#39;);  background-size: ' + weatherIconSize + 'px ' + weatherIconSize + 'px;"/></div>';
                         w += '<div class="weatherh">' + h + '</div>';
                         w += '<div class="weatherl">' + l + '</div>';
                         w += '</td>';

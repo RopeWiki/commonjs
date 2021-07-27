@@ -46,7 +46,7 @@ function ILabel(pos, txt, map, scale, color) {
     }
     fgcolor = color;
     bkcolor = "FFFFFF";
-    image.url = "http://chart.apis.google.com/chart?chst=d_text_outline&chld=" + fgcolor + "|" + String(fs) + "|h|" + bkcolor + "|" + style + "|" + urlencode(txt);
+    image.url = PROTOCOL + "chart.apis.google.com/chart?chst=d_text_outline&chld=" + fgcolor + "|" + String(fs) + "|h|" + bkcolor + "|" + style + "|" + urlencode(txt);
 
     var m = new google.maps.Marker({ title2: "", map: map, position: pos, clickable: false, icon: image, zIndex: z, optimized: false });
 
@@ -64,7 +64,7 @@ function validateIconUrl(href) {
             href.includes("c:ring,000000.png") ||
             href.includes("cfg=point")
         )
-            href = 'http://maps.google.com/mapfiles/kml/shapes/open-diamond.png';
+            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/open-diamond.png';
 
         // replace known bad icon urls:
 
@@ -74,30 +74,34 @@ function validateIconUrl(href) {
         //http://miftyisbored.com/a-complete-list-of-standard-google-maps-marker-icons/
 
         if (href.includes("nps-parking"))
-            href = 'http://maps.google.com/mapfiles/kml/shapes/parking_lot.png';
+            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/parking_lot.png';
 
         if (href.includes("nps-info"))
-            href = 'http://maps.google.com/mapfiles/kml/shapes/info.png';
+            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/info.png';
 
         if (href.includes("camera.png") ||
             href.includes("nps-camera"))
-            href = 'http://maps.google.com/mapfiles/kml/pal4/icon46.png';
+            href = PROTOCOL + 'maps.google.com/mapfiles/kml/pal4/icon46.png';
 
         if (href.includes("tent.png"))
-            href = 'http://maps.google.com/mapfiles/kml/shapes/campground.png';
+            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/campground.png';
 
         if (href.includes("crossbones.png"))
-            href = 'http://maps.google.com/mapfiles/kml/shapes/caution.png';
+            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/caution.png';
 
         if (href.includes("waterfall.png"))
-            href = 'http://maps.google.com/mapfiles/ms/icons/waterfalls.png';
+            href = PROTOCOL + 'maps.google.com/mapfiles/ms/icons/waterfalls.png';
 
         if (href.includes("drinkingwater.png"))
-            href = 'http://maps.google.com/mapfiles/ms/icons/drinking_water.png';
+            href = PROTOCOL + 'maps.google.com/mapfiles/ms/icons/drinking_water.png';
 
         if (href.includes("nps-caving.png"))
             href = '/images/1/13/CavingIcon.png';
     }
+
+    // replace with secure protocol if necessary
+    if (PROTOCOL.startsWith("https:") && href.startsWith("http:")) 
+        href = href.replace("http:", "https:");
 
     // add others as needed
 

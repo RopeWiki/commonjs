@@ -190,7 +190,7 @@ function GeoXml(myvar, map, url, opts) {
         if (fixUrlEnd) { getcapproxy = fixUrlEnd(getcapproxy); }
     }
 
-    this.publishdirectory = "http://www.dyasdesigns.com/tntmap/";
+    this.publishdirectory = PROTOCOL + "www.dyasdesigns.com/tntmap/";
     topwin = top;
     try { topname = top.title2; }
     catch (err) { topwin = self; }
@@ -475,7 +475,7 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
     }
     else {
         bicon = {
-            url: "http://maps.google.com/mapfiles/kml/pal3/icon40.png",
+            url: PROTOCOL + "maps.google.com/mapfiles/kml/pal3/icon40.png",
             origin: new google.maps.Point(0, 0),
             anchor: new google.maps.Point(iconsize / 2 * scale, iconsize / 2 * scale),
             scaledSize: new google.maps.Size(iconsize * scale, iconsize * scale)
@@ -518,7 +518,7 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
         }
         shadow = null;
         if (!href) {
-            href = "http://maps.google.com/mapfiles/kml/pal3/icon40.png";
+            href = PROTOCOL + "maps.google.com/mapfiles/kml/pal3/icon40.png";
         }
         icon = bicon;
         bicon.size = null;
@@ -526,7 +526,7 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
         icon.url = href;
     }
     else {
-        href = "http://maps.google.com/mapfiles/kml/pal3/icon40";
+        href = PROTOCOL + "maps.google.com/mapfiles/kml/pal3/icon40";
         if (instyle == null || typeof instyle == "undefined") {
             shadow = href + "s.png";
             href += ".png";
@@ -596,6 +596,7 @@ GeoXml.prototype.createMarker = function (point, name, desc, styleid, idx, insty
                 if (result3 != null) {
                     var urlLink = stuff2.substr(0, result3.index);
                     urlLink = urlLink.replace("http://", "");
+                    urlLink = urlLink.replace("https://", "");
                     contentUrl[x] = urlLink;
                     text = text.substr(0, result.index) + "<span id='geoxmlobjcont" + x + "'></span>" + stuff.substr(result1.index + result1[0].length, stuff.length);
                     x++;
@@ -991,14 +992,14 @@ GeoXml.prototype.processLine = function (pnum, lnum, idx, multi) {
             var blob;
             if (this.rectangleLegend) {
                 var m_w = parseInt(((16 - s_w) / 2));
-                blob = '<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:2px;;margin-right:2px;margin-top:0px" version="1.2" fill="#ffeecc" width="16px" height="16px">';
+                blob = '<svg xmlns="' + PROTOCOL + 'www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:2px;;margin-right:2px;margin-top:0px" version="1.2" fill="#ffeecc" width="16px" height="16px">';
                 if (op.color == '#ffffff' || op.color == '#FFFFFF') {
                     blob += ' <rect stroke="none" height="16" width="16" y="0" x="0" stroke-width="null" fill="#cbcbcb"/>';
                 }
                 blob += ' <rect stroke="none" width="16" height="' + s_w + '" x="0" y="' + m_w + '" stroke-width="null" fill="' + op.color + '"/></svg>';
             }
             else {
-                blob = '<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" fill="#ffeecc" width="16px" height="16px">';
+                blob = '<svg xmlns="' + PROTOCOL + 'www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" fill="#ffeecc" width="16px" height="16px">';
                 if (op.color == '#ffffff' || op.color == '#FFFFFF') {
                     blob += ' <rect stroke="none" height="16" width="16" y="0" x="0" stroke-width="null" fill="#cbcbcb"/>';
                 }
@@ -1474,11 +1475,11 @@ GeoXml.prototype.finishPolygonJSON = function (op, idx, updatebound, lastpoly) {
     if (this.basesidebar && newgeom) {
         var blob;
         if (this.rectangleLegend) {
-            blob = '<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" width="16px" height="16px">';
+            blob = '<svg xmlns="' + PROTOCOL + 'www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" width="16px" height="16px">';
             blob += ' <rect stroke="none" height="16" width="16" y="0" x="0" stroke-width="null" fill="' + op.color + '"/></svg>';
         }
         else {
-            blob = '<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" width="16px" height="16px">';
+            blob = '<svg xmlns="' + PROTOCOL + 'www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" width="16px" height="16px">';
             blob += '<path stroke="' + op.strokeColor + '" transform="rotate(139.901 9.70429 10.2675)" fill="' + op.color + '" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" d="m2.72366,9.83336c3.74686,-4.221 6.00924,-2.11097 7.43079,1.52863c1.42154,3.63961 3.85727,-1.60143 6.07385,1.67422c2.21659,3.27565 -4.2,6.26012 -7.17232,7.93434" id="svg_2"/></svg>';
         }
 
@@ -1622,11 +1623,11 @@ GeoXml.prototype.finishLineJSON = function (po, idx, lastlinename) {
             var s_w = po.weight;
             if (s_w < 1) { s_w = 1; }
             var m_w = parseInt(((16 - s_w) / 2));
-            blob = '<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" width="16px" height="16px">';
+            blob = '<svg xmlns="' + PROTOCOL + 'www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" width="16px" height="16px">';
             blob += ' <rect stroke="none" height="16" width="' + s_w + '" y="0" x="' + m_w + '" stroke-width="null" fill="' + po.color + '"/></svg>';
         }
         else {
-            blob = '<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" width="16px" height="16px">';
+            blob = '<svg xmlns="' + PROTOCOL + 'www.w3.org/2000/svg" style="vertical-align:text-top;margin-left:0px;margin-top:0px" version="1.2" width="16px" height="16px">';
             if (op.color == '#ffffff' || op.color == '#FFFFFF') {
                 blob += ' <rect stroke="none" height="16" width="16" y="0" x="0" stroke-width="null" fill="#cbcbcb"/>';
             }
@@ -2698,7 +2699,7 @@ GeoXml.prototype.handlePlacemarkGeometry = function (mark, geom, idx, depth, ful
                     document.body.appendChild(preload);
                     preload.innerHTML = desc;
                 }
-                if (desc.match(/^http:\/\//i)) {
+                if (desc.match(/^http:\/\/|^https:\/\//i)) {
                     var flink = desc.split(/(\s)+/);
                     if (flink.length > 1) {
                         desc = "<a href=\"" + flink[0] + "\">" + flink[0] + "</a>";
@@ -3006,14 +3007,14 @@ GeoXml.prototype.makeIcon = function (currstyle, href, id, myscale, hotspot) {
                     href.includes("/pink.png") ||
                     href.includes("-dot.png")
                 ) {
-                    shadow = "http://maps.google.com/mapfiles/ms/icons/msmarker.shadow.png";
+                    shadow = PROTOCOL + "maps.google.com/mapfiles/ms/icons/msmarker.shadow.png";
                 }
                 else if (href.includes("-pushpin.png") ||
                     href.includes("/pause.png") ||
                     href.includes("/go.png") ||
                     href.includes("/stop.png")
                 ) {
-                    shadow = "http://maps.google.com/mapfiles/ms/icons/pushpin_shadow.png";
+                    shadow = PROTOCOL + "maps.google.com/mapfiles/ms/icons/pushpin_shadow.png";
                 }
                 else if (!href.includes(".jpg"))
                     shadow = href.replace(".png", ".shadow.png");
@@ -3026,7 +3027,7 @@ GeoXml.prototype.makeIcon = function (currstyle, href, id, myscale, hotspot) {
             href = currstyle.url;
             scale = currstyle.scale;
         } else {
-            href = "http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png";
+            href = PROTOCOL + "maps.google.com/mapfiles/kml/shapes/placemark_circle.png";
             anchorscale = { x: 0.5, y: 0.5 };
         };
     }
