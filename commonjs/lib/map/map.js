@@ -633,7 +633,7 @@ function loadingFinished() {
 }
 
 function getRegionOrSearchAreaText() {
-    return !isUserListTable()
+    return (!isUserListTable() && !isUserStarRatingsTable())
         ? searchMapRectangle === undefined ? "region" : "search area"
         : "list";
 }
