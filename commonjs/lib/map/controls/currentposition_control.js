@@ -4,7 +4,6 @@
 function initCurrentPositionControl() {
     if (!navigator.geolocation) return;
 
-    //navigator.geolocation.getCurrentPosition(createCurrentPositionButton, handleCurrentPositionError);
     createCurrentPositionButton();
 }
 
@@ -53,8 +52,10 @@ function toggleCurrentPosition(force) {
 
         var button = document.getElementById('currentPositionCustom');
 
-        if (button.classList.contains("enabled")) {
-            button.classList.remove("enabled");
+        if (!!button) {
+            if (button.classList.contains("enabled")) {
+                button.classList.remove("enabled");
+            }
         }
 
         if (userMarker !== undefined && userMarker !== null) {
