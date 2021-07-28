@@ -220,7 +220,11 @@ function updateTable() {
     if (starrate) {
         var starRatingInfoRow = tableNewBody.insertRow(0);
         var colSpan = 9;
-        starRatingInfoRow.innerHTML = '<th colspan="' + colSpan + '" class="rwwarningbox" style="font-size:x-small">YOUR RATINGS ARE HIGHLIGHTED IN GREEN, CLICK ON THE STARS TO ADD/CHANGE RATINGS, X TO DELETE</th>';
+        var rowText = isUserStarRatingsTable()
+            ? starRatingsUser.toUpperCase() + "'S RATINGS ARE HIGHLIGHTED IN GREEN"
+            : "YOUR RATINGS ARE HIGHLIGHTED IN GREEN, CLICK ON THE STARS TO ADD/CHANGE RATINGS, X TO DELETE";
+
+        starRatingInfoRow.innerHTML = '<th colspan="' + colSpan + '" class="rwwarningbox" style="font-size:x-small">' + rowText + '</th>';
         starRatingInfoRow.className = 'schkon';
     }
 

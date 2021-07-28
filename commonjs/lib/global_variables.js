@@ -25,7 +25,7 @@ function initializeGlobalVariables() {
     slideshowchk = slideshowchk !== "";
 
     starrate = getCookie("starrate");
-    if (window.location.href.toString().indexOf('starratechk=') >= 0)
+    if (window.location.href.toString().indexOf('starratechk=') >= 0 || isUserStarRatingsTable())
         starrate = true;
 
     urlcheckbox = getCookie("urlcheckbox");

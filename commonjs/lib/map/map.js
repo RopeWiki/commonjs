@@ -461,7 +461,6 @@ const loadLimit = 100;
 var loadOffset = 0;
 var locationsTotalWithinArea;
 var locationsLoadedWithinArea = 0;
-var userStarRatingsLoaded = false;
 
 function loadMoreLocations(checkCountOnly) {
     
@@ -541,21 +540,8 @@ function loadMoreLocations(checkCountOnly) {
             }
         });
 
-    //load user star ratings
-    var curuser = document.getElementById("curuser");
-    if (curuser && !userStarRatingsLoaded) {
-        var currentUser = curuser.innerHTML;
-        userStarRatingsLoaded = true;
-
-        $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
-                '&query=' + urlencode('[[Has page rating::+]][[Has page rating user::' + currentUser + ']]') +
-                '|?Has_page_rating_page=|?Has_page_rating=|mainlabel=-' +
-                '|limit=' + 2000), //load all ratings the user has made
-            function (data) {
-                setUserStarRatings(data);
-            });
-    }
-
+    LoadStarRatings();
+    
     loadOffset += numberToLoad;
 }
 
@@ -658,10 +644,13 @@ function setHeadingTextForRegion() {
 
     if (isUserListTable()) {
         firstHeadingText = listUser + "'s " + listName + ' list';
-        
-        // set browser tab title
-        document.title = listName;
-    } else {
+        document.title = listName; // set browser tab title
+    }
+    else if (isUserStarRatingsTable()) {
+        firstHeadingText = starRatingsUser + "'s ratings";
+        document.title = firstHeadingText; // set browser tab title
+    }
+    else {
         if (searchWasRun) //don't change heading unless custom search rectangle was run
         {
             var subRegions = {};

@@ -1,3 +1,31 @@
+var userStarRatingsLoaded = false;
+
+function LoadStarRatings() {
+    if (!userStarRatingsLoaded) {
+        userStarRatingsLoaded = true;
+
+        var user;
+        if (isUserStarRatingsTable())
+            user = starRatingsUser;
+        else {
+            var curuser = document.getElementById("curuser");
+            if (curuser) user = curuser.innerHTML;
+        }
+
+        if (user) {
+            $.getJSON(geturl(SITE_BASE_URL +
+                    '/api.php?action=ask&format=json' +
+                    '&query=' +
+                    urlencode('[[Has page rating::+]][[Has page rating user::' + user + ']]') +
+                    '|?Has_page_rating_page=|?Has_page_rating=|mainlabel=-' +
+                    '|limit=' +
+                    2000), //load all ratings the user has made
+                function(data) {
+                    setUserStarRatings(data);
+                });
+        }
+    }
+}
 
 function getStarFraction(num) {
     if (num >= 0.875)
@@ -10,6 +38,22 @@ function getStarFraction(num) {
         return 1;
     else
         return 0;
+}
+
+var starRatingsUser, isUserStarRatingsTableVar;
+
+function isUserStarRatingsTable() {
+    if (isUserStarRatingsTableVar === undefined) {
+        var url = new URL(window.location.href.toString());
+        starRatingsUser = url.searchParams.get("onlyuser");
+
+        if (starRatingsUser) {
+            isUserStarRatingsTableVar = true;
+        } else
+            isUserStarRatingsTableVar = false;
+    }
+
+    return isUserStarRatingsTableVar;
 }
 
 function getStars(num, numRatings, size) {
@@ -134,6 +178,7 @@ function setUserStarRatings(data) {
     updateTable();
 }
 
+//this function doesn't seem to be used anywhere
 function loadStars(enabled) {
     var url = window.location.href.toString();
     var onlyuser = enabled || url.indexOf('onlyuser=') > 0 || url.indexOf('starratechk=') > 0;
@@ -179,7 +224,6 @@ function loadStars(enabled) {
         }
     }
 }
-
 
 function getUserStarDisplay(location, stars, ustars, numRatings, size) {
 
