@@ -46,7 +46,7 @@ function initMapLayerControl() {
         basename: mapLayerControlBasename,
         id: "mapSelectWeather",
         text: "Weather",
-        tooltip: "Show animated weather radar",
+        tooltip: "Overlay animated weather radar",
         action: function () {
             var showing = document.getElementById("mapSelectWeather").checked;
             displayWeatherLayer(showing);
@@ -78,7 +78,7 @@ function addLayerTerrain(entries) {
         basename: mapLayerControlBasename,
         type: google.maps.MapTypeId.TERRAIN,
         text: "Terrain",
-        tooltip: "Show street map with terrain"
+        tooltip: "Google terrain map layer"
     }
 
     entries.push(new mapLayerDropdownItem(options));
@@ -89,7 +89,7 @@ function addLayerStreetmap(entries) {
         basename: mapLayerControlBasename,
         type: google.maps.MapTypeId.ROADMAP,
         text: "Streets",
-        tooltip: "Show street map"
+        tooltip: "Google street map layer"
     }
     entries.push(new mapLayerDropdownItem(options));
 
@@ -102,7 +102,7 @@ function addLayerHybrid(entries) {
         basename: mapLayerControlBasename,
         type: google.maps.MapTypeId.HYBRID,
         text: "Satellite",
-        tooltip: "Show satellite view"
+        tooltip: "Google satellite view layer"
     }
     entries.push(new mapLayerDropdownItem(options));
 
@@ -114,8 +114,8 @@ function addLayerTopoUsa1(entries) {
     var options = {
         basename: mapLayerControlBasename,
         type: "topousa1",
-        text: "TopoUSA 1",
-        tooltip: "Show USGS paper topo maps"
+        text: "Paper Topo",
+        tooltip: "USGS Paper topo map layer"
     }
     entries.push(new mapLayerDropdownItem(options));
 }
@@ -124,8 +124,8 @@ function addLayerTopoUsa2(entries) {
     var options = {
         basename: mapLayerControlBasename,
         type: "topousa2",
-        text: "TopoUSA 2",
-        tooltip: "Show USGS vector topo maps"
+        text: "Vector Topo",
+        tooltip: "USGS Vector topo map layer"
     }
     entries.push(new mapLayerDropdownItem(options));
 }
@@ -134,8 +134,8 @@ function addLayerTopoWorld(entries) {
     var options = {
         basename: mapLayerControlBasename,
         type: "topoworld",
-        text: "TopoWorld",
-        tooltip: "Show Worldwide topo"
+        text: "World Topo",
+        tooltip: "World base topo layer"
     }
     entries.push(new mapLayerDropdownItem(options));
 }
@@ -145,7 +145,7 @@ function addLayerTopoSpain(entries) {
         basename: mapLayerControlBasename,
         type: "estopo",
         text: "TopoSpain",
-        tooltip: "Mostrar mapa específico de España"
+        tooltip: "Mapa topo específico de España"
     }
     entries.push(new mapLayerDropdownItem(options));
 }
