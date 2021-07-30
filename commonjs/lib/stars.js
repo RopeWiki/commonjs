@@ -233,11 +233,17 @@ function getGeneralStarsDisplay(location, stars, ustars, numRatings, size) {
 
     if (showUsersRatings) stars = ustars;
 
-    starDisplay.innerHTML = '<a href="' + SITE_BASE_URL + '/List_ratings?location=' + location + '">' + getStars(stars, numRatings, size, !showUsersRatings) + '</a>';
-    starDisplay.title = stars.toFixed(1) + '*';
+    var starsHTML = getStars(stars, numRatings, size, !showUsersRatings);
 
-    if (!showUsersRatings) starDisplay.title += (numRatings <= 0 ? '' : ' (' + numRatings + ' ratings)');
+    if (!showUsersRatings) //wrap in a link to the ratings page
+        starsHTML = '<a href="' + SITE_BASE_URL + '/List_ratings?location=' + location + '">' + starsHTML + '</a>';
 
+    starDisplay.innerHTML = starsHTML;
+
+    starDisplay.title = !showUsersRatings
+        ? stars.toFixed(1) + '*' + (numRatings <= 0 ? '' : ' (' + numRatings + ' ratings)')
+        : "They rated this " + stars.toFixed(0) + " stars";
+    
     starDisplay.className = "starv";
     if (ustars > 0) starDisplay.className += ' votedsub';
     if (showUsersRatings) starDisplay.className += ' votedrow';
