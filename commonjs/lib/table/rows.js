@@ -23,7 +23,9 @@ function assembleTableRow(item) {
     return '<tr class="trow notranslate">' + row + '</tr>';
 }
 
-function getStandardTableHeaderRow() {    
+function getStandardTableHeaderRow() {
+    var showingMyRatings = (!isUserStarRatingsTable() || starRatingsUser === currentuser);
+
     const Header =
         '<th class="rwHdr">' +
             '<div class="gmnoprint toption locateicon">↓ Click on icon to locate on map</div>' +
@@ -32,7 +34,7 @@ function getStandardTableHeaderRow() {
             '<span id="sort-region" title="Sort by name of region" class="rwSortIcon gmnoprint notranslate"></span>' +
         '</th>' +
         '<th class="rwHdr">' +
-        '<div id="starrate" class="schk gmnoprint toption notranslate" title="Show star ratings you have given"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">' + (!isUserStarRatingsTable() ? "My" : "Their") +' ratings</label></div>' +
+        '<div id="starrate" class="schk gmnoprint toption notranslate" title="Show star ratings ' + (showingMyRatings ? "you" : "they") +' have given"><label><input class="gmnoprint" type="checkbox" onclick="toggleStarrate()">' + (showingMyRatings ? "My" : "Their") +' ratings</label></div>' +
             '<span id="sort-rankRating" title="Sort by combined Quality & Popularity formula" class="rwSortIcon gmnoprint notranslate"></span>' +
             '<span class="rwText"><a href="/StarRank" title="Star ratings">Quality</a></span>' +
             '<span id="sort-totalRating" title="Sort by raw user rating" class="rwSortIcon gmnoprint notranslate"></span>' +

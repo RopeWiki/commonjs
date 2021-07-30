@@ -8,8 +8,7 @@ function LoadStarRatings() {
         if (isUserStarRatingsTable())
             user = starRatingsUser;
         else {
-            var curuser = document.getElementById("curuser");
-            if (curuser) user = curuser.innerHTML;
+            if (!!currentuser) user = currentuser;
         }
 
         if (user) {
@@ -49,6 +48,7 @@ function isUserStarRatingsTable() {
 
         if (starRatingsUser) {
             isUserStarRatingsTableVar = true;
+            starrate = true; //set checked by default
         } else
             isUserStarRatingsTableVar = false;
     }
@@ -56,14 +56,20 @@ function isUserStarRatingsTable() {
     return isUserStarRatingsTableVar;
 }
 
-function getStars(num, numRatings, size) {
+function getStars(num, numRatings, size, includeNumRatings) {
     var line = '<span class="tablestars">';
+
+    if (!includeNumRatings) //bump right to account for lack of numRatings text
+        line += "&nbsp;";
+
     for (var i = 0; i < 5; ++i) {
         line += '<img width="' + size + 'px" height="' + size + 'px" src="' + STARLIST[getStarFraction(num)] + '"/>';
         num -= 1;
     }
-    if (numRatings > 0)
+
+    if (includeNumRatings && numRatings > 0)
         line += '<span class="starsub">' + numRatings + '</span>';
+
     line += '</span>';
     return line;
 }
@@ -72,17 +78,21 @@ function getStarsVote(num, unum, ratings) {
     var line = '<span class="tablestars starRate">';
     var text = ['Delete', 'Not worth doing', 'Worthwhile', 'Ok', 'Great', 'Among the best'];
     var i;
-    if (!document.getElementById('curuser'))
+
+    if (!currentuser)
         for (i = 0; i <= 5; ++i)
             text[i] = 'Log in to rate';
+
     for (i = 1; i <= 5; ++i) {
         line += '<b id="' + i + '" class="starRate' + getStarFraction(num) + '" style="cursor:pointer" onclick="starVote(this)"><span class="starText starvText">' + text[i] + '</span></b>';
         num -= 1;
     }
+
     if (unum > 0)
         line += '<b id="0" class="starx starsub" style="color:red;cursor:pointer;" onclick="starVote(this)">X<span class="starText starvText">' + text[0] + '</span></b>';
     else if (ratings > 0)
         line += '<span class="starsub">' + ratings + '</span>';
+
     line += '</span>';
 
     return line;
@@ -103,11 +113,10 @@ function getStarsId(elem) {
 function starVote(elem) {
     var stars = elem.id;
     var id = getStarsId(elem);
-    var euser = document.getElementById('curuser');
-
-    if (stars && id && euser) {
+    
+    if (stars && id && !!currentuser) {
         //alert(id+ " " + stars + "*");
-        var user = euser.innerHTML;
+        var user = currentuser;
         var fr = document.createElement("IFRAME");
         var target = 'Votes:' + id + '/' + user;
         if (stars === '0') {
@@ -125,32 +134,17 @@ function starVote(elem) {
         while (parent != null && parent.className.indexOf('starv') < 0)
             parent = parent.parentNode;
         if (parent) {
-            /*
-            if (typeof parent.stars != "undefined")
-              {
-              // adjust values
-              var ratings = parent.ratings;
-              var rstars = parent.stars * ratings;
-              var ustars = parent.ustars;
-              if (rstars<0)
-                  {
-                  rstars = 0;
-                  ratings  = 0;
-                  }
-              if (ustars>0 && rstars>0)
-                  {
-                  rstars -= ustars;
-                  ratings -= 1;
-                  }
-              if (stars=="") stars=0;
-              parent.ustars = stars;
-              parent.ratings = ratings +1;
-              parent.stars = (rstars+stars)/parent.ratings;
-              }
-            */
             parent.innerHTML = getStarsVote(stars, stars, -1, 16);
             parent.className = 'starv votedrow';
         }
+
+        //update marker value
+        var marker = markers.filter(function (x) { return x.name === id; })[0];
+
+        if (marker != undefined)
+            marker.locationData.userStars = stars;
+
+        updateTable();
     }
 }
 
@@ -178,65 +172,20 @@ function setUserStarRatings(data) {
     updateTable();
 }
 
-//this function doesn't seem to be used anywhere
-function loadStars(enabled) {
-    var url = window.location.href.toString();
-    var onlyuser = enabled || url.indexOf('onlyuser=') > 0 || url.indexOf('starratechk=') > 0;
-    var starsv = document.getElementsByClassName('starv');
-
-    for (var i = 0; i < starsv.length; i++) {
-        var starsvstr;
-        if (typeof starsv[i].starsvstr == "undefined")
-            starsvstr = starsv[i].starsvstr = starsv[i].innerHTML;
-        else
-            starsvstr = starsv[i].starsvstr;
-        var str = starsvstr.split('*');
-        if (str.length < 2) continue;
-        var stars = parseFloat(str[0]);
-        var id = getStarsId(starsv[i]);
-        if (id != null) {
-            var ratings = -1;
-            var ustars = parseFloat(str[1]);
-            var strp = str[1].split("#");
-            if (strp.length > 1)
-                ratings = parseInt(strp[1]);
-
-            if (onlyuser && ustars > 0) {
-                stars = ustars;
-                ratings = 0;
-            }
-            if (enabled) {
-                // vote stars
-                starsv[i].innerHTML = getStarsVote(stars, ustars, ratings, 16);
-                if (ustars > 0)
-                    starsv[i].className = 'starv votedrow';
-            } else {
-                // display star rates
-                var starDisplay = getStarDisplay(id, stars, ratings, 16);
-                starsv[i].innerHTML = starDisplay.innerHTML;
-                starsv[i].title = starDisplay.title;
-                if (ustars > 0)
-                    starsv[i].className = 'starv votedsub';
-            }
-        } else {
-            // sample stars
-            starsv[i].innerHTML = getStars(stars, 0, 16);
-        }
-    }
-}
-
 function getUserStarDisplay(location, stars, ustars, numRatings, size) {
 
-    if (starrate) {
-        // display user's stars
-        return getStarsVoteDisplay(stars, ustars, numRatings);
-    } else {
-        // display general star rates
-        return getStarDisplay(location, stars, ustars, numRatings, size);
+    if (starrate &&
+        (!isUserStarRatingsTable() || (isUserStarRatingsTable() && !!currentuser && starRatingsUser === currentuser)))
+    {
+        return getUsersStarswithVotingDisplay(stars, ustars, numRatings);
+    }
+    else
+    {
+        return getGeneralStarsDisplay(location, stars, ustars, numRatings, size);
     }
 }
 
-function getStarsVoteDisplay(stars, ustars, numRatings) {
+function getUsersStarswithVotingDisplay(stars, ustars, numRatings) {
     if (!stars) stars = 0;
     if (!ustars) ustars = 0;
     else stars = ustars;
@@ -247,17 +196,20 @@ function getStarsVoteDisplay(stars, ustars, numRatings) {
     var line = '<span class="starRate" style="white-space: nowrap;">';
     var text = ['Delete', 'Not worth doing', 'Worthwhile', 'Ok', 'Great', 'Among the best'];
     
-    if (!document.getElementById('curuser'))
+    if (!currentuser)
         for (i = 0; i <= 5; ++i)
             text[i] = 'Log in to rate';
+
     for (i = 1; i <= 5; ++i) {
         line += '<b id="' + i + '" class="starRate' + getStarFraction(stars) + '" style="cursor:pointer" onclick="starVote(this)"><span class="starText starvText">' + text[i] + '</span></b>';
         stars -= 1;
-    }
+        }
+
     if (ustars > 0)
         line += '<b id="0" class="starx starsub" style="color:red;cursor:pointer;" onclick="starVote(this)">X<span class="starText starvText">' + text[0] + '</span></b>';
     else if (numRatings > 0)
         line += '<span class="starsub">' + numRatings + '</span>';
+
     line += '</span>';
 
     starDisplay.title = "";
@@ -269,7 +221,7 @@ function getStarsVoteDisplay(stars, ustars, numRatings) {
     return starDisplay;
 }
 
-function getStarDisplay(location, stars, ustars, numRatings, size) {
+function getGeneralStarsDisplay(location, stars, ustars, numRatings, size) {
     if (!stars) stars = 0;
     if (!ustars) ustars = 0;
     if (!numRatings) numRatings = 0;
@@ -277,11 +229,18 @@ function getStarDisplay(location, stars, ustars, numRatings, size) {
 
     var starDisplay = {};
 
-    starDisplay.innerHTML = '<a href="' + SITE_BASE_URL + '/List_ratings?location=' + location + '">' + getStars(stars, numRatings, size) + '</a>';
-    starDisplay.title = stars.toFixed(1) + '*' + (numRatings <= 0 ? '' : ' (' + numRatings + ' ratings)');
+    var showUsersRatings = isUserStarRatingsTable() && starrate;
+
+    if (showUsersRatings) stars = ustars;
+
+    starDisplay.innerHTML = '<a href="' + SITE_BASE_URL + '/List_ratings?location=' + location + '">' + getStars(stars, numRatings, size, !showUsersRatings) + '</a>';
+    starDisplay.title = stars.toFixed(1) + '*';
+
+    if (!showUsersRatings) starDisplay.title += (numRatings <= 0 ? '' : ' (' + numRatings + ' ratings)');
+
     starDisplay.className = "starv";
-    if (ustars > 0)
-        starDisplay.className += ' votedsub';
+    if (ustars > 0) starDisplay.className += ' votedsub';
+    if (showUsersRatings) starDisplay.className += ' votedrow';
 
     return starDisplay;
 }

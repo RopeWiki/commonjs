@@ -16,7 +16,9 @@ function togglewchk(varname) {
 
 function toggleStarrate() {
     starrate = $("div#starrate :checkbox")[0].checked;
-    setCookie("starrate", starrate ? "on" : "", 360 * 10); // 10 years
+
+    if (!isUserStarRatingsTable())
+        setCookie("starrate", starrate ? "on" : "", 360 * 10); // 10 years
 
     updateTable();
 }
@@ -259,8 +261,7 @@ function loadUserInterface(document) {
         elem[i].innerHTML = '<label><input class="wchk__chk gmnoprint" type="checkbox" onclick="togglewchk(\'' + id + '\')" ' + (eval(id) ? 'checked' : '') + '>' + label + '</label>';
     }
 
-    var curuser = document.getElementById("curuser");
-    if (!curuser) starrate = false;
+    if (!currentuser) starrate = false;
 
     elem = document.getElementsByClassName('schk');
     for (var i = 0; i < elem.length; i++) {

@@ -25,17 +25,22 @@ function initializeGlobalVariables() {
     slideshowchk = slideshowchk !== "";
 
     starrate = getCookie("starrate");
-    if (window.location.href.toString().indexOf('starratechk=') >= 0 || isUserStarRatingsTable())
+    if (window.location.href.toString().indexOf('starratechk=') >= 0)
         starrate = true;
 
     urlcheckbox = getCookie("urlcheckbox");
     watershed = getCookie("watershed");
     weather = getCookie("weather");
+    
+    var curuser = document.getElementById("curuser");
+    if (curuser) currentuser = curuser.innerHTML;
 }
 
 // ===== other global variables:
 
 var skinuser = "";
+
+var currentuser;
 
 var gtrans = null;
 var gtrans2 = "x";

@@ -213,20 +213,20 @@ function updateTable() {
     }
     
     //hide star rate checkbox if user isn't logged in
-    var curuser = document.getElementById("curuser");
-    if (!curuser) $("div#starrate")[0].style.display = "none";
+    if (!currentuser && !isUserStarRatingsTable())
+        $("div#starrate")[0].style.display = "none";
 
     //add 'star rating info bar' table row if star rating is checked
-    if (starrate) {
-        var starRatingInfoRow = tableNewBody.insertRow(0);
-        var colSpan = 9;
-        var rowText = isUserStarRatingsTable()
-            ? starRatingsUser.toUpperCase() + "'S RATINGS ARE HIGHLIGHTED IN GREEN"
-            : "YOUR RATINGS ARE HIGHLIGHTED IN GREEN, CLICK ON THE STARS TO ADD/CHANGE RATINGS, X TO DELETE";
+    //if (starrate) {
+    //    var starRatingInfoRow = tableNewBody.insertRow(0);
+    //    var colSpan = 9;
+    //    var rowText = isUserStarRatingsTable()
+    //        ? starRatingsUser.toUpperCase() + "'S RATINGS ARE HIGHLIGHTED IN GREEN"
+    //        : "YOUR RATINGS ARE HIGHLIGHTED IN GREEN, CLICK ON THE STARS TO ADD/CHANGE RATINGS, X TO DELETE";
 
-        starRatingInfoRow.innerHTML = '<th colspan="' + colSpan + '" class="rwwarningbox" style="font-size:x-small">' + rowText + '</th>';
-        starRatingInfoRow.className = 'schkon';
-    }
+    //    starRatingInfoRow.innerHTML = '<th colspan="' + colSpan + '" class="rwwarningbox" style="font-size:x-small">' + rowText + '</th>';
+    //    starRatingInfoRow.className = 'schkon';
+    //}
 
     //now replace the table with the new one
     tableCurrentBody.parentNode.replaceChild(tableNewBody, tableCurrentBody);
