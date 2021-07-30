@@ -229,7 +229,7 @@ function getGeneralStarsDisplay(location, stars, ustars, numRatings, size) {
 
     var starDisplay = {};
 
-    var showUsersRatings = isUserStarRatingsTable() && starrate;
+    var showUsersRatings = isUserStarRatingsTable() && starrate && ustars > 0;
 
     if (showUsersRatings) stars = ustars;
 
