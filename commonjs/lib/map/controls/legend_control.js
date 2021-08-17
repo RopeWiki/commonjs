@@ -32,7 +32,7 @@ function initLegendControl() {
 
     var condenseButton = document.createElement("span");
     condenseButton.id = "legendCondense";
-    condenseButton.className = "controls legend condense";
+    condenseButton.className = "controls legend condense gmnoprint";
     condenseButton.style.display = "none";
     condenseButton.innerHTML = ">>";
 

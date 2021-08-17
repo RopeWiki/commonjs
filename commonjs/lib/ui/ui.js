@@ -99,7 +99,7 @@ function loadUserInterface(document) {
         pageName = pageName.split("_").join(" ");
         pageName = pageName.split("'").join("%27");
 
-        addToListElement.innerHTML = '<input class="add-to-list-button" title="Add to a custom list" type="submit" onclick="addToList(\'' + pageName + '\')" value="Add&nbsp;to List">';
+        addToListElement.innerHTML = '<input class="add-to-list-button gmnoprint" title="Add to a custom list" type="submit" onclick="addToList(\'' + pageName + '\')" value="Add&nbsp;to List">';
     }
 
     // javascriptlink
@@ -481,7 +481,6 @@ function loadUserInterface(document) {
                                 w += '<hr id="cd3" title="May flood with heavy rains">';
                         }
                     }
-                    waterflowdiv.className = ''; // no noprint
                     waterflowdiv.innerHTML += ' ' + w;
                 });
         }

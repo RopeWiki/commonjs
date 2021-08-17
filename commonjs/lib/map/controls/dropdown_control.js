@@ -113,7 +113,7 @@ function createDropdownControl(options) {
     selectedItem.appendChild(selectedItemText);
 
     var arrow = document.createElement("img");
-    arrow.className = dropdownCssBasename(basename) + " arrow";
+    arrow.className = dropdownCssBasename(basename) + " arrow gmnoprint";
     dropdown.arrowElement = arrow;
     setArrow(dropdown);
     selectedItem.appendChild(arrow);
