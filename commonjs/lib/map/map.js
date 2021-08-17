@@ -655,7 +655,7 @@ function setHeadingTextForRegion() {
         var pagename = url.searchParams.get("pagename");
 
         if (pagename) {
-            firstHeadingText = urldecode(pagename).replace("_", " ") + " Map";
+            firstHeadingText = urldecode(pagename).replaceAll("_", " ") + " Map";
             document.title = firstHeadingText;
         }
     }

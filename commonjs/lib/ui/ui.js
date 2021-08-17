@@ -526,8 +526,6 @@ function loadUserInterface(document) {
             }
         }
     }
-
-    setHeadingTextForRegion();
 }
 
 function loadFormInterface() {
@@ -671,6 +669,8 @@ function findtag(children, tag, f) {
 }
 
 function setHeadingText() {
+    
+    setHeadingTextForRegion(); //first, change text if necessary
 
     var header = document.getElementById("firstHeading");
     var headingText = header.children[header.children.length - 1].innerHTML;
