@@ -133,7 +133,7 @@ function SetupMapLayers() {
 function GetMapLayerIds() {
     var mapLayerIds = [google.maps.MapTypeId.TERRAIN];
 
-    if (isUSAorCanada()) {
+    if (isUSA()) {
         mapLayerIds.push("topousa1");
         mapLayerIds.push("topousa2");
     }
@@ -146,6 +146,14 @@ function GetMapLayerIds() {
     return mapLayerIds;
 }
 
+function isUSA() {
+    var pageName = mw.config.get("wgPageName");
+    var parentRegionEnable = ($("[title='United States']").length > 0) && pageName !== 'North_America';
+
+    return (pageName === "United_States" || //region pages
+            parentRegionEnable); //sub-region under US    
+}
+
 function isUSAorCanada() {
     var embeddedMapType;
     var kmlType = document.getElementById("kmltype");
@@ -154,7 +162,6 @@ function isUSAorCanada() {
         embeddedMapType = mapSet[0];
     }
 
-    // @ts-ignore
     var pageName = mw.config.get("wgPageName");
     var parentRegionEnable = ($("[title='United States']").length > 0 || $("[title='Canada']").length > 0) && pageName !== 'North_America';
 
