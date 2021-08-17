@@ -650,6 +650,15 @@ function setHeadingTextForRegion() {
         firstHeadingText = starRatingsUser + "'s ratings";
         document.title = firstHeadingText; // set browser tab title
     }
+    else if (isMapPage()) {
+        var url = new URL(window.location.href.toString());
+        var pagename = url.searchParams.get("pagename");
+
+        if (pagename) {
+            firstHeadingText = urldecode(pagename).replace("_", " ") + " Map";
+            document.title = firstHeadingText;
+        }
+    }
     else {
         if (searchWasRun) //don't change heading unless custom search rectangle was run
         {
@@ -1090,4 +1099,8 @@ function parseConditionDate(conditionsSummary) {
     return date.length > 1
         ? new Date(date[1]).getTime() / 1000
         : undefined;
+}
+
+function isMapPage() {
+    return mw.config.get("wgPageName") === "Map";
 }

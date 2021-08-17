@@ -12,7 +12,7 @@ function initResizeControl() {
     
     var resizeControl = document.createElement('div');
     resizeControl.id = 'dragbar';
-    resizeControl.className = 'controls dragcontrol';
+    resizeControl.className = 'controls dragcontrol gmnoprint';
     resizeControl.title = 'Drag to resize map';
     resizeControl.innerHTML = '=';
 

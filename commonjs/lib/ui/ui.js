@@ -526,6 +526,8 @@ function loadUserInterface(document) {
             }
         }
     }
+
+    setHeadingTextForRegion();
 }
 
 function loadFormInterface() {

@@ -62,7 +62,8 @@ function loadMapInterface() {
 function initializemap() {
 
     if ($("#kmllistquery").length !== 0 || //region page
-        !!document.getElementById("waterflow-table")) //waterflow analysis
+        !!document.getElementById("waterflow-table") || //waterflow analysis
+        isMapPage()) //map page
         loadInteractiveMap();
     else
         loadStaticMap();

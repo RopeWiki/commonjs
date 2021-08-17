@@ -2,7 +2,7 @@
 
 function initFullscreenControl() {
     var fullscreenControl = document.createElement('div');
-    fullscreenControl.className = 'controls fullscreen-control';
+    fullscreenControl.className = 'controls fullscreen-control gmnoprint';
     fullscreenControl.id = 'fullscreenCustom';
     fullscreenControl.innerHTML =
         '<div title = "Toggle Fullscreen">' +
