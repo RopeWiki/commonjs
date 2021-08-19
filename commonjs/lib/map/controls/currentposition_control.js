@@ -4,10 +4,10 @@
 function initCurrentPositionControl() {
     if (PROTOCOL !== HTTPS || !navigator.geolocation) return;
 
-    createCurrentPositionButton();
+    curposCreateButton();
 }
 
-function createCurrentPositionButton() {
+function curposCreateButton() {
     var currentPositionControl = document.createElement('div');
     currentPositionControl.className = 'controls currentposition-control gmnoprint';
     currentPositionControl.id = 'currentPositionCustom';
@@ -19,25 +19,25 @@ function createCurrentPositionButton() {
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(currentPositionControl);
 
     currentPositionControl.onclick = function() {
-        toggleCurrentPosition();
+        curposToggle();
     };
 }
 
 var curposShowing = false, curposZoomed = false;
-var curposMarker, corposCompassMarker, curposWatchId, curposOriginalBounds;
+var curposMarker, curposCompassMarker, curposWatchId, curposOriginalBounds;
 var curposCoords, curposCompassHeading;
 
-function userMarkerAnchorPt() {
+function curposMarkerAnchorPt() { //if this isn't a function we get a compile error 'google. not found'
      return new google.maps.Point(12, 12);
 }
 
-var currentPositionOptions = {
+var curposOptions = {
     enableHighAccuracy: true,
     timeout: 5000,
     maximumAge: 0
 };
 
-function toggleCurrentPosition(force) {
+function curposToggle(force) {
 
     if (!!force) curposShowing = force;
     else {
@@ -56,22 +56,21 @@ function toggleCurrentPosition(force) {
     }
 
     if (curposShowing) {
+        if (!curposMarker) {
+            navigator.geolocation.getCurrentPosition(curposInitialize, curposHandleError, curposOptions);
 
-        if (navigator.geolocation) {
-            if (curposMarker === undefined || curposMarker === null) {
-                navigator.geolocation.getCurrentPosition(initializeCurrentPosition, handleCurrentPositionError, currentPositionOptions);
-
-                updateUserCompassMarker();
-            }
+            curposUpdateCompassMarker();
         }
 
-        startCompass();
+        if (!curposCompassMarker) {
+            curposInitializeCompass();
+        }
     }
     else {
         navigator.geolocation.clearWatch(curposWatchId);
 
-        window.removeEventListener("deviceorientation", compassHandler, true);
-        window.removeEventListener("deviceorientationabsolute", compassHandler, true);
+        window.removeEventListener("deviceorientation", curposCompassHandler, true);
+        window.removeEventListener("deviceorientationabsolute", curposCompassHandler, true);
 
         var button = document.getElementById('currentPositionCustom');
 
@@ -81,14 +80,14 @@ function toggleCurrentPosition(force) {
             }
         }
 
-        if (curposMarker !== undefined && curposMarker !== null) {
+        if (!!curposMarker) {
             curposMarker.setMap(null);
             curposMarker = null;
         }
 
-        if (corposCompassMarker !== undefined && corposCompassMarker !== null) {
-            corposCompassMarker.setMap(null);
-            corposCompassMarker = null;
+        if (!!curposCompassMarker) {
+            curposCompassMarker.setMap(null);
+            curposCompassMarker = null;
         }
 
         if (!!curposOriginalBounds) {
@@ -98,11 +97,7 @@ function toggleCurrentPosition(force) {
     }
 }
 
-function handleCurrentPositionError() {
-    toggleCurrentPosition(false);
-}
-
-function initializeCurrentPosition(position) {
+function curposInitialize(position) {
 
     var button = document.getElementById('currentPositionCustom');
 
@@ -116,7 +111,7 @@ function initializeCurrentPosition(position) {
             map: map,
             icon: {
                 url: CURRENT_POSITION_ICON,
-                anchor: userMarkerAnchorPt()
+                anchor: curposMarkerAnchorPt()
             }
         });
         
@@ -133,18 +128,31 @@ function initializeCurrentPosition(position) {
             curposCoords = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             curposMarker.setPosition(curposCoords);
         },
-        handleCurrentPositionError,
-        currentPositionOptions);
+        curposHandleError,
+        curposOptions);
 }
 
-function updateUserCompassMarker() {
+function curposInitializeCompass() {
+    if (isIOS()) {
+        DeviceOrientationEvent.requestPermission()
+            .then(function (response) {
+                if (response === "granted") {
+                    window.addEventListener("deviceorientation", curposCompassHandler, true);
+                }
+            });
+    } else {
+        window.addEventListener("deviceorientationabsolute", curposCompassHandler, true);
+    }
+}
+
+function curposUpdateCompassMarker() {
     
     if (!curposCompassHeading || !curposCoords
         || map.getZoom() < 12
             ) { //don't display
-        if (!!corposCompassMarker) {
-            corposCompassMarker.setMap(null);
-            corposCompassMarker = null;
+        if (!!curposCompassMarker) {
+            curposCompassMarker.setMap(null);
+            curposCompassMarker = null;
         }
         return;
     }
@@ -154,36 +162,27 @@ function updateUserCompassMarker() {
         strokeColor: "#00F",
         fillColor: "#007fff",
         fillOpacity: 1,
-        anchor: userMarkerAnchorPt(),
+        anchor: curposMarkerAnchorPt(),
         rotation: curposCompassHeading
     };
 
-    if (!corposCompassMarker) {
-        corposCompassMarker = new google.maps.Marker({
+    if (!curposCompassMarker) {
+        curposCompassMarker = new google.maps.Marker({
             map: map,
             icon: compassPointer
         });
     }
     
-    corposCompassMarker.setIcon(compassPointer);
-    corposCompassMarker.setPosition(curposCoords);
+    curposCompassMarker.setIcon(compassPointer);
+    curposCompassMarker.setPosition(curposCoords);
 }
 
-function startCompass() {
-    if (isIOS()) {
-        DeviceOrientationEvent.requestPermission()
-            .then(function(response) {
-                if (response === "granted") {
-                    window.addEventListener("deviceorientation", compassHandler, true);
-                }
-            });
-    } else {
-        window.addEventListener("deviceorientationabsolute", compassHandler, true);
-    }
-}
-
-function compassHandler(e) {
+function curposCompassHandler(e) {
     curposCompassHeading = (e.webkitCompassHeading + window.orientation) || Math.abs(e.alpha - 360);
 
-    updateUserCompassMarker();
+    curposUpdateCompassMarker();
+}
+
+function curposHandleError() {
+    curposToggle(false);
 }
