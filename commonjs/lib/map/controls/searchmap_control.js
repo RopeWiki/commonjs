@@ -92,7 +92,8 @@ function searchMapButtonClicked() {
         createAndDisplaySearchRectangle(searchRectBounds);
 
         if (searchRectBounds !== map.getBounds())
-            setSearchMapRectangleBounds(true);
+            //setSearchMapRectangleBounds(true);
+            setSearchMapRectangleBounds(false);
         
         setLoadingInfoText();
 

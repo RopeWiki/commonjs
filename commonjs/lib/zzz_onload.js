@@ -23,7 +23,7 @@ initToolbarCustomization();
 
 window.onload = function() {
     
-    if (iOS())
+    if (isIOS())
         $(window).scrollTop(0); //iOS doesn't start at the top after sizing from '@media only screen' query in the .css
 
     loadmapScript();

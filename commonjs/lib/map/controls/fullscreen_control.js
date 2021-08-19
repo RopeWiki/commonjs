@@ -17,7 +17,7 @@ function initFullscreenControl() {
     var elementToSendFullscreen = map.getDiv().firstChild;
 
     fullscreenControl.onclick = function () {
-        if (iOS()) { //functionality is different in iOS. Needs to use our toggleFullScreen code.
+        if (isIOS()) { //functionality is different in iOS. Needs to use our toggleFullScreen code.
 
             adjustControlsForFullscreen(fullscreenControl, !toggleFS);
             toggleFullScreen();

@@ -4,8 +4,6 @@
 
 function loadmapScript() {
 
-    setViewForAndroid();
-
     loadSkin();
 
     loadEditor();
@@ -113,12 +111,12 @@ function loadInteractiveMap() {
         keyboardShortcuts: false,
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         mapTypeControl: false, //using custom control in 'control_maptype.js'
-        zoomControl: !iOS(),
+        zoomControl: !isMobileDevice(),
         zoomControlOptions: {
             position: google.maps.ControlPosition.LEFT_CENTER
         },
 
-        streetViewControl: !iOS(),
+        streetViewControl: !isMobileDevice(),
         streetViewControlOptions: {
             position: google.maps.ControlPosition.LEFT_CENTER
         },
@@ -632,9 +630,7 @@ function loadInteractiveMap() {
 
         centermap();
 
-        setViewForAndroid();
-
-        if (isFullscreen(null) && !iOS()) { //this is set to the inverse until after window is drawn, so use inverse logic
+        if (isFullscreen(null) && !isIOS()) { //this is set to the inverse until after window is drawn, so use inverse logic
             map.set('gestureHandling', 'cooperative');
         }
     });
