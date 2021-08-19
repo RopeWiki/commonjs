@@ -25,7 +25,7 @@ function curposCreateButton() {
 
 var curposShowing = false, curposZoomed = false;
 var curposMarker, curposCompassMarker, curposWatchId, curposOriginalBounds;
-var curposCoords, curposCompassHeading;
+var curposCoords, curposCompassHeading, curposMagneticDeclination;
 
 function curposMarkerAnchorPt() { //if this isn't a function we get a compile error 'google. not found'
      return new google.maps.Point(12, 12);
@@ -104,6 +104,8 @@ function curposInitialize(position) {
     button.classList.add("enabled");
 
     curposCoords = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+    curposGetMagneticDeclination(position.coords.latitude, position.coords.longitude);
     
     if (!curposMarker) {
         curposMarker = new google.maps.Marker({
@@ -180,9 +182,25 @@ function curposUpdateCompassMarker() {
 function curposCompassHandler(e) {
     curposCompassHeading = (e.webkitCompassHeading + window.orientation) || Math.abs(e.alpha - 360);
 
+    if (!!curposMagneticDeclination) curposCompassHeading += curposMagneticDeclination;
+
     curposUpdateCompassMarker();
 }
 
 function curposHandleError() {
     curposToggle(false);
+}
+
+function curposGetMagneticDeclination(lat, lon) {
+
+    if (!!curposMagneticDeclination) return;
+    
+    var url = "https://www.ngdc.noaa.gov/geomag-web/calculators/calculateDeclination?lat1=" + lat + "&lon1=" + lon + "&resultFormat=json";
+
+    $.getJSON(geturl(url),
+        function(data) {
+            if (data) {
+                curposMagneticDeclination = data.result[0].declination;
+            };
+        });
 }
