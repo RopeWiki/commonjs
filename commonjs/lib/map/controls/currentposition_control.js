@@ -51,19 +51,20 @@ function curposToggle(force) {
 
     if (curposZoomed && !!curposMarker) {
         map.panTo(curposMarker.position);
-        map.setZoom(12);
+        if (map.getZoom() < 12)
+            map.setZoom(12);
         return;
     }
 
     if (curposShowing) {
+        if (!curposCompassMarker) {
+            curposInitializeCompass();
+        }
+
         if (!curposMarker) {
             navigator.geolocation.getCurrentPosition(curposInitialize, curposHandleError, curposOptions);
 
             curposUpdateCompassMarker();
-        }
-
-        if (!curposCompassMarker) {
-            curposInitializeCompass();
         }
     }
     else {
