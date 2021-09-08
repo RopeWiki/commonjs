@@ -671,12 +671,32 @@ function setHeadingText() {
     
     setHeadingTextForRegion(); //first, change text if necessary
 
+    var linkify = false;
+    var location = "";
+
     var header = document.getElementById("firstHeading");
     var headingText = header.children[header.children.length - 1].innerHTML;
+    var headingTextSubscript = "";
     
     //change wording of condition reports and format date
     if (headingText.startsWith("Conditions:")) {
-        headingText = "Condition Reports";
+        location = urlget(window.location.href.toString(), "Conditions:", "");
+        var posend = location.lastIndexOf("-");
+        if (posend > 0) location = location.substring(0, posend);
+        location = location.split('_').join(' ');
+        headingText = location;
+        headingTextSubscript = '<br><font size="+2">Condition Reports</font>';
+        document.title = "Conditions: " + location; // set browser tab title
+        linkify = true;
+    }
+
+    //change wording of ratings page
+    if (headingText === "List ratings") {
+        location = urlget(window.location.href.toString(), "location=", "");
+        headingText = location;
+        headingTextSubscript = '<br><font size="+2">Overall Rating</font>';
+        document.title = "Ratings: " + location; // set browser tab title
+        linkify = true;
     }
 
     //add spans to de-emphasize text in parenthesis
@@ -688,6 +708,10 @@ function setHeadingText() {
         headingText = headingText.substring(0, index) + '<span class="understate">' + headingText.substring(index, endIndex + 1) + '</span>' + headingText.substring(endIndex + 1);
     }
 
+    if (linkify) {
+        headingText = '<a href="/' + location + '" title="' + location + '">' + headingText + '</a>';
+    }
+
     //set text
-    header.children[header.children.length - 1].innerHTML = headingText;
+    header.children[header.children.length - 1].innerHTML = headingText + headingTextSubscript;
 }
