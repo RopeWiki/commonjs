@@ -4366,6 +4366,12 @@ GeoXml.prototype.DownloadURL = function(fpath, callback, title2, xmlcheck) {
         return;
     }
     fpath = geturl(fpath);
+
+    //correct for out of date luca server url
+    if (!fpath.startsWith(PROTOCOL) && fpath.indexOf("luca") > 0) {
+        fpath = PROTOCOL + LUCA_HOSTNAME + fpath.substring(fpath.indexOf("luca.ropewiki.com") + "luca.ropewiki.com".length);
+    }
+
     var xmlDoc;
     var that = this;
 
