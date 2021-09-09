@@ -681,6 +681,8 @@ function setHeadingText() {
     //change wording of condition reports and format date
     if (headingText.startsWith("Conditions:")) {
         location = urlget(window.location.href.toString(), "Conditions:", "");
+        var pos = location.indexOf("?");
+        if (pos > 0) location = location.substring(0, pos);
         var posend = location.lastIndexOf("-");
         if (posend > 0) location = location.substring(0, posend);
         location = location.split('_').join(' ');
