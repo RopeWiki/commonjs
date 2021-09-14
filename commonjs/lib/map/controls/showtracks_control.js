@@ -1,6 +1,12 @@
 ﻿//google maps custom control to show or hide tracks shown on region pages
 
 function initShowTracksControl() {
+
+    var table = document.getElementById('waterflow-table');
+    if (!!table) {
+        //document.getElementById("showKmlCheckbox").style.display = "block"; //for showing streams, for watershed info
+    }
+
     return '<label id="showKmlCheckbox" class="controls show-kml-checkbox"><input class="gmnoprint" id="routeschk" type="checkbox" onclick="toggleRoutes()">Show&nbsp;track&nbsp;data</label>';
 }
 
@@ -37,7 +43,7 @@ function toggleRoutes(kmlfile, kmlgroup) {
     }
 
     var group = "KML";
-    var url = kmlroutes.innerHTML.replace("{{SERVER}}", SITE_BASE_URL).split('&amp;').join('&');
+    var url = kmlroutes.firstChild.href;
     if (!gxml || kmlfile) {
         function geoxmlinitr() {
             // Here you can use anything you defined in the loaded script

@@ -50,11 +50,14 @@ function loadMapInterface() {
 
     // waterflow
     var table = document.getElementById('waterflow-table');
-    if (!table) return;
-    if ((typeof staticscripts) == 'undefined')
-        $.getScript((typeof waterflowjs) != 'undefined' ? waterflowjs : geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
-    else
-        setTimeout(waterflowinit, 100);
+    if (!!table) {
+        if ((typeof staticscripts) == 'undefined')
+            $.getScript((typeof waterflowjs) != 'undefined'
+                ? waterflowjs
+                : geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
+        else
+            setTimeout(waterflowinit, 100);
+    }
 }
 
 function initializemap() {
@@ -542,7 +545,7 @@ function loadInteractiveMap() {
     // set kml (if any) from "kmlfile"
     var kmlfilew = document.getElementById("kmlfilew");
     if (kmlfilew != null) {
-        var file = kmlfilew.innerHTML;
+        var file = kmlfilew.firstChild.href;
         if (file != null && file.length > 0) {
             kmlmap = "kmlfilew";
             var mapbox = "#mapbox";

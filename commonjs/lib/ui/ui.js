@@ -696,8 +696,17 @@ function setHeadingText() {
     if (headingText === "List ratings") {
         location = urlget(window.location.href.toString(), "location=", "");
         headingText = location;
-        headingTextSubscript = '<br><font size="+2">Overall Rating</font>';
+        headingTextSubscript = '<br><span class="overallrating-header"><font size="+2">Overall Rating</font></span>';
         document.title = "Ratings: " + location; // set browser tab title
+        linkify = true;
+    }
+    
+    //change wording of ratings page
+    if (headingText === "Waterflow") {
+        location = urlget(window.location.href.toString(), "location=", "");
+        headingText = location;
+        headingTextSubscript = '<br><font size="+2">Waterflow estimate</font>';
+        document.title = "Waterflow: " + location; // set browser tab title
         linkify = true;
     }
 

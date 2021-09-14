@@ -357,34 +357,17 @@ function getTableConditionDisplay(summary) {
     summary = div.innerHTML;
 
     //add tooltips to icons
-    summary = summary.replace('id="cs0"', 'id="cs0" title="The conditions are not from a descent of the canyon"');
-    summary = summary.replace('id="cs1"', 'id="cs1" title="Regretted doing the trip"');
-    summary = summary.replace('id="cs2"', 'id="cs2" title="The canyon was worth doing"');
-    summary = summary.replace('id="cs3"', 'id="cs3" title="The canyon was good"');
-    summary = summary.replace('id="cs4"', 'id="cs4" title="The canyon trip was great"');
-    summary = summary.replace('id="cs5"', 'id="cs5" title="The canyon trip was outstanding"');
+    var quality = getConditionIcon(summary, "cs");
+    if (quality !== null) summary = summary.replace('id="' + quality + '"', 'id="' + quality + '" title="' + condQuality[quality] + '"');
 
-    summary = summary.replace('id="cwa1"', 'id="cwa1" title="Completely dry or all pools avoidable"');
-    summary = summary.replace('id="cwa2"', 'id="cwa2" title="No current or just a trickle, may require shallow wading"');
-    summary = summary.replace('id="cwa2p"', 'id="cwa2p" title="No current or just a trickle, may require swimming"');
-    summary = summary.replace('id="cwa3"', 'id="cwa3" title="Light current, more than just a trickle but still weak"');
-    summary = summary.replace('id="cwa4"', 'id="cwa4" title="Moderate current, challenging but easy water hazards"');
-    summary = summary.replace('id="cwa4p"', 'id="cwa4p" title="A bit high, quite challenging but not too dangerous"');
-    summary = summary.replace('id="cwa5"', 'id="cwa5" title="High water, only for experienced swift water canyoneers"');
-    summary = summary.replace('id="cwa6"', 'id="cwa6" title="Dangerously high water, only for expert swift water canyoneers"');
-    summary = summary.replace('id="cwa7"', 'id="cwa7" title="Extremely dangerous high water, may be unsafe even for experts"');
+    var waterflow = getConditionIcon(summary, "cwa");
+    if (waterflow !== null) summary = summary.replace('id="' + waterflow + '"', 'id="' + waterflow + '" title="' + condWaterflow[waterflow] + '"');
 
-    summary = summary.replace('id="ct0"', 'id="ct0" title="No thermal insulation needed"');
-    summary = summary.replace('id="ct1"', 'id="ct1" title="Rain jacket (1mm-2mm)"');
-    summary = summary.replace('id="ct2"', 'id="ct2" title="Thin wetsuit (3mm-4mm)"');
-    summary = summary.replace('id="ct3"', 'id="ct3" title="Full wetsuit (5mm-6mm)"');
-    summary = summary.replace('id="ct4"', 'id="ct4" title="Thick wetsuit (7mm-10mm)"');
-    summary = summary.replace('id="ct5"', 'id="ct5" title="Drysuit or equivalent extreme thermal protection"');
+    var wetsuit = getConditionIcon(summary, "ct");
+    if (wetsuit !== null) summary = summary.replace('id="' + wetsuit + '"', 'id="' + wetsuit + '" title="' + condWetsuit[wetsuit] + '"');
 
-    summary = summary.replace('id="cd3"', 'id="cd3" title="Requires special precautions and/or problem solving"');
-    summary = summary.replace('id="cd4"', 'id="cd4" title="Requires special technical skills and/or gear"');
-    summary = summary.replace('id="cd5"', 'id="cd5" title="May be too dangerous or impossible even for experts"');
-    
+    var dangers = getConditionIcon(summary, "cd");
+    if (dangers !== null) summary = summary.replace('id="' + dangers + '"', 'id="' + dangers + '" title="' + condDangers[dangers] + '"');
 
     //linkify the most recent link. the rest of the html is already prepared
     //example: [[Conditions:Cabin Creek-20190923143634|'''22 Sep 2019''']] 
@@ -408,4 +391,14 @@ function getTableValueUnit(entry) {
     if (entry.unit === 'mi' || entry.unit === 'km') return miStr(entry.value);
 
     return entry.value.toString() + entry.unit.toString();
+}
+
+function getConditionIcon(entry, condType) {
+    var match = 'id="' + condType;
+    var index = entry.indexOf(match);
+    if (index < 0) return null;
+
+    index += match.length;
+
+    return condType + entry.substring(index, entry.indexOf('"', index + 1));
 }

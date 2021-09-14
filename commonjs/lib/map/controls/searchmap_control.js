@@ -106,9 +106,12 @@ function createAndDisplaySearchRectangle(bounds) {
 
     searchmapn = 0;
 
+    var editable = true;
+    if (document.getElementById('waterflow-table') !== undefined) editable = false;
+
     searchMapRectangle = new google.maps.Rectangle({
         bounds: bounds,
-        editable: true
+        editable: editable
     });
     searchMapRectangle.setMap(map);
 
@@ -212,6 +215,8 @@ function getBoundsForSearchRectangle() {
 }
 
 function clearLocationsOutside(bounds) {
+    if (!searchMapRectangle.editable) return;
+
     var newMarkers = [];
     var newBounds = new google.maps.LatLngBounds();
 

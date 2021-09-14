@@ -129,6 +129,11 @@ function isodate(date) { // YYYY-MM-DD
     return d.toISOString().substr(0, 10);
 }
 
+function dateDisplay(date) { // YYYY-MM-DD
+    var d = isodate(date);
+    return d.substr(8, 2) + ' ' + months[parseInt(d.substr(5, 2)) - 1] + ' ' + d.substr(0, 4);
+}
+
 function monthname(num) {
     var name = ["NULL", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     return name[parseInt(num)];
@@ -139,7 +144,8 @@ function cleanup(str) {
 }
 
 function wfsitelink(siteid, label, date, days, today) {
-    url = "";
+    var url = "";
+
     var site = findsite(siteid);
     if (site) {
         var mode = site.mode;
@@ -180,6 +186,8 @@ var oldrow;
 var forecast = [];
 var watershowchk = false;
 var watershowclass = "watershow";
+var wflocation;
+var wfdatapoints = [];
 
 function togglewatershowchk(id) {
     watershowchk = ! watershowchk;
@@ -189,31 +197,148 @@ function togglewatershowchk(id) {
 }
 
 function waterflow() {
+    wflocation = urlget(window.location.href.toString(), "location=", "");
+
+    loadReferencePhotos();
+}
+
+function loadReferencePhotos() {
+    //query server for reference photos
+    var url = geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+        '&query=' + urlencode('[[Category:References]][[Has condition location::' + wflocation + ']]') +
+        '|?Has condition date' +
+        //'|?Has condition waterflow' +
+        '|?Has waterflow percent' +
+        '|?Has waterflow pic' +
+        '|mainlabel=-');
+
+    $.getJSON(url, function (data) {
+        var results = data.query.results;
+        var keys = Object.keys(results);
+        for (var i = 0; i < keys.length; ++i) {
+            wfdatapoints.push({
+                link: keys[i],
+                date: isodate(results[keys[i]].printouts["Has condition date"][0] * 1000),
+                //waterflow: results[keys[i]].printouts["Has condition waterflow"][0],
+                pscale: results[keys[i]].printouts["Has waterflow percent"][0] - 1, //pscale matches {{Waterflows}} with startindex of 1 (8 levels)
+                pic: results[keys[i]].printouts["Has waterflow pic"][0].fulltext,
+                type: "Reference Photo"
+            });
+        }
+
+        loadConditionReports();
+    });
+}
+
+function loadConditionReports() {
+    //query server for condition reports
+    var url = geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
+        '&query=' + urlencode('[[Category:Conditions]][[Has condition location::' + wflocation + ']]') +
+        '|?Has condition date' +
+        '|?Has condition water' +
+        '|?Has condition quality' +
+        '|?Has condition wetsuit' +
+        '|?Has condition difficulty' +
+        '|?Has condition questionable' +
+        '|mainlabel=-');
+
+    $.getJSON(url, function (data) {
+        var results = data.query.results;
+        var keys = Object.keys(results);
+        for (var i = 0; i < keys.length; ++i) {
+            var values = results[keys[i]].printouts;
+            var waterCond = values["Has condition water"][0];
+            if (!waterCond) continue;
+
+            if (values["Has condition questionable"][0]) continue; //not reliable
+
+            var date = isodate(values["Has condition date"][0] * 1000);
+            var pscale = parseInt(waterCond.substring(0, 1));
+            if (isNaN(pscale)) continue;
+
+            if (date < '2017-02-10') //prior to this date the condition scale had 6 levels, but it has 10 levels
+            {
+                pscale = pscale * 2 - 1; //this adjusts the scale to the current 10 levels
+                if (pscale === 5) pscale = 6; //this is because the line was 'significant' which equates to 'moderate-high'. there was no 'moderate' equivalent at the time
+            }
+
+            pscale = pscale - 2; //condition reports levels 0-2 all equate to 'very low', the first level in the {{Waterflows}} levels
+            if (pscale < 0) pscale = 0;
+
+            wfdatapoints.push({
+                link: keys[i],
+                date: date,
+                pscale: pscale,
+                type: "Condition Report",
+                quality: values["Has condition quality"][0],
+                waterflow: values["Has condition water"][0],
+                wetsuit: values["Has condition wetsuit"][0],
+                dangers: values["Has condition difficulty"][0]
+            });
+        }
+
+        waterflowProcessData();
+    });
+}
+
+function waterflowProcessData() {
+
+    function sortAndLimitDatapoints() {
+
+        //filter out duplicate dates
+        //first sort so reference photos are at start, so they will get included with preference to conditon reports
+        wfdatapoints.sort((a, b) => { return a.type < b.type ? 1 : -1 });
+        function unique(array, propertyName) {
+            return array.filter((e, i) => array.findIndex(a => a[propertyName] === e[propertyName]) === i);
+        }
+        wfdatapoints = unique(wfdatapoints, "date");
+
+        wfdatapoints.sort((a, b) => {
+            if (a.pscale === b.pscale) return a.date < b.date ? 1 : -1;
+            return a.pscale > b.pscale ? 1 : -1;
+        });
+
+        var maxpointsperlevel = 2;
+        var wfdatapointslimited = [];
+        var currentlevel, currentlevelcount = 0;
+
+        for (var i = 0; i < wfdatapoints.length; ++i) {
+            if (wfdatapoints[i].pscale !== currentlevel) {
+                currentlevel = wfdatapoints[i].pscale;
+                currentlevelcount = 0;
+            }
+            if (currentlevelcount >= maxpointsperlevel) continue;
+
+            wfdatapointslimited.push(wfdatapoints[i]);
+            currentlevelcount++;
+        }
+        wfdatapoints = wfdatapointslimited;
+    }
+
+    sortAndLimitDatapoints();
+    
     var TODAY = 'T';
     var downloadth = 4;
+
     var wfwatershed = window.location.href.toString().indexOf('watershed=on') >= 0; // || url.indexOf('http')<0;
     var wflog = window.location.href.toString().indexOf('debug=log') >= 0; // || url.indexOf('http')<0;
     var wftest = window.location.href.toString().indexOf('debug=test') >= 0; // || url.indexOf('http')<0;
     var wfnousgs = window.location.href.toString().indexOf('debug=nousgs') >= 0; // || url.indexOf('http')<0;
     var wfallusgs = window.location.href.toString().indexOf('debug=allusgs') >= 0; // || url.indexOf('http')<0;
     var wflocal = window.location.href.toString().indexOf('debug=local') >= 0; // || url.indexOf('http')<0;
-    if (window.location.href.toString().indexOf('debug=noth') >= 0)
-        downloadth = 1;
+    if (window.location.href.toString().indexOf('debug=noth') >= 0) downloadth = 1;
 
     function isloading(str) { return str.indexOf('img') >= 0; }
 
     var loading = "<img height=12 src='" + SITE_BASE_URL + "/extensions/SemanticForms/skins/loading.gif'/>";
     var firstcoldate = 3;
 
-    var table = document.getElementById('waterflow-table');
-    if (!table) return;
-
     if (wfwatershed) {
-        var ths = table.getElementsByTagName('TH');
+        var th = table.getElementsByTagName('TH');
         var newth = document.createElement('th');
         newth.innerHTML = "TODAY CFS<br>(from AvgFlow)";
         newth.style.fontSize = "small";
-        ths[firstcoldate].parentNode.insertBefore(newth, ths[firstcoldate]);
+        th[firstcoldate].parentNode.insertBefore(newth, th[firstcoldate]);
         ++downloadth;
         ++firstcoldate;
     }
@@ -224,14 +349,15 @@ function waterflow() {
     var center = document.getElementById('kmlmarker');
     if (!center) return;
     var latlng = center.innerHTML.split(',');
-    loc = { lat: latlng[0], lng: latlng[1] };
+    var mainloc = { lat: latlng[0], lng: latlng[1] };
     var wficonlist;
     var kmlicons = document.getElementById("kmlicons");
     if (kmlicons != null)
         wficonlist = kmlicons.innerHTML.split(',');
 
-    // set scale  
-    var pscale = [];
+    // set scale
+    // the waterflow levels and background colors are defined by the Template:Waterflows and loaded here
+    var pscalelist = [];
     var waterscale = document.getElementById("waterscale");
     var td = waterscale.getElementsByTagName('TD');
     var th = waterscale.getElementsByTagName('TH');
@@ -246,29 +372,131 @@ function waterflow() {
         var text = text.replace(regex, "");
         var errl = l - 10; //Math.min(10,Math.max(20, (avg - l)/2));
         var errh = h + 10; //Math.min(10,Math.max(20, (h - avg)/2));
-        if (i == 7) // Extreme
+        if (i === 7) // Extreme
             avg = l = !isNaN(h) ? h : l, h = 1e10, errl = l - 10, errh = h + 10;
         if (isNaN(h) || isNaN(l))
             avg = 100, l = errl = 0, h = errh = 100;
 
-        pscale.push({ h: h, l: l, avg: avg, errh: errh, errl: errl, text: text, rgb: td[i].style.backgroundColor });
+        pscalelist.push({ h: h, l: l, avg: avg, errh: errh, errl: errl, text: text, rgb: td[i].style.backgroundColor });
         console.log("p" + i + " ~" + avg + " [" + l + " - " + h + "] [" + errl + " - " + errh + "] " + text);
     }
 
-    var th = table.getElementsByTagName('TH');
+    var table = document.getElementById('waterflow-table');
+    if (!table) return;
 
+    function assembleWfTableHeaderRow() {
+        var header =
+            '<th>Site Code<div><span id="USGS"></span> <span id="CDEC"></span></div></th>' +
+            '<th><div style="width:15em">Site Description <span class="uchk gmnoprint notranslate" style="font-weight:normal;font-size:xx-small;margin:0px;padding:0px;line-height:0.5em"><label><input class="gmnoprint" type="checkbox" onclick="toggleMetric()">Metric</label></span></div></th>' +
+            '<th>Distance</th>' +
+            '<th class="rwwarning" id = "' + isodate(new Date()) + '" style = "color: rgb(255, 0, 0); background-color: rgb(255, 255, 0);" ><b style="background-color: rgb(255, 255, 0);">TODAY</b><br style="background-color: rgb(255, 255, 0);"><div class="waterflow-prediction" style="background-color: rgb(255, 255, 0);">unknown</div></th>';
+
+        function getcicon(type, value) {
+            if (!value) return "";
+
+            var index = parseInt(value.substring(0, 1));
+            if (isNaN(index)) return "";
+            
+            var condArray = [];
+            switch (type) {
+                case 'cs':
+                    condArray = condQuality;
+                    break;
+                case 'cwa':
+                    condArray = condWaterflow;
+                    break;
+                case 'ct':
+                    condArray = condWetsuit;
+                    break;
+                case 'cd':
+                    condArray = condDangers;
+                    break;
+            }
+
+            var id = Object.keys(condArray)[index];
+
+            return '<hr class="cicons" id="' + id + '" title="' + condArray[id] + '">';
+        }
+
+        for (var i = 0; i < wfdatapoints.length; ++i) {
+            var entry = wfdatapoints[i];
+            var dispDate = dateDisplay(entry.date);
+
+            switch (entry.type) {
+
+                case "Reference Photo":
+                    header +=
+                        '<th id="' + entry.date + '" title="' + entry.type + '" class="waterflow-table-th-datacolumn">' +
+                        '<b><u>' + entry.type + '</u></b><br>' +
+                        '<a href="/' + entry.link + '" title="' + entry.type + ': ' + dispDate + '"><b>' + dispDate + '</b></a><br>' +
+                        pscalelist[entry.pscale].text + '</div><br>' +
+                        '<div>' +
+                            '<img alt="Reference Photo" src="' + SITE_BASE_URL + '/thumb.php?f=' + entry.pic + '&w=100" height="67">' +
+                        '</div>' +
+                        '</th>';
+                    break;
+
+                case "Condition Report":
+                    var qualityIcon = getcicon('cs', entry.quality);
+                    var waterflowIcon = getcicon('cwa', entry.waterflow);
+                    var wetsuitIcon = getcicon('ct', entry.wetsuit);
+                    var dangersIcon = getcicon('cd', entry.dangers);
+
+                    header +=
+                        '<th id="' + entry.date + '" title="' + entry.type + '" class="waterflow-table-th-datacolumn"><span class="notranslate">' +
+                        '<b><u>' + entry.type + '</u></b><br>' + 
+                        '<a href="/' + entry.link + '" title="' + entry.type + ': ' + dispDate + '"><b>' + dispDate + '</b></a><br>' +
+                        pscalelist[entry.pscale].text + '</div><br>' +
+                        '<span class="cicons wftable">' +
+                            qualityIcon + ' ' +
+                            waterflowIcon +
+                            wetsuitIcon +
+                            dangersIcon +
+                        '</span></span><br><br>' +
+                        '</th>';
+                    break;
+            }
+        }
+
+        return '<tr class="trow notranslate">' + header + '</tr>';
+    }
+
+    function drawWfTableHeaderRow() {
+        //var tableNewHeader = document.createElement('thead');
+        //var headerRow = tableNewHeader.insertRow();
+        //headerRow.innerHTML = assembleWfTableHeaderRow();
+        //var tableNewBody = document.createElement('tbody');
+
+        //while (table.firstChild) {
+        //    table.removeChild(table.firstChild);
+        //}
+        //table.appendChild(tableNewHeader);
+        //table.appendChild(tableNewBody);
+
+        while (table.firstChild.firstChild) {
+            table.firstChild.removeChild(table.firstChild.firstChild);
+        }
+
+        var headerRow = table.firstChild.insertRow();
+        headerRow.innerHTML = assembleWfTableHeaderRow();
+    }
+
+    drawWfTableHeaderRow();
+
+    var th = table.getElementsByTagName('TH');
+    
     // set up reference headers
     var refcnt = 0;
     for (var d = firstcoldate + 1; d < th.length; ++d)
         th[d].pscale = -1;
-    for (var rd = 0; rd < pscale.length; ++rd)
+    for (var rd = 0; rd < pscalelist.length; ++rd)
         for (var d = firstcoldate + 1; d < th.length; ++d) {
             var thi = ">" + th[d].innerHTML + "<";
-            if (thi.indexOf(">" + pscale[rd].text + "<") >= 0)
+            if (thi.indexOf(">" + pscalelist[rd].text + "<") >= 0)
                 th[d].pscale = rd, ++refcnt; // pscale value
         }
 
-    // set alternate reference
+    // set alternate reference [TODO: Not used]
     var refalt = ['Smiley5.png', 'Smiley4.png', 'Smiley3.png', 'Smiley2.png', 'Smiley1.png', 'Smiley0.png'];
     for (var rd = 0; rd < refalt.length && !refcnt; ++rd)
         for (var d = firstcoldate + 1; d < th.length; ++d) {
@@ -345,7 +573,7 @@ function waterflow() {
             }
 
             var usgsrect = [rnd(boxrect[1]), rnd(boxrect[0]), rnd(boxrect[3]), rnd(boxrect[2])];
-            var url = "https://waterservices.usgs.gov/nwis/" +
+            url = "https://waterservices.usgs.gov/nwis/" +
                 (imode ? "iv" : "dv") +
                 "/?format=json&bBox=" +
                 usgsrect.join(",") +
@@ -362,7 +590,9 @@ function waterflow() {
                         var siteid = "USGS:" + ts[i].sourceInfo.siteCode[0].value;
                         if (findsite(siteid) == null) {
                             var sitename = ts[i].sourceInfo.siteName;
-                            sitename = sitename.split(' A ').join(' AT ').split(' NEAR ').join(' NR ');
+                            sitename = sitename.split(' A ').join(' AT ');
+                            sitename = sitename.split(' NR ').join(' NEAR ');
+                            sitename = sitename.split(' AT ').join('<br>AT ').split(' NEAR ').join('<br>NEAR ');
                             addsite(siteid,
                                 sitename,
                                 ts[i].sourceInfo.geoLocation.geogLocation.latitude,
@@ -511,7 +741,6 @@ function waterflow() {
         //url = LUCA_BASE_URL + "/rwwf?html=https://cdec.water.ca.gov/cgi-progs/staSearch?staid=sensor_chk=on&sensor=20&active_chk=on&active=Y&loc_chk=on&lon1=-119.24328&lon2=-118.34252&lat1=36.191&lat2=36.9146&elev1=-5&elev2=99000&ext=.json";
         var misc = { counter: 0, name: "OTHER", error: true };
         //var preurl = LUCA_BASE_URL + "/rwwf?waterflow=";
-        var location = urlget(window.location.href.toString(), "location=", "");
         var preurl = wflocal ? PROTOCOL + "localhost/rwr?waterflow=" : LUCA_BASE_URL + "/rwr?waterflow=";
         if (wftest) preurl += "&wftest=on";
         if (wflog) preurl += "&wflog=on";
@@ -701,7 +930,7 @@ function waterflow() {
 
         function miscgetsites(multi) {
             sitecountdown(misc, 1);
-            var url = preurl + "&wflocation=" + urlencode(location) + "&wfrect=" + boxrect.join();
+            var url = preurl + "&wflocation=" + urlencode(wflocation) + "&wfrect=" + boxrect.join();
 
             $.getJSON(url,
                 function(data) {
@@ -809,6 +1038,13 @@ function waterflow() {
         return Math.floor(Q * 1e2 + 0.5) / 1e2;
     }
 
+    function valrnddisplay(Q) {
+        //round cfs to two sig figs, and remove decimals
+        if (Q === 0) return Q;
+        if (Q < 1) return Q.toPrecision(1);
+        return Math.round(Q.toPrecision(2));
+    }
+
     function addval(siteid, val) {
         if (val.length < 2)
             return;
@@ -821,6 +1057,7 @@ function waterflow() {
                     var Q3 = [-1, -1, -1, -1, -1];
                     var G3 = [-1, -1, -1, -1, -1];
                     var str = "";
+                    //add cfs
                     if (site.units.length > 0 && val.length > 1 && val[1] != "") {
                         var m3_to_cfs = 35.3146662127;
                         var val3 = val[1].split('|');
@@ -835,42 +1072,44 @@ function waterflow() {
                         }
                         var Q = Q3[0];
                         if (Q >= 0) {
-                            str += Q + (metric ? 'm3s' : 'cfs');
+                            str += valrnddisplay(Q) + (metric ? 'm3s' : 'cfs');
                             if (Q3[1] >= 0) Q3[3] = valrnd((Q + Q3[1]) / 2);
                             if (Q3[2] >= 0) Q3[4] = valrnd((Q + Q3[2]) / 2);
                         }
                         if (val[0].length > 10 && val[0][10] != 'T')
                             str += '<sub>' + val[0][10].toLowerCase() + '</sub>';
                     }
-                    if (site.units.length > 1 && val.length > 2 && val[2] != "") {
-                        var m_to_ft = 3.28084;
-                        var val3 = val[2].split('|');
-                        for (var v3 = 0; v3 < val3.length; ++v3) {
-                            var G = parseFloat(val3[v3]);
-                            if (site.units[1] != 'ft')
-                                G = G * m_to_ft;
-                            if (metric)
-                                G = G / m_to_ft;
-                            if (G >= 0)
-                                G3[v3] = valrnd(G);
-                        }
-                        var G = G3[0];
-                        if (G >= 0) {
-                            str += ' ';
-                            str += G + (metric ? 'm' : 'ft');
-                            if (G3[1] >= 0) G3[3] = valrnd((G + G3[1]) / 2);
-                            if (G3[2] >= 0) G3[4] = valrnd((G + G3[2]) / 2);
-                        }
-                    }
-                    if (site.units.length > 2 && val.length > 3 && val[3] != "") {
-                        var T = parseFloat(val[3]);
-                        if (site.units[2] != 'F')
-                            T = T * 9 / 5 + 32;
-                        if (metric)
-                            T = (T - 32) * 5 / 9;
-                        str += ' ';
-                        str += Math.floor(T * 1e0 + 0.5) / 1e0 + "&deg;" + (metric ? 'C' : 'F');
-                    }
+                    ////add gauge height
+                    //if (site.units.length > 1 && val.length > 2 && val[2] != "") {
+                    //    var m_to_ft = 3.28084;
+                    //    var val3 = val[2].split('|');
+                    //    for (var v3 = 0; v3 < val3.length; ++v3) {
+                    //        var G = parseFloat(val3[v3]);
+                    //        if (site.units[1] != 'ft')
+                    //            G = G * m_to_ft;
+                    //        if (metric)
+                    //            G = G / m_to_ft;
+                    //        if (G >= 0)
+                    //            G3[v3] = valrnd(G);
+                    //    }
+                    //    var G = G3[0];
+                    //    if (G >= 0) {
+                    //        str += ' ';
+                    //        str += G + (metric ? 'm' : 'ft');
+                    //        if (G3[1] >= 0) G3[3] = valrnd((G + G3[1]) / 2);
+                    //        if (G3[2] >= 0) G3[4] = valrnd((G + G3[2]) / 2);
+                    //    }
+                    //}
+                    ////add water temp
+                    //if (site.units.length > 2 && val.length > 3 && val[3] != "") {
+                    //    var T = parseFloat(val[3]);
+                    //    if (site.units[2] != 'F')
+                    //        T = T * 9 / 5 + 32;
+                    //    if (metric)
+                    //        T = (T - 32) * 5 / 9;
+                    //    str += ' ';
+                    //    str += Math.floor(T * 1e0 + 0.5) / 1e0 + "&deg;" + (metric ? 'C' : 'F');
+                    //}
                     cells[c].innerHTML = str;
                     cells[c].QG = [Q3, G3];
                 }
@@ -878,7 +1117,7 @@ function waterflow() {
     }
 
     var statuslabel = "<br>Currently: ";
-    var statusloading = "%DATA%";
+    var statusloading = "Not reporting";
 
     function isprov(id, prov) {
         return id.substr(0, prov.length + 1) == prov + ':'
@@ -895,7 +1134,7 @@ function waterflow() {
         site.pwidth = cfg[1];
         site.pheight = cfg[2];
         site.urls = urls;
-        site.dist = Math.round(distance(site.loc, loc) * 10) / 10;
+        site.dist = Math.round(distance(site.loc, mainloc) * 10) / 10;
         // give first priority to USGS, last priority to DF
         if (isprov(id, 'DF')) site.dist += 0.03;
         if (isprov(id, 'USGS')) site.dist -= 0.03;
@@ -907,6 +1146,7 @@ function waterflow() {
         site.sorted = -100;
         site.p = -1;
 
+        // add row to table for this waterflow site
         var newrow = document.createElement("TR");
         newrow.id = site.id;
         // insert in proper order
@@ -917,8 +1157,6 @@ function waterflow() {
                 before = rows[r];
         table.insertBefore(newrow, before);
 
-        // add cols/rows
-        var br = "<br>";
         var th = table.getElementsByTagName('TH');
         for (c = 0; c < th.length; ++c) {
             var newcol = null;
@@ -930,8 +1168,7 @@ function waterflow() {
             case 1:
                 newcol = document.createElement("TD");
                 var wdiv = "<div id='" + site.id + "watershed' style='font-size:x-small'></div>";
-                newcol.innerHTML = "<div style='font-size:small;white-space:normal'>" + site.name + wdiv + "</div>";
-                newcol.style.cssText = "white-space: normal;"
+                newcol.innerHTML = "<div class='waterflow-sitedescription'>" + site.name + wdiv + "</div>";
                 break;
             case 2:
                 newcol = document.createElement("TD");
@@ -1021,7 +1258,7 @@ function waterflow() {
                 continue;
             var cell = row.children[firstcoldate - 1]
             cell.style.fontSize = "small";
-            cell.innerHTML = valrnd(Q * pointCFS / CFS) + (metric ? 'm3s' : 'cfs') + "?";
+            cell.innerHTML = valrnddisplay(Q * pointCFS / CFS) + (metric ? 'm3s' : 'cfs') + "?";
         }
     }
 
@@ -1090,11 +1327,6 @@ function waterflow() {
         row = document.getElementById(site.id);
         var cols = row.childNodes;
         var th = table.getElementsByTagName('TH');
-/*
-      for (ic=0; ic<children.length; ++ic)
-        if (children[ic].className!="")
-           cols.push(children[ic]);         
-*/
 
         th[firstcoldate].style.cssText = "color: #FF0000";
         if (cols.length != th.length)
@@ -1128,12 +1360,12 @@ function waterflow() {
                 var refindex2 = cols[c].QG[QG][v3] < cols[refindex].QG[QG][v3] ? refindex2B : refindex2A;
                 if (refindex != refindex2 && validQG(refindex2, v3, QG)) // custom normalization
                 {
-                    var div = Math.log(pscale[th[refindex2].pscale].avg / pscale[th[refindex].pscale].avg);
+                    var div = Math.log(pscalelist[th[refindex2].pscale].avg / pscalelist[th[refindex].pscale].avg);
                     var b = Math.log(cols[refindex2].QG[QG][v3] / cols[refindex].QG[QG][v3]) / div;
                     if (div > 0 && b > 0) bnorm = b;
                 }
                 return Math.round(Math.pow(cols[c].QG[QG][v3] / cols[refindex].QG[QG][v3], 1 / bnorm) *
-                    pscale[th[refindex].pscale].avg);
+                    pscalelist[th[refindex].pscale].avg);
             }
             return -1;
         }
@@ -1160,7 +1392,7 @@ function waterflow() {
                     var diff = 10; // missing reference
                     if (validQG(d, v3, QG)) {
                         // valid reference
-                        var pps = pscale[th[d].pscale];
+                        var pps = pscalelist[th[d].pscale];
                         var pd = calcp(d, ref, ref2, ref3, v3, QG) - pps.avg;
                         //if (p<pps.errl || p>pps.errh)
                         var div = pd > 0 ? (pps.errh - pps.avg) : (pps.avg - pps.errl);
@@ -1227,7 +1459,7 @@ function waterflow() {
                 // compute percent
                 var p = calcp(r, refindex, refindex2, refindex3, refv3, refQG);
                 if (sorted >= 0 && p >= 0 && th[r].title != "") {
-                    var pps = pscale[th[r].pscale];
+                    var pps = pscalelist[th[r].pscale];
                     if (p < pps.errl || p > pps.errh)
                         sorted = -3; // diff desc, out of bounds
                     else
@@ -1258,9 +1490,9 @@ function waterflow() {
                     if (r == firstcoldate)
                         site.status = site.status + ' (' + p + '%)';
                     // adjust color scale
-                    for (s = 0; s < pscale.length - 1 && p > pscale[s].h; ++s);
+                    for (s = 0; s < pscalelist.length - 1 && p > pscalelist[s].h; ++s);
                     //console.log("p:"+p+" hsv:"+h+" rgb:"+rgb);
-                    cell.style.backgroundColor = pscale[s].rgb;
+                    cell.style.backgroundColor = pscalelist[s].rgb;
                 }
             }
 
@@ -1268,13 +1500,6 @@ function waterflow() {
                 if (cell.innerHTML != "")
                     ++refs; // empty references
 
-            // add graph links
-            cell.innerHTML += "<br>" +
-                wfsitelink(site.id, "7d", th[r].id, 7, today) +
-                " - " +
-                wfsitelink(site.id, "30d", th[r].id, 30, today) +
-                " - " +
-                wfsitelink(site.id, "1yr", th[r].id, 365, today);
             if (today)
                 addforecast(cell, site.id);
         }
@@ -1365,22 +1590,21 @@ function waterflow() {
             var avgp = sump / sumw;
             var p = sites[matched].p; // closest match
 
-            for (var s = 0; s < pscale.length - 1 && p > pscale[s].h; ++s);
-            var text = pscale[s].text;
+            for (var s = 0; s < pscalelist.length - 1 && p > pscalelist[s].h; ++s);
+            var text = pscalelist[s].text;
             var prediction = document.getElementsByClassName('waterflow-prediction');
             for (var pd = 0; pd < prediction.length; ++pd) {
                 prediction[pd].innerHTML = text;
                 prediction[pd].style.color = color;
             }
-            for (var mins = 0; mins < pscale.length - 1 && minp > pscale[mins].h; ++mins);
-            for (var maxs = 0; maxs < pscale.length - 1 && maxp > pscale[maxs].h; ++maxs);
-            var text = pscale[maxs].text;
+            for (var mins = 0; mins < pscalelist.length - 1 && minp > pscalelist[mins].h; ++mins);
+            for (var maxs = 0; maxs < pscalelist.length - 1 && maxp > pscalelist[maxs].h; ++maxs);
+            var text = pscalelist[maxs].text;
             if (maxs != mins)
-                text = pscale[mins].text + " to " + pscale[maxs].text;
+                text = pscalelist[mins].text + " to " + pscalelist[maxs].text;
             var prediction = document.getElementsByClassName('waterflow-explanation');
             for (var pd = 0; pd < prediction.length; ++pd) {
                 prediction[pd].innerHTML = " (" + match + " matching sites reporting " + text + ")";
-                prediction[pd].style.color = color;
             }
         } else {
             // diagnose failure
