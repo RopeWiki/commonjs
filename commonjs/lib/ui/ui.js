@@ -677,38 +677,36 @@ function setHeadingText() {
     var header = document.getElementById("firstHeading");
     var headingText = header.children[header.children.length - 1].innerHTML;
     var headingTextSubscript = "";
-    
-    //change wording of condition reports and format date
-    if (headingText.startsWith("Conditions:")) {
-        location = urlget(window.location.href.toString(), "Conditions:", "");
-        var pos = location.indexOf("?");
-        if (pos > 0) location = location.substring(0, pos);
-        var posend = location.lastIndexOf("-");
-        if (posend > 0) location = location.substring(0, posend);
-        location = location.split('_').join(' ');
-        headingText = location;
-        headingTextSubscript = '<br><font size="+2">Condition Reports</font>';
-        document.title = "Conditions: " + location; // set browser tab title
-        linkify = true;
+
+    function changeStandardHeader(oldTitle, headingSubscript, urlkey, newTitle) {
+        if (headingText.startsWith(oldTitle)) {
+            if (!newTitle) newTitle = oldTitle;
+            if (!urlkey) urlkey = oldTitle;
+            location = urlget(window.location.href.toString(), urlkey, "");
+            var pos = location.indexOf("?");
+            if (pos > 0) location = location.substring(0, pos);
+            var posend = location.lastIndexOf("-");
+            if (posend > 0) location = location.substring(0, posend);
+            location = location.split('_').join(' ');
+            headingText = location;
+            headingTextSubscript = '<br><font size="+2">' + headingSubscript + '</font>';
+            document.title = newTitle + " " + location; // set browser tab title
+            linkify = true;
+        }
     }
 
+    //change wording of condition reports
+    changeStandardHeader("Conditions:", "Condition Reports");
+
+    //change wording of reference photos
+    changeStandardHeader("References:", "Reference Photo");
+
     //change wording of ratings page
-    if (headingText === "List ratings") {
-        location = urlget(window.location.href.toString(), "location=", "");
-        headingText = location;
-        headingTextSubscript = '<br><span class="overallrating-header"><font size="+2">Overall Rating</font></span>';
-        document.title = "Ratings: " + location; // set browser tab title
-        linkify = true;
-    }
+    changeStandardHeader("List ratings", '<span class="overallrating-header">Overall Rating</span>', 'location=', "Ratings:");
     
-    //change wording of ratings page
-    if (headingText === "Waterflow") {
-        location = urlget(window.location.href.toString(), "location=", "");
-        headingText = location;
-        headingTextSubscript = '<br><font size="+2">Waterflow estimate</font>';
-        document.title = "Waterflow: " + location; // set browser tab title
-        linkify = true;
-    }
+    //change wording of waterflow page
+    changeStandardHeader("Waterflow", "Waterflow estimate", "location=", "Waterflow:");
+
 
     //add spans to de-emphasize text in parenthesis
     var index = headingText.indexOf("(");
