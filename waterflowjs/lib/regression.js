@@ -7,12 +7,15 @@ function expCurveValue(x, a, b, c)
 // single pass method to calculate exponential curve coefficients from pages 16-18 on this paper:
 // www.scribd.com/doc/14674814/Regressions-et-equations-integrales
 function regressionCalcFrenchMethod(pts) {
+    if (!pts) return {};
+    
+    var n = pts.length;
+    if (n < 3) return {};
+
     var i, x, y;
 
     var sum = (previousValue, currentValue) => previousValue + currentValue;
-
-    var n = pts.length;
-
+    
     //calculate the data arrays
     var Sk = []; //Sk
     var xk_minus_x1_squared = []; //(xk-x1)^2
@@ -21,6 +24,9 @@ function regressionCalcFrenchMethod(pts) {
     var yk_minus_y1 = []; //yk-y1
     var yk_minus_y1_times_xk_minus_x1 = []; //(yk-y1)*(xk-x1)
     var yk_minus_y1_times_Sk = []; //(yk-y1)*Sk
+    var yk_Sum = pts.reduce((A, B) => A + B.Y, 0);
+    
+    if (yk_Sum === 0) return {}; //error, all y values are 0
 
     Sk[0] = 0;
 
@@ -50,13 +56,17 @@ function regressionCalcFrenchMethod(pts) {
         yk_minus_y1_times_xk_minus_x1.push(_yk_minus_y1 * _xk_minus_x1);
         yk_minus_y1_times_Sk.push(_yk_minus_y1 * _Sk);
     }
-
+    
     var matrix1 = [];
     var xk_minus_x1_times_Sk_Sum = xk_minus_x1_times_Sk.reduce(sum);
     matrix1.push([xk_minus_x1_squared.reduce(sum), xk_minus_x1_times_Sk_Sum]);
     matrix1.push([xk_minus_x1_times_Sk_Sum, Sk_squared.reduce(sum)]);
 
+    if (!matrixIsValid(matrix1)) return {};
+
     var matrix1Inv = matrixInvert(matrix1);
+
+    if (!matrixIsValid(matrix1Inv)) return {};
 
     var matrix2 = [];
     matrix2.push([yk_minus_y1_times_xk_minus_x1.reduce(sum)]);
@@ -91,10 +101,13 @@ function regressionCalcFrenchMethod(pts) {
     matrix1b.push([n, thetaKSum]);
     matrix1b.push([thetaKSum, thetaK_squared.reduce(sum)]);
 
+    if (!matrixIsValid(matrix1b)) return {};
+
     var matrix1bInv = matrixInvert(matrix1b);
 
+    if (!matrixIsValid(matrix1bInv)) return {};
+
     var matrix2b = [];
-    var yk_Sum = pts.reduce((A, B) => A + B.Y, 0);
     matrix2b.push([yk_Sum]);
     matrix2b.push([yk_times_thetaK.reduce(sum)]);
 
@@ -155,6 +168,14 @@ function matrixDot(A, B) {
             return A[i].reduce((sum, elm, k) => sum + (elm * B[k][j]), 0);
         });
     });
+}
+
+function matrixIsValid(array) {
+    for (var i = 0; i < array.length; ++i)
+        for (var j = 0; j < array[0].length; ++j)
+            if (isNaN(array[i][j])) return false;
+
+    return true;
 }
 
 
