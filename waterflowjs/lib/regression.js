@@ -1,10 +1,12 @@
-﻿// Return the function for x, a, b, and c.
-function F(x, a, b, c)
+﻿// Return the function value for x, a, b, and c.
+function expCurveValue(x, a, b, c)
 {
     return a + b * Math.exp(c * x);
 }
 
-function RegressionCalcFrenchMethod(pts) {
+// single pass method to calculate exponential curve coefficients from pages 16-18 on this paper:
+// www.scribd.com/doc/14674814/Regressions-et-equations-integrales
+function regressionCalcFrenchMethod(pts) {
     var i, x, y;
 
     var sum = (previousValue, currentValue) => previousValue + currentValue;
@@ -105,7 +107,7 @@ function RegressionCalcFrenchMethod(pts) {
     var best_b = b2;
     var best_c = c2;
 
-    var error = RErrorSquared(pts, best_a, best_b, best_c);
+    var error = regressionRSquared(pts, best_a, best_b, best_c);
 
     return {
         a: best_a,
@@ -115,7 +117,7 @@ function RegressionCalcFrenchMethod(pts) {
     }
 }
 
-function RErrorSquared(pts, a, b, c) {
+function regressionRSquared(pts, a, b, c) {
     var ssRes = 0;
     var ssTot = 0;
 
@@ -133,7 +135,7 @@ function RErrorSquared(pts, a, b, c) {
     for (i = 0; i < t; i++) {
         var x = pts[i].X;
         var y = pts[i].Y;
-        var f = F(x, a, b, c);
+        var f = expCurveValue(x, a, b, c);
 
         ssRes += Math.pow(y - f, 2);
 
