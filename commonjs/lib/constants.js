@@ -1,5 +1,3 @@
-//env: 1-prod, 2-dev, 3-proddev
-const env = 1;
 
 // communication protocol
 var PROTOCOL;
@@ -8,43 +6,69 @@ const HTTP = "http://", HTTPS = "https://";
 // primary hostname of the site.
 var SITE_HOSTNAME;
 
-// Google Maps API key
-var GOOGLE_MAPS_APIKEY;
+// Base URL of the site (from which all resources are descended).
+var SITE_BASE_URL;
+
+// Other names of the site that may be used.
+var SITE_ALTERNATE_NAMES;
 
 // Hostname of server hosting the RWServer server (see https://github.com/RopeWiki/RWServer).
 var LUCA_HOSTNAME;
 
-switch (env) {
-case 1:
-        PROTOCOL = HTTP;
-        SITE_HOSTNAME = "ropewiki.com";
+// Base Url of the RWServer server.
+var LUCA_BASE_URL;
+
+// Google Maps API key
+var GOOGLE_MAPS_APIKEY;
+
+// Open Weather API key for inline weather widget
+const OPENWEATHER_APIKEY = "1d5f0c74f9119e20765fed256ecfadc5";
+
+function setConstants() { //set these automatically based on the browser url
+
+    var url = window.location.href.toString();
+
+    var protocolDelimiter = '://';
+
+    var index = url.indexOf(protocolDelimiter);
+    var protocol = url.substring(0, index);
+    var baseurl = url.substring(index + protocolDelimiter.length, url.indexOf('/', index + protocolDelimiter.length + 1));
+
+    switch (baseurl) {
+    case 'ropewiki.com': //prod
+        SITE_HOSTNAME = baseurl;
         LUCA_HOSTNAME = "luca.ropewiki.com";
         //GOOGLE_MAPS_APIKEY = "AIzaSyDdkcexZV-p5Nj8RwgLYTcegm5jorJpbyw"; //ben's
         GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw"; //public (mine)
         break;
-case 2:
-        PROTOCOL = HTTP;
-        SITE_HOSTNAME = "192.168.1.40:8080";
+    case '192.168.1.40:8080': //dev
+        SITE_HOSTNAME = baseurl;
         LUCA_HOSTNAME = "luca.ropewiki.com";
-        GOOGLE_MAPS_APIKEY = "";
+        GOOGLE_MAPS_APIKEY = "AIzaSyCRtJb1twFPUpCKG_yHwvNgkwQTmf7NqaI"; //dev (mine)
         break;
-case 3:
-        PROTOCOL = HTTPS;
-        SITE_HOSTNAME = "dev.ropewiki.com";
+    case 'dev.ropewiki.com': //proddev
+        SITE_HOSTNAME = baseurl;
         LUCA_HOSTNAME = "dev.ropewiki.com/luca";
         GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw"; //public (mine)
         break;
+    }
+
+    switch (protocol) {
+    case 'http':
+        PROTOCOL = HTTP;
+        break;
+    case 'https':
+        PROTOCOL = HTTPS;
+        break;
+    }
+
+    SITE_BASE_URL = PROTOCOL + SITE_HOSTNAME;
+
+    SITE_ALTERNATE_NAMES = [
+        PROTOCOL + "www.ropewiki.com"
+    ];
+
+    LUCA_BASE_URL = PROTOCOL + LUCA_HOSTNAME;
 }
 
-// Base URL of the site (from which all resources are descended).
-const SITE_BASE_URL = PROTOCOL + SITE_HOSTNAME;
-
-// Other names of the site that may be used.
-const SITE_ALTERNATE_NAMES = [
-    PROTOCOL + "www.ropewiki.com"
-];
-
-// Base Url of the RWServer server.
-const LUCA_BASE_URL = PROTOCOL + LUCA_HOSTNAME;
-
-const OPENWEATHER_APIKEY = "1d5f0c74f9119e20765fed256ecfadc5";
+setConstants();
