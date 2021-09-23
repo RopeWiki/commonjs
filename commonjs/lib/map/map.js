@@ -164,7 +164,7 @@ function loadlist(list, fitbounds) {
         var contentString = '<div style="width:auto;height:auto;overflow:hidden;">';
 
         // add title
-        contentString += '<b class="notranslate">' + sitelink(item.id, nonamespace(item.nameWithoutRegion)) + '</b>';
+        contentString += '<b class="notranslate">' + sitelink(item.id, nonamespace(!!item.nameWithoutRegion ? item.nameWithoutRegion : item.id)) + '</b>';
 
         // load addbutton
         var kmladdbutton = document.getElementById("kmladdbutton");

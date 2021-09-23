@@ -98,7 +98,7 @@ function getStandardTableRow(item) {
         '<td class="ctable">[ConditionsSummary]</td>';
     
     var location = Location
-        .replace(/\[LocationName]/g, item.nameWithoutRegion)
+        .replace(/\[LocationName]/g, !!item.nameWithoutRegion ? item.nameWithoutRegion : item.id)
         .replace(/\[LocationNameFull]/g, item.id)
         .replace(/\[LocationNameLink]/g, linkify(item.id))
         .replace(/\[Star Icon png]/, item.icon)

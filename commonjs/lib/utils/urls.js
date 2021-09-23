@@ -110,11 +110,14 @@ function getLocalUrl(url) {
 
 function geturl(url) {
     
-    // patch for sitename mismatch ('ropewiki.com' vs other site)
+    // patch for sitename mismatch ('ropewiki.com' vs other ropewiki site)
     var urlParams = getLocalUrl(urldecode(url));
     var local = getLocalUrl();
-    if (urlParams.protocol !== local.protocol || urlParams.baseurl !== local.baseurl) { //reassemble with correct site url
-        url = local.siteurl + urlParams.link;
+    if (urlParams.baseurl.indexOf('ropewiki') > 0 && urlParams.protocol !== local.protocol) { //reassemble with correct site url
+        var baseurl = urlParams.baseurl.indexOf('luca') === 0
+            ? local.siteurl
+            : LUCA_BASE_URL;
+        url = baseurl + urlParams.link;
     }
 
     // patch CORS for alternate site names
