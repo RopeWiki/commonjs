@@ -371,10 +371,10 @@ function getrwlist(data) {
                 obj.technicalRating = parseTechnicalRating(obj.description);
                 v = item.printouts["Has banner image file"];
                 if (v && v.length > 0)
-                    obj.thumbnail = v[0];
+                    obj.thumbnail = geturl(v[0]);
                 v = item.printouts["Has KML file"];
                 if (v && v.length > 0)
-                    obj.kmlfile = v[0];
+                    obj.kmlfile = geturl(v[0]);
                 v = item.printouts["Has info regions"];
                 if (v && v.length > 0) {
                     obj.regionList = v[0].split(/[;/]+/); //split on both ; and /

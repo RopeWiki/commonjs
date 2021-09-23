@@ -26,34 +26,28 @@ const OPENWEATHER_APIKEY = "1d5f0c74f9119e20765fed256ecfadc5";
 
 function setConstants() { //set these automatically based on the browser url
 
-    var url = window.location.href.toString();
+    var local = getLocalUrl();
 
-    var protocolDelimiter = '://';
-
-    var index = url.indexOf(protocolDelimiter);
-    var protocol = url.substring(0, index);
-    var baseurl = url.substring(index + protocolDelimiter.length, url.indexOf('/', index + protocolDelimiter.length + 1));
-
-    switch (baseurl) {
+    switch (local.baseurl) {
     case 'ropewiki.com': //prod
-        SITE_HOSTNAME = baseurl;
+        SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "luca.ropewiki.com";
         //GOOGLE_MAPS_APIKEY = "AIzaSyDdkcexZV-p5Nj8RwgLYTcegm5jorJpbyw"; //ben's
         GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw"; //public (mine)
         break;
     case '192.168.1.40:8080': //dev
-        SITE_HOSTNAME = baseurl;
+        SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "luca.ropewiki.com";
         GOOGLE_MAPS_APIKEY = "AIzaSyCRtJb1twFPUpCKG_yHwvNgkwQTmf7NqaI"; //dev (mine)
         break;
     case 'dev.ropewiki.com': //proddev
-        SITE_HOSTNAME = baseurl;
+        SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "dev.ropewiki.com/luca";
         GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw"; //public (mine)
         break;
     }
 
-    switch (protocol) {
+    switch (local.protocol) {
     case 'http':
         PROTOCOL = HTTP;
         break;

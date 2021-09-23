@@ -107,7 +107,7 @@ function createAndDisplaySearchRectangle(bounds) {
     searchmapn = 0;
 
     var editable = true;
-    if (document.getElementById('waterflow-table') !== undefined) editable = false;
+    if (!!document.getElementById('waterflow-table')) editable = false;
 
     searchMapRectangle = new google.maps.Rectangle({
         bounds: bounds,
