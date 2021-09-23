@@ -16,7 +16,11 @@ function displayinfowindow(marker) {
     }
 
     marker.infowindow.setZIndex(++zindex);
-    marker.infowindow.open(map, marker);
+    marker.infowindow.open({
+        map: map,
+        anchor: marker,
+        shouldFocus: false
+    });
     lastinfowindow = marker.infowindow;
 }
 
@@ -160,7 +164,7 @@ function loadlist(list, fitbounds) {
         var contentString = '<div style="width:auto;height:auto;overflow:hidden;">';
 
         // add title
-        contentString += '<b class="notranslate">' + sitelink(item.id, nonamespace(item.id)) + '</b>';
+        contentString += '<b class="notranslate">' + sitelink(item.id, nonamespace(item.nameWithoutRegion)) + '</b>';
 
         // load addbutton
         var kmladdbutton = document.getElementById("kmladdbutton");

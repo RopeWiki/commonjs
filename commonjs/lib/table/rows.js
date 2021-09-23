@@ -71,7 +71,7 @@ function getStandardTableRow(item) {
     const Location =
         '<td><table><tbody>' +
             '<tr>' +
-                '<td rowspan="2" class="pinmap" id="[LocationName]"><img src="[Star Icon png]" id="[LocationName]" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick="pinmap(this.id)"></td>' +
+                '<td rowspan="2" class="pinmap" id="[LocationNameFull]"><img src="[Star Icon png]" id="[LocationNameFull]" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick="pinmap(this.id)"></td>' +
                 '<td class="loc">[PermitStatusIcon]<a href="/[LocationNameLink]" title="[LocationName]">[LocationName]</a></td>' +
             '</tr>' +
             '<tr>' +
@@ -99,6 +99,7 @@ function getStandardTableRow(item) {
     
     var location = Location
         .replace(/\[LocationName]/g, item.nameWithoutRegion)
+        .replace(/\[LocationNameFull]/g, item.id)
         .replace(/\[LocationNameLink]/g, linkify(item.id))
         .replace(/\[Star Icon png]/, item.icon)
         .replace(/\[PermitStatusIcon]/, getTablePermitStatusIcon(item.permits))
