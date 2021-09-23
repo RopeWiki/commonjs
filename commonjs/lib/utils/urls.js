@@ -113,8 +113,8 @@ function geturl(url) {
     // patch for sitename mismatch ('ropewiki.com' vs other ropewiki site)
     var urlParams = getLocalUrl(urldecode(url));
     var local = getLocalUrl();
-    if (urlParams.baseurl.indexOf('ropewiki') > 0 && urlParams.protocol !== local.protocol) { //reassemble with correct site url
-        var baseurl = urlParams.baseurl.indexOf('luca') === 0
+    if (urlParams.baseurl.indexOf('ropewiki') >= 0 && urlParams.protocol !== local.protocol) { //reassemble with correct site url
+        var baseurl = urlParams.baseurl.indexOf('luca') < 0
             ? local.siteurl
             : LUCA_BASE_URL;
         url = baseurl + urlParams.link;
