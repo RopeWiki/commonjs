@@ -58,10 +58,8 @@ function validateIconUrl(href) {
     // patch default marker icons for CalTopo
     if (href.includes("caltopo.com") || href.includes("sartopo.com")) {
 
-        if (href.includes("circle/FF0000.png") ||
-            href.includes("circle/000000.png") ||
-            href.includes("c:ring,FF0000.png") ||
-            href.includes("c:ring,000000.png") ||
+        if (((href.includes("circle") || href.includes("ring")) &&
+                (href.includes("000000.png") || href.includes("FF0000.png"))) ||
             href.includes("cfg=point")
         )
             href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/open-diamond.png';
