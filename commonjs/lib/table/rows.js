@@ -72,7 +72,7 @@ function getStandardTableRow(item) {
         '<td><table><tbody>' +
             '<tr>' +
                 '<td rowspan="2" class="pinmap" id="[LocationNameFull]"><img src="[Star Icon png]" id="[LocationNameFull]" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick="pinmap(this.id)"></td>' +
-                '<td class="loc">[PermitStatusIcon]<a href="/[LocationNameLink]" title="[LocationName]">[LocationName]</a></td>' +
+        '<td class="loc">[PermitStatusIcon]<a href="/[LocationNameLink]" title="[LocationName]" target="_blank">[LocationName]</a></td>' +
             '</tr>' +
             '<tr>' +
                 '<td class="reg"><strong>[RegionLink]</strong> [ParentRegionLinks]</td>' +
