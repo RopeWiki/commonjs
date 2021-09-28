@@ -152,7 +152,8 @@ function loadlist(list, fitbounds) {
             sdescm += '<a href="javascript:toggleRoutes(\'' + urlencode(item.kmlfile) + '\',\'' + urlencode(item.id) + '\');">Show track data on map</a>';
             sdescm += '</i></div>';
         }
-        var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=' + item.location.lat.toFixed(4) + ',' + item.location.lng.toFixed(4) + '">Search nearby</a>';
+        //var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=' + item.location.lat.toFixed(4) + ',' + item.location.lng.toFixed(4) + '">Search nearby</a>';
+        var extra = ' - <a href="javascript:removeMarker(\'' + urlencode(item.id) + '\');">Hide from map</a>';
         sdescm += displaydirections(item.location.lat, item.location.lng, extra);
         
         var permitStatus = "None";
@@ -700,7 +701,8 @@ function loadingFinished() {
 function getRegionOrSearchAreaText() {
     return (!isUserListTable()
             && !isUserStarRatingsTable()
-            && (!isSpecifiedListTable() || searchWasRun))
+            && (!isSpecifiedListTable() || searchWasRun)
+            || !!searchMapRectangle)
         ? searchMapRectangle === undefined ? "region" : "search area"
         : "list";
 }
@@ -822,7 +824,7 @@ function updateUrlWithVisibleLocations() {
             visibleLocations.push(tableCurrentBody.rows[i].pageid);
         }
 
-        if (visibleLocations.length > 20) { //encode the url to save space
+        if (visibleLocations.length > 10) { //encode the url to save space
             //start by calculating differences between the entries
             visibleLocations.sort(function (a, b) { return a - b; });
             var visibleLocationsDiffs = [];
@@ -846,9 +848,13 @@ function updateUrlWithVisibleLocations() {
 
     if (currentUrl === originalUrl)
         window.history.pushState(null, '', url);
-    else 
+    else
         window.history.replaceState(null, '', url);
 }
+
+$(window).bind("popstate", function () { //to allow browser 'back' to work with the 'pushState()' call above
+    window.location = location.href;
+});
 
 function getFilteringInfo() {
     var filterInfo = "";

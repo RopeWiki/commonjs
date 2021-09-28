@@ -453,23 +453,7 @@ function deleteLocation(state) {
             return;
         }
 
-        //remove row from table
-        for (var i = 0; i < markers.length; i++) {
-            var marker = markers[i];
-            if (marker.name !== state.elementId) continue;
-
-            marker.isVisible = false;
-            marker.setMap(null);
-            if (marker.closedMarker) marker.closedMarker.setMap(null);
-            if (marker.highlight) marker.highlight.setMap(null);
-
-            //remove marker altogether from list, primarily so that the "Loaded all x locations" updates correctly with the new shorter length
-            markers.splice(i, 1);
-            locationsTotalWithinArea--;
-            break;
-        }
-
-        updateTable();
+        removeMarker(state.elementId);
     });
 }
 

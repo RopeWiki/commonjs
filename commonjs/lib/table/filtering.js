@@ -166,6 +166,39 @@ function filterMarkers(refreshTable) {
     if (refreshTable) updateTable();
 }
 
+function removeMarker(id) {
+    var index = markers.map(function (marker) { return marker.locationData.id; }).indexOf(id);
+    if (index >= 0) {
+        var marker = markers[index];
+
+        clearMarker(marker);
+
+        markers.splice(index, 1);
+        locationsTotalWithinArea--;
+        searchWasRun = true;
+        
+        setLoadingInfoText();
+
+        updateTable();
+
+        updateUrlWithVisibleLocations();
+    }
+}
+
+function clearMarker(marker) {
+    if (marker.closedMarker) {
+        marker.closedMarker.setMap(null);
+        marker.closedMarker = null;
+    }
+    if (marker.highlight) {
+        marker.highlight.setMap(null);
+        marker.highlight = null;
+    }
+
+    marker.setMap(null);
+    marker = null;
+}
+
 
 var maxTableRows = 100;
 
