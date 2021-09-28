@@ -107,7 +107,10 @@ function createAndDisplaySearchRectangle(bounds) {
     searchmapn = 0;
 
     var editable = true;
-    if (!!document.getElementById('waterflow-table')) editable = false;
+    if (!!document.getElementById('waterflow-table')) {
+        return; //don't draw it at all -- drawing is handled within waterflow
+        editable = false;
+    }
 
     searchMapRectangle = new google.maps.Rectangle({
         bounds: bounds,
@@ -226,17 +229,7 @@ function clearLocationsOutside(bounds) {
             newMarkers.push(marker);
             newBounds.extend(marker.position);
         } else {
-            if (marker.closedMarker) {
-                marker.closedMarker.setMap(null);
-                marker.closedMarker = null;
-            }
-            if (marker.highlight) {
-                marker.highlight.setMap(null);
-                marker.highlight = null;
-            }
-
-            marker.setMap(null);
-            marker = null;
+            clearMarker(marker);
         }
     }
 
