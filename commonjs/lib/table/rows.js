@@ -152,6 +152,7 @@ function addNewItemsToTable(list) {
         var newRow = tableCurrentBody.insertRow(tableCurrentBody.rows.length);
         newRow.className = "trow notranslate";
         newRow.innerHTML = html;
+        newRow.pageid = item.pageid;
     }
 
     filterMarkers();

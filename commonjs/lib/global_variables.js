@@ -2,8 +2,6 @@
 //import { SITE_BASE_URL } from "./constants";
 //import { getCookie } from "./cookies";
 
-var sites = [];
-
 // cookies
 var metric = null;
 var french = null;

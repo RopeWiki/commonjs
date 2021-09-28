@@ -24,6 +24,7 @@ function getLocationParameters(loadLimit) {
         '|%3FHas_vehicle_type' +
         '|%3FHas_shuttle_length' +
         '|%3FHas_best_season_parsed' + //remove this, included in 'has condition summary' 
+        '|%3FHas_pageid' +
 
         '|limit=' + loadLimit;
 
@@ -193,6 +194,7 @@ function updateTable() {
         var newRow = tableNewBody.insertRow(tableNewBody.rows.length);
         newRow.className = "trow notranslate";
         newRow.innerHTML = html;
+        newRow.pageid = marker.locationData.pageid;
 
         numDisplayed++;
 

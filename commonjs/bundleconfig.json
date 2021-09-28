@@ -32,7 +32,6 @@
       "lib/pdf.js",
       "lib/pictures.js",
       "lib/search.js",
-      "lib/sites.js",
       "lib/skin.js",
       "lib/stars.js",
       "lib/table/rows.js",
@@ -44,6 +43,7 @@
       "lib/ui/modal.js",
       "lib/ui/toggle.js",
       "lib/ui/ui.js",
+      "lib/utils/compression.js",
       "lib/utils/urls.js",
       "lib/wikieditor_customization.js",
       "lib/zzz_onload.js"

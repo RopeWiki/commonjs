@@ -164,8 +164,9 @@ function loadlist(list, fitbounds) {
         var contentString = '<div style="width:auto;height:auto;overflow:hidden;">';
 
         // add title
-        contentString += '<b class="notranslate">' + sitelink(item.id, nonamespace(!!item.nameWithoutRegion ? item.nameWithoutRegion : item.id)) + '</b>';
-
+        var label = nonamespace(!!item.nameWithoutRegion ? item.nameWithoutRegion : item.id);
+        contentString += '<b class="notranslate">' + aref(item.id, label, label, 'target="_blank"') + '</b>';
+        
         // load addbutton
         var kmladdbutton = document.getElementById("kmladdbutton");
         if (kmladdbutton)
@@ -442,6 +443,11 @@ function getrwlist(data) {
                     obj.shuttleLength = v[0];
                 }
 
+                v = item.printouts["Has pageid"];
+                if (v && v.length > 0) {
+                    obj.pageid = v[0];
+                }
+
                 if (userStarRatings != undefined) {
                     var index = userStarRatings.findIndex(function (x) { return x.name === obj.id; });
                     if (index >= 0) obj.userStars = userStarRatings[index].stars;
@@ -469,6 +475,10 @@ var locationsLoadedWithinArea = 0;
 function loadMoreLocations(checkCountOnly) {
     
     displaySearchMapLoader();
+
+    if (locationsQuery === '[[specified]]') {
+        setSpecifiedLocationsQuery();
+    }
 
     if (locationsTotalWithinArea === undefined) //need to query for the total
     {
@@ -516,11 +526,19 @@ function loadMoreLocations(checkCountOnly) {
         : loadLimit * 2; //if it's less than twice the load number to load all of them, then just load all of them.
 
     //load location data
-    $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
-            '&query=' + urlencode('[[Category:Canyons]][[Has coordinates::+]]'+ locationsQuery) + getLocationParameters(numberToLoad) +
-            "|order=descending,ascending|sort=Has rank rating,Has name" +
-            "|offset=" + loadOffset),
+    var urlQuery = SITE_BASE_URL + '/api.php?action=ask&format=json' +
+        '&query=' + urlencode('[[Category:Canyons]][[Has coordinates::+]]' + locationsQuery) + getLocationParameters(numberToLoad) +
+        "|order=descending,ascending|sort=Has rank rating,Has name" +
+        "|offset=" + loadOffset;
+
+    $.getJSON(geturl(urlQuery),
         function (data) {
+            if (data.error) {
+                var loadingInfo = document.getElementById("loadinginfo");
+                loadingInfo.innerHTML = '<div class="rwwarningbox"><b>Error communicating with Ropewiki server</b></div>';
+                hideSearchMapLoader();
+                return;
+            }
             var fitBounds = searchMapRectangle === undefined;
             getkmllist(data, fitBounds);
             
@@ -549,11 +567,56 @@ function loadMoreLocations(checkCountOnly) {
     loadOffset += numberToLoad;
 }
 
+var isSpecifiedListTable = function () { return false; }
+
+function setSpecifiedLocationsQuery() {
+    //get list from url and decode
+    var url = window.location.href;
+    var unencoded = getUrlParam(url, 'pages');
+    var i;
+    if (!!unencoded) {
+        unencoded = unencoded.split(','); //convert to array
+    } else {
+        var encoded = getUrlParam(url, 'pagesEnc');
+        if (!encoded) return;
+        encoded = encoded.replaceAll(' ', '+'); //our urldecode replaces '+' with ' ', but these are needed in base64 encoding
+
+        var binary_string = window.atob(encoded);
+        var len = binary_string.length;
+        var bytes = new Uint8Array(len);
+        for (i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+
+        bytes = FastIntegerCompression.uncompress(bytes);
+
+        //now convert array of diffs to actual pageids
+        unencoded = [];
+        var current = 0;
+        for (i = 0; i < bytes.length && i < maxSpecified; i++) {
+            current = bytes[i] + current;
+            unencoded.push(current);
+        }
+    }
+
+    locationsQuery = '[[Has pageid::' + unencoded.join('||') + ']]';
+    locationsTotalWithinArea = unencoded.length;
+
+    isSpecifiedListTable = function () { return true; }
+
+    var elems = document.getElementsByClassName("slideshowchk");
+    elems[0].parentElement.parentElement.style.display = "none"; //hide slideshow button because it won't work with loading locations post pageload
+}
+
 function setLoadingInfoText() { //called at the end of updateTable()
 
     setHeadingTextForRegion();
+    
+    updateUrlWithVisibleLocations();
 
     var loadingInfo = document.getElementById("loadinginfo");
+
+    if (loadingInfo.innerHTML.includes("Error")) return;
 
     if (locationsTotalWithinArea === undefined) {
         loadingInfo.innerHTML = "Please wait, loading from server...";
@@ -567,17 +630,15 @@ function setLoadingInfoText() { //called at the end of updateTable()
         //: countLocationsVisibleOnMap();
         : markers.length;
 
-    if (loadOffset >= locationsTotalWithinArea) {
-        loadingFinished();
-    }
-    
     var moreToLoad = locationsLoadedWithinArea < locationsTotalWithinArea;
     if (searchMapRectangle === undefined && searchWasRun) moreToLoad = false;
-    if (!moreToLoad) {
+
+    if (loadOffset >= locationsTotalWithinArea || !moreToLoad) {
         loadingFinished();
-        return;
+
+        if (!moreToLoad) return;
     }
-    
+
     // more button
     var loadmore = document.getElementById("loadmore");
     loadmore.innerHTML = '<button onclick="loadMoreLocations()">+</button> ';
@@ -637,7 +698,9 @@ function loadingFinished() {
 }
 
 function getRegionOrSearchAreaText() {
-    return (!isUserListTable() && !isUserStarRatingsTable())
+    return (!isUserListTable()
+            && !isUserStarRatingsTable()
+            && (!isSpecifiedListTable() || searchWasRun))
         ? searchMapRectangle === undefined ? "region" : "search area"
         : "list";
 }
@@ -664,7 +727,8 @@ function setHeadingTextForRegion() {
         }
     }
     else {
-        if (searchWasRun) //don't change heading unless custom search rectangle was run
+        if (searchWasRun //don't change heading unless custom search rectangle was run
+            || isSpecifiedListTable())
         {
             var subRegions = {};
             var parentRegions = {};
@@ -699,6 +763,7 @@ function setHeadingTextForRegion() {
                     }
                     parentRegions[parent] = parentRegions[parent] + 1;
                 }
+
             }
 
             var regionsToSort = Object.keys(parentRegions).length > 1 || Object.keys(subRegions).length === 0
@@ -730,6 +795,59 @@ function setHeadingTextForRegion() {
         var heading = document.getElementById("firstHeading");
         heading.children[heading.children.length - 1].innerHTML = firstHeadingText;
     }
+}
+
+var originalUrl;
+var maxSpecified = 95; //97 seems to be the max before erroring due to wiki limitation on query size or depth
+function updateUrlWithVisibleLocations() {
+    if (!originalUrl) originalUrl = window.location.href;
+
+    var currentUrl = window.location.href;
+
+    var totalLoaded = markers.length;
+    var setOriginalUrl = !searchWasRun && countLocationsVisibleOnMap() === totalLoaded;
+
+    var url;
+    if (setOriginalUrl) {
+        url = originalUrl;
+    } else {
+        url = '/Location?query=specified';
+
+        var visibleLocations = [];
+        var i;
+
+        var tableCurrentBody = document.getElementById("loctablebody");
+        //this will pick the items from the top of the sorted table first
+        for (i = 0; i < tableCurrentBody.rows.length; i++) {
+            visibleLocations.push(tableCurrentBody.rows[i].pageid);
+        }
+
+        if (visibleLocations.length > 20) { //encode the url to save space
+            //start by calculating differences between the entries
+            visibleLocations.sort(function (a, b) { return a - b; });
+            var visibleLocationsDiffs = [];
+            var current = 0;
+            for (i = 0; i < visibleLocations.length && i < maxSpecified; i++) {
+                visibleLocationsDiffs.push(visibleLocations[i] - current);
+                current = visibleLocations[i];
+            }
+
+            var bufDiffs = FastIntegerCompression.compress(visibleLocationsDiffs);
+
+            var urlEnc = btoa(String.fromCharCode.apply(null, new Uint8Array(bufDiffs)));
+
+            url += '&pagesEnc=' + urlEnc;
+        }
+        else 
+            url += '&pages=' + visibleLocations.join(',');
+    }
+
+    if (url === currentUrl) return;
+
+    if (currentUrl === originalUrl)
+        window.history.pushState(null, '', url);
+    else 
+        window.history.replaceState(null, '', url);
 }
 
 function getFilteringInfo() {
