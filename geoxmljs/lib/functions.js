@@ -46,7 +46,7 @@ function ILabel(pos, txt, map, scale, color) {
     }
     fgcolor = color;
     bkcolor = "FFFFFF";
-    image.url = PROTOCOL + "chart.apis.google.com/chart?chst=d_text_outline&chld=" + fgcolor + "|" + String(fs) + "|h|" + bkcolor + "|" + style + "|" + urlencode(txt);
+    image.url = "https://chart.apis.google.com/chart?chst=d_text_outline&chld=" + fgcolor + "|" + String(fs) + "|h|" + bkcolor + "|" + style + "|" + urlencode(txt);
 
     var m = new google.maps.Marker({ title2: "", map: map, position: pos, clickable: false, icon: image, zIndex: z, optimized: false });
 
@@ -58,11 +58,10 @@ function validateIconUrl(href) {
     // patch default marker icons for CalTopo
     if (href.includes("caltopo.com") || href.includes("sartopo.com")) {
 
-        if (((href.includes("circle") || href.includes("ring")) &&
-                (href.includes("000000.png") || href.includes("FF0000.png"))) ||
+        if ((href.includes("circle") || href.includes("ring")) ||
             href.includes("cfg=point")
         )
-            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/open-diamond.png';
+            href = 'https://maps.google.com/mapfiles/kml/shapes/open-diamond.png';
 
         // replace known bad icon urls:
 
@@ -72,26 +71,26 @@ function validateIconUrl(href) {
         //http://miftyisbored.com/a-complete-list-of-standard-google-maps-marker-icons/
 
         if (href.includes("nps-parking"))
-            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/parking_lot.png';
+            href = 'https://maps.google.com/mapfiles/kml/shapes/parking_lot.png';
 
         if (href.includes("nps-info"))
-            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/info.png';
+            href = 'https://maps.google.com/mapfiles/kml/shapes/info.png';
 
         if (href.includes("camera.png") ||
             href.includes("nps-camera"))
-            href = PROTOCOL + 'maps.google.com/mapfiles/kml/pal4/icon46.png';
+            href = 'https://maps.google.com/mapfiles/kml/pal4/icon46.png';
 
         if (href.includes("tent.png"))
-            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/campground.png';
+            href = 'https://maps.google.com/mapfiles/kml/shapes/campground.png';
 
         if (href.includes("crossbones.png"))
-            href = PROTOCOL + 'maps.google.com/mapfiles/kml/shapes/caution.png';
+            href = 'https://maps.google.com/mapfiles/kml/shapes/caution.png';
 
         if (href.includes("waterfall.png"))
-            href = PROTOCOL + 'maps.google.com/mapfiles/ms/icons/waterfalls.png';
+            href = 'https://maps.google.com/mapfiles/ms/icons/waterfalls.png';
 
         if (href.includes("drinkingwater.png"))
-            href = PROTOCOL + 'maps.google.com/mapfiles/ms/icons/drinking_water.png';
+            href = 'https://maps.google.com/mapfiles/ms/icons/drinking_water.png';
 
         if (href.includes("nps-caving.png"))
             href = '/images/1/13/CavingIcon.png';
