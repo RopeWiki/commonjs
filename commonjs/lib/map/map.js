@@ -689,7 +689,7 @@ function loadingFinished() {
     if (locationsLoadedWithinArea !== totalLoaded) info += ". (" + totalLoaded + " total locations loaded)";
 
     if (searchMapRectangle === undefined && searchWasRun) //search map was used but is now cancelled
-        info = "Loaded " + totalLoaded + " total locations";
+        info = "Loaded " + totalLoaded + " total location" + (totalLoaded !== 1 ? "s" : "");
 
     var filterInfo = getFilteringInfo(); 
     if (filterInfo) info += "." + filterInfo;
