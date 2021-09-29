@@ -149,11 +149,11 @@ function loadlist(list, fitbounds) {
         // set up extras
         if (item.kmlfile && item.kmlfile !== "") {
             sdescm += '<div><i>';
-            sdescm += '<a href="javascript:toggleRoutes(\'' + urlencode(item.kmlfile) + '\',\'' + urlencode(item.id) + '\');">Show track data on map</a>';
+            sdescm += '<a href="javascript:toggleRoutes(\'' + escapequotes(item.kmlfile) + '\',\'' + escapequotes(item.id) + '\');">Show track data on map</a>';
             sdescm += '</i></div>';
         }
         //var extra = ' - <a href="' + SITE_BASE_URL + '/Location?locdist=30mi&locname=' + item.location.lat.toFixed(4) + ',' + item.location.lng.toFixed(4) + '">Search nearby</a>';
-        var extra = ' - <a href="javascript:removeMarker(\'' + urlencode(item.id) + '\');">Hide from map</a>';
+        var extra = ' - <a href="javascript:removeMarker(\'' + escapequotes(item.id).split("'").join("\\\'") + '\');">Hide from map</a>';
         sdescm += displaydirections(item.location.lat, item.location.lng, extra);
         
         var permitStatus = "None";

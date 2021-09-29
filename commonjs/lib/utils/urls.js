@@ -20,6 +20,12 @@ function linkify(str) {
         : str;
 }
 
+function escapequotes(str) {
+    return !!str
+        ? urlencode(str).split("'").join("\'").split('"').join('\"')
+        : str;
+}
+
 function urlget(url, idstr, defstr) {
     var str = defstr;
     var pos = url.indexOf(idstr);
@@ -160,7 +166,7 @@ function deftext(str) {
 // if we need to find the absolute path to an image (or .kml file), the pattern that mediawiki uses to create the filepath is this:
 // stackoverflow.com/questions/2813294/how-does-mediawiki-calculate-the-file-path-to-an-image
 // "File location is determined by $wgLocalFileRepo which by default depends on $wgUploadDirectory and $wgHashedUploadDirectory. 
-// If hashing is enabled, /x/xy will be appended to the path, where xy are the first two letters of the md5 hash of the filename."
+// If hashing is enabled, /x/xy will be appended to the path, where xy are the first two characters of the md5 hash of the filename."
 // The filename that Mediawiki uses to create the hash uses underscores for spaces
 // (i.e., 'Big Falls (SoCal) Banner.jpg' is 'Big_Falls_(SoCal)_Banner.jpg')
 function MD5hash(e) {
