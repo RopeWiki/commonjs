@@ -4,6 +4,13 @@ function expCurveValue(x, a, b, c)
     return a + b * Math.exp(c * x);
 }
 
+// Return the function x-value for y, a, b, and c.
+function expCurveXValue(y, a, b, c)
+{
+    //y must be greater (or equal) to a, or NaN will result
+    return Math.log((y - a) / b) / c;
+}
+
 // single pass method to calculate exponential curve coefficients from pages 16-18 on this paper:
 // www.scribd.com/doc/14674814/Regressions-et-equations-integrales
 function regressionCalcFrenchMethod(pts) {
