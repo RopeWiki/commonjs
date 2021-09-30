@@ -846,14 +846,25 @@ function updateUrlWithVisibleLocations() {
 
     if (url === currentUrl) return;
 
-    if (currentUrl === originalUrl)
+    if (currentUrl === originalUrl) {
         window.history.pushState(null, '', url);
-    else
+        mapSpecifiedListChanged = true;
+    }
+    else if (url !== originalUrl)
         window.history.replaceState(null, '', url);
+    else {
+        window.history.back();
+        mapSpecifiedListChanged = null;
+    }
 }
 
-$(window).bind("popstate", function () { //to allow browser 'back' to work with the 'pushState()' call above
-    window.location = location.href;
+var mapSpecifiedListChanged = null;
+
+window.addEventListener('popstate', function () { //to allow browser 'back' to work with the 'pushState()' call above
+    if (mapSpecifiedListChanged) {
+        window.location = location.href; //force reload of the page
+        mapSpecifiedListChanged = null;
+    }
 });
 
 function getFilteringInfo() {
