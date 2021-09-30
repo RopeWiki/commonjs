@@ -385,7 +385,8 @@ function getrwlist(data) {
                 if (v && v.length > 0) {
                     obj.regionList = v[0].split(/[;/]+/); //split on both ; and /
                     obj.region = obj.regionList[obj.regionList.length - 1];
-                    obj.nameWithoutRegion = parseLocationNameWithoutRegion(obj);
+                    obj.regionWithoutParents = parseNameWithoutRegion(obj.region, obj); //such as 'Front Range (Colorado)'
+                    obj.nameWithoutRegion = parseNameWithoutRegion(obj.id, obj);
                 }
                 v = item.printouts["Has info major region"];
                 if (v && v.length > 0) {
@@ -971,19 +972,18 @@ function centermap() {
 //    return 2.5 * item.totalRating / 5 + 2.5 * (1 - Math.pow(2.71828183, (-1 * item.totalCounter / Q)));
 //}
 
-function parseLocationNameWithoutRegion(item) {
+function parseNameWithoutRegion(name, item) {
     //remove the region if it's in the table row as it is redundant
-    var parsedName = item.id;
     var start, end = 0;
 
     while (true) {
-        start = parsedName.indexOf(' (', end + 1);
-        end = parsedName.indexOf(')', start);
+        start = name.indexOf(' (', end + 1);
+        end = name.indexOf(')', start);
         if (start < 0 || end < 0) break;
 
         //split and reassemble with any items that are not in the region list
         var newParenthetical = "";
-        var extractedRegions = parsedName.substring(start + 2, end).split(',').map(function (item) { return item.trim(); });
+        var extractedRegions = name.substring(start + 2, end).split(',').map(function (item) { return item.trim(); });
         for (var i = 0; i < extractedRegions.length; ++i) {
             if (!item.regionList.includes(extractedRegions[i]) &&
                 !item.regionList.includes(extractedRegions[i] + " National Park")) { //special case, i.e. Death Valley because it's such a long name
@@ -992,11 +992,11 @@ function parseLocationNameWithoutRegion(item) {
             }
         }
         if (newParenthetical !== "") newParenthetical = ' (' + newParenthetical + ')';
-        parsedName = parsedName.substring(0, start) + newParenthetical + parsedName.substring(end + 1);
+        name = name.substring(0, start) + newParenthetical + name.substring(end + 1);
         end = end + newParenthetical.length - (end - start + 1); //adjust for new length of parenthetical
     }
 
-    return parsedName;
+    return name;
 }
 
 function parseBestMonths(bestSeasonRaw) {

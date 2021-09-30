@@ -103,7 +103,7 @@ function getStandardTableRow(item) {
         .replace(/\[LocationNameLink]/g, linkify(item.id))
         .replace(/\[Star Icon png]/, item.icon)
         .replace(/\[PermitStatusIcon]/, getTablePermitStatusIcon(item.permits))
-        .replace(/\[RegionLink]/g, getTableRegionLink(item.region))
+        .replace(/\[RegionLink]/g, getTableRegionLink(item))
         .replace(/\[ParentRegionLinks]/, getTableParentRegionLinks(item.parentRegions));
 
     var starDisplay = getUserStarDisplay(item.id, item.totalRating, item.userStars, item.totalCounter, 16);
@@ -186,12 +186,13 @@ function getTablePermitStatusIcon(permitStatus) {
     return img;
 }
 
-function getTableRegionLink(region) {
-    if (!region) return "no region specified";
+function getTableRegionLink(item) {
+    if (!item.region) return "no region specified";
 
-    return '<a href="/[RegionLink]" title="[Region]">[Region]</a>'
-        .replace(/\[Region]/g, region)
-        .replace(/\[RegionLink]/, linkify(region));
+    return '<a href="/[RegionLink]" title="[RegionFull]">[Region]</a>'
+        .replace(/\[Region]/g, item.regionWithoutParents)
+        .replace(/\[RegionFull]/g, item.region)
+        .replace(/\[RegionLink]/, linkify(item.region));
 }
 
 function getTableParentRegionLinks(regions) {
