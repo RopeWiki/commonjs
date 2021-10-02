@@ -51,12 +51,25 @@ function loadMapInterface() {
     // waterflow
     var table = document.getElementById('waterflow-table');
     if (!!table) {
-        if ((typeof staticscripts) == 'undefined')
-            $.getScript((typeof waterflowjs) != 'undefined'
-                ? waterflowjs
-                : geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
-        else
-            setTimeout(waterflowinit, 100);
+        //if (typeof waterflow == 'undefined')
+        //    $.getScript(geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
+        //else
+        //    setTimeout(waterflowinit, 100);
+
+        $.ajax({
+            url: geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"),
+            dataType: "script",
+            //timeout: 5 * 1000,
+            success: function () { waterflowinit(); },
+            error: function (jqXHR, exception) { return; },
+            complete: function(xhr, status) {
+                if (status === 'error' || !xhr.responseText) {
+                    return;
+                } else if (status === 'parsererror') {
+                    waterflowinit();
+                }
+            }
+        });
     }
 }
 
@@ -277,6 +290,7 @@ function loadInteractiveMap() {
         kmllist = kmllistquery;
         locationsQuery = kmllistquery.innerHTML.split("+").join(" "); //mediawiki encodes spaces as "+" characters
         locationsQuery = decodeURIComponent(locationsQuery); //now decode the url encoded string
+        locationsQuery = locationsQuery.replaceAll('\n', '');
 
         // load dynamic query
         loadMoreLocations();
@@ -532,11 +546,8 @@ function loadInteractiveMap() {
                 gxml.load(file, filelink);
             }
 
-            if ((typeof staticscripts) == 'undefined')
-                $.getScript((typeof geoxmljs) != 'undefined'
-                    ? geoxmljs
-                    : geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Geoxml.js&action=raw&ctype=text/javascript"),
-                    geoxmlinitp);
+            if ((typeof GeoXml) == 'undefined')
+                $.getScript(geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Geoxml.js&action=raw&ctype=text/javascript"), geoxmlinitp);
             else
                 setTimeout(geoxmlinitp, 100);
         }
@@ -572,11 +583,8 @@ function loadInteractiveMap() {
                 gxml.load(file, file);
             }
 
-            if ((typeof staticscripts) == 'undefined')
-                $.getScript((typeof geoxmljs) != 'undefined'
-                    ? geoxmljs
-                    : geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Geoxml.js&action=raw&ctype=text/javascript"),
-                    geoxmlinitw);
+            if ((typeof GeoXml) == 'undefined')
+                $.getScript(geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Geoxml.js&action=raw&ctype=text/javascript"), geoxmlinitw);
             else
                 setTimeout(geoxmlinitw, 100);
         }

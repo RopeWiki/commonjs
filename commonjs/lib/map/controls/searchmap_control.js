@@ -108,7 +108,7 @@ function createAndDisplaySearchRectangle(bounds) {
 
     var editable = true;
     if (!!document.getElementById('waterflow-table')) {
-        return; //don't draw it at all -- drawing is handled within waterflow
+        return; //don't draw search rectangle at all -- drawing is handled within waterflow
         editable = false;
     }
 

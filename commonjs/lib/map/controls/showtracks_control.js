@@ -72,13 +72,11 @@ function toggleRoutes(kmlfile, kmlgroup) {
             downloadedRoutes.push(group);
         }
 
-        if ((typeof staticscripts) == 'undefined')
-            $.getScript((typeof geoxmljs) != 'undefined'
-                ? geoxmljs
-                : geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Geoxml.js&action=raw&ctype=text/javascript"),
-                geoxmlinitr);
+        if ((typeof GeoXml) == 'undefined')
+            $.getScript(geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Geoxml.js&action=raw&ctype=text/javascript"), geoxmlinitr);
         else
             setTimeout(geoxmlinitr, 100);
+
         if (kmlfile) return;
     } else {
         if (showRoutes == null) {

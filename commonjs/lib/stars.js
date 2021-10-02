@@ -250,3 +250,20 @@ function getGeneralStarsDisplay(location, stars, ustars, numRatings, size) {
 
     return starDisplay;
 }
+
+
+var conditionReportsUser, isUserConditionReportsTableVar;
+
+function isUserConditionReportsTable() {
+    if (isUserConditionReportsTableVar === undefined) {
+        var url = new URL(window.location.href.toString());
+        conditionReportsUser = url.searchParams.get("onlycuser");
+
+        if (conditionReportsUser) {
+            isUserConditionReportsTableVar = true;
+        } else
+            isUserConditionReportsTableVar = false;
+    }
+
+    return isUserConditionReportsTableVar;
+}

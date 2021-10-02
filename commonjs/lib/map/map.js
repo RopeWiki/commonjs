@@ -702,6 +702,7 @@ function loadingFinished() {
 function getRegionOrSearchAreaText() {
     return (!isUserListTable()
             && !isUserStarRatingsTable()
+            && !isUserConditionReportsTable()
             && (!isSpecifiedListTable() || searchWasRun)
             || !!searchMapRectangle)
         ? searchMapRectangle === undefined ? "region" : "search area"
@@ -719,6 +720,16 @@ function setHeadingTextForRegion() {
     else if (isUserStarRatingsTable()) {
         firstHeadingText = starRatingsUser + "'s ratings";
         document.title = firstHeadingText; // set browser tab title
+    }
+    else if (isUserConditionReportsTable()) {
+        firstHeadingText = conditionReportsUser + "'s condition reports";
+        document.title = firstHeadingText; // set browser tab title
+        firstHeadingText += "<br><span class='conditionreport-user-info'>Note: This is a table of all the locations" +
+            " this user has submitted condition reports for. Each row in the table will show the date of the most recent" +
+            " condition report for that location, which is not necessarily the same report as the user made, if there" +
+            " has been a more recent condition report added. To see the user's condition report(s) for a location," +
+            " click on the date of the most recent recent condition report in the table, and find their condition report(s)" +
+            " in the page that subsequently loads.</span>";
     }
     else if (isMapPage()) {
         var url = new URL(window.location.href.toString());
