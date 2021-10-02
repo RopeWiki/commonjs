@@ -805,7 +805,8 @@ function setHeadingTextForRegion() {
         }
 
         var title = firstHeadingText.replace(', and others', '...');
-        document.title = title;
+        if (!!title)
+            document.title = title;
     }
 
     if (firstHeadingText !== "") {
