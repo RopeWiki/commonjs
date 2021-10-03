@@ -52,8 +52,6 @@ var STARLIST = [
     SITE_BASE_URL + "/images/4/41/GoldStar4.png"
 ];
 
-const DOWNLOAD_FILE = SITE_BASE_URL + "/images/a/ad/DownIcon.png";
-
 const PINMAP_ICON = SITE_BASE_URL + "/images/8/86/PinMap.png";
 const MARKER_MOUSEOVER_HIGHLIGHT = SITE_BASE_URL + "/images/3/39/Starn_b.png"; //blue outline
 const MARKER_USERLIST_HIGHLIGHT = SITE_BASE_URL + "/images/e/e6/Starn_y.png"; //yellow outline

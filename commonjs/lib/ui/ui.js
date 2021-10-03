@@ -89,19 +89,7 @@ function loadUserInterface(document) {
         if (text.trim().split(' ').join() == "==Background==")
             sections[i].innerHTML = "";
     }
-
-    // add to list button
-    var currentUser = mw.config.get("wgUserName");
-
-    var addToListElement = document.getElementById("add-to-list");
-    if (currentUser !== null && currentUser !== "null" && addToListElement) {
-        var pageName = mw.config.get("wgPageName");
-        pageName = pageName.split("_").join(" ");
-        pageName = pageName.split("'").join("%27");
-
-        addToListElement.innerHTML = '<input class="add-to-list-button gmnoprint" title="Add to a custom list" type="submit" onclick="addToList(\'' + pageName + '\')" value="Add&nbsp;to List">';
-    }
-
+    
     // javascriptlink
     var jslink = document.getElementsByClassName('jslink');
     for (var i = 0; i < jslink.length; i++)
@@ -298,7 +286,8 @@ function loadUserInterface(document) {
     var kml = document.getElementById('kmlmapdisplay');
     var edit = window.location.href.toString().indexOf("&action=") > 0;
     if (hdr && pdf && kml && !edit) {
-        var text = ' <select class="notranslate" style="width:27px;height:32px;background-image:url(' + DOWNLOAD_FILE + ');" id="pdfselect" value="" onchange="pdfselect(this)">';
+        //download icon
+        var text = ' <select class="notranslate" id="pdfselect" value="" onchange="pdfselect(this)">';
         text += '<option selected disabled hidden style="display: none" value=""></option>';
         text += '<option value="P">PDF: Page</option>';
         text += '<option value="PM">PDF: Map</option><option value="KM">KML: Map</option><option value="GM">GPX: Map</option>';
@@ -312,6 +301,25 @@ function loadUserInterface(document) {
         div.id = "pdfbutton";
         div.innerHTML = text;
         hdr.appendChild(div);
+
+        //add to list icon
+        var currentUser = mw.config.get("wgUserName");
+
+        if (currentUser !== null && currentUser !== "null") {
+            var pageName = mw.config.get("wgPageName");
+            pageName = pageName.split("_").join(" ");
+            pageName = pageName.split("'").join("%27");
+            
+            var text = ' <input id="add-to-list" title="Add to a custom list" type="submit" onclick="addToList(\'' + pageName + '\')" value="">';
+            
+            var div = document.createElement('SPAN');
+            div.className = "gmnoprint";
+            //div.title = "Download";
+            //div.id = "pdfbutton";
+            div.innerHTML = text;
+            hdr.appendChild(div);
+        }
+        
     }
 
     // load credits
@@ -723,4 +731,24 @@ function setHeadingText() {
 
     //set text
     header.children[header.children.length - 1].innerHTML = headingText + headingTextSubscript;
+
+    //set permit status (icon and colored hr line)
+    var permit = document.getElementById("permit");
+    if (!!permit) {
+        var permitStatus = permit.innerHTML;
+        if (!!permitStatus && permitStatus !== "No") {
+
+            var div = document.createElement('div');
+            div.innerHTML = getTablePermitStatusIcon(permitStatus);
+            var icon = div.firstChild;
+            icon.classList.add("header");
+
+            var hr = document.createElement("hr");
+            hr.className = "permit-hr " + permitStatus;
+
+            header.prepend(icon);
+            header.parentNode.insertBefore(hr, header.nextSibling); //insert after the #firstheading element
+        }
+    }
 }
+
