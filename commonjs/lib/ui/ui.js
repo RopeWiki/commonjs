@@ -284,7 +284,7 @@ function loadUserInterface(document) {
     var hdr = document.getElementById('firstHeading');
     var pdf = document.getElementById('idcredits');
     var kml = document.getElementById('kmlmapdisplay');
-    var edit = window.location.href.toString().indexOf("&action=") > 0;
+    var edit = window.location.href.toString().indexOf("&action=") > 0 || window.location.href.toString().indexOf("&diff=") > 0;
     if (hdr && pdf && kml && !edit) {
         //download icon
         var text = ' <select class="notranslate" id="pdfselect" value="" onchange="pdfselect(this)">';
@@ -732,9 +732,10 @@ function setHeadingText() {
     //set text
     header.children[header.children.length - 1].innerHTML = headingText + headingTextSubscript;
 
-    //set permit status (icon and colored hr line)
+    //set permit status (icon and colored hr line) //TODO: this can be handled by .css ::before and ::after tags
     var permit = document.getElementById("permit");
-    if (!!permit) {
+    var edit = window.location.href.toString().indexOf("&action=") > 0 || window.location.href.toString().indexOf("&diff=") > 0;
+    if (!!permit && !edit) {
         var permitStatus = permit.innerHTML;
         if (!!permitStatus && permitStatus !== "No") {
 
