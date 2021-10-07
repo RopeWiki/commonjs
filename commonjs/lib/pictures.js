@@ -15,8 +15,8 @@ function pictureinit() {
     var picsort = document.createElement("div");
     picsort.innerHTML =
         '<br>Sort by:<br>' +
-        '<input type="radio" id="sortdist" name="sortpics" value="Distance" onclick="updatePictureGrid();" checked>&nbsp;<label for="sortdist">Distance</label><br>' +
-        '<input type="radio" id="sortdate" name="sortpics" value="Date"onclick="updatePictureGrid();" >&nbsp;<label for="sortdate">Date</label><br>' +
+        '<input type="radio" id="sortdist" name="sortpics" value="Distance" onclick="updatePictureGrid();" checked>&nbsp;<label for="sortdist">Distance (from original location)</label><br>' +
+        '<input type="radio" id="sortdate" name="sortpics" value="Date"onclick="updatePictureGrid();" >&nbsp;<label for="sortdate">Date (newest first)</label><br>' +
         '<br>';
     piclist.parentNode.insertBefore(picsort, piclist);
 
