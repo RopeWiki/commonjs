@@ -1,7 +1,7 @@
 
 var piciconlist = [];
 var picloadingmsg = "<img height=12 src='" + SITE_BASE_URL + "/extensions/SemanticForms/skins/loading.gif'/> Loading... ";
-var piclist, picloading, picloadingerr, picloadingn;
+var piclist, picloading, picloadingerr, picloadingn, picCoords = [];
 
 function pictureinit() {
     piclist = document.getElementById('picture-list');
@@ -28,7 +28,7 @@ function pictureinit() {
     //var url = preurl + picrect.innerHTML;
 
     var kmlrect = document.getElementById("kmlrect");
-    var coords = kmlrect.innerHTML.split(',');
+    picCoords = kmlrect.innerHTML.split(',');
 
     clearLocationsUpdateTableCallback = updatePictureGrid;
 
@@ -37,27 +37,29 @@ function pictureinit() {
         var sw = bounds.getSouthWest();
         var ne = bounds.getNorthEast();
 
-        var coords = [];
-        coords.push(sw.lat().toFixed(3));
-        coords.push(sw.lng().toFixed(3));
-        coords.push(ne.lat().toFixed(3));
-        coords.push(ne.lng().toFixed(3));
+        picCoords = [];
+        picCoords.push(sw.lat().toFixed(3));
+        picCoords.push(sw.lng().toFixed(3));
+        picCoords.push(ne.lat().toFixed(3));
+        picCoords.push(ne.lng().toFixed(3));
+
+        flickrPage = 0;
         
-        runFlickrSearch(coords);
+        runFlickrSearch();
     }
 
-    runFlickrSearch(coords);
+    runFlickrSearch();
 }
 
 var flickrPage = 0;
 
-function runFlickrSearch(coords) {
+function runFlickrSearch() {
 
     picloading.innerHTML = picloadingmsg;
 
     //Flickr
     //coords have to be lng/lat for Flicker instead of lat/lng, so reorder
-    var bbox = coords[1] + "," + coords[0] + "," + coords[3] + "," + coords[2];
+    var bbox = picCoords[1] + "," + picCoords[0] + "," + picCoords[3] + "," + picCoords[2];
     
     var FLICKR_API_KEY = "4cf233b7707befcb3da28c6f23a8ccef";
     var urlFlickr = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1&api_key=' + FLICKR_API_KEY + '&bbox=' + bbox + '&extras=geo,date_upload,date_taken,url_q,description,owner_name';
@@ -103,9 +105,21 @@ function runFlickrSearch(coords) {
             loadPictureList(list);
 
             var pages = results.photos.pages;
+            var loadMore = document.getElementById('loadmorepic');
+
             if (flickrPage < pages) {
-                runFlickrSearch(coords);
-            } else flickrPage = 0;
+                if (!loadMore) {
+                    loadMore = document.createElement("div");
+                    loadMore.id = "loadmorepic";
+                    picloading.parentNode.insertBefore(loadMore, picloading.nextSibling);
+                }
+
+                loadMore.innerHTML = '<br>Loaded ' + flickrPage + ' of ' + pages + ' pages&nbsp;<input type="button" value="Load more" title="Load more photos" onclick="runFlickrSearch()" class="userlistbutton showmore"></td>';
+
+            } else {
+                if (!!loadMore) loadMore.outerHTML = ''; //delete
+                flickrPage = 0;
+            }
         }
     }
 
@@ -186,7 +200,7 @@ function loadPictureList(list) {
 
 function updatePictureGrid() {
 
-    picloading.innerHTML = markers.length + " pictures loaded";
+    picloading.innerHTML = markers.length + ' picture' + (markers.length !== 1 ? "s" : "") + ' loaded';
 
     //clear all items
     piclist.innerHTML = '';
