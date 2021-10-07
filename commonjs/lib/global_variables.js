@@ -73,10 +73,6 @@ var kmlsummary;
 // keep bounds for autozoom and center
 var boundslist;
 
-var piciconlist = [];
-var picloadingmsg = "<img height=12 src='" + SITE_BASE_URL + "/extensions/SemanticForms/skins/loading.gif'/> Loading... ";
-var piclist, picloading, picloadingerr, picloadingn;
-
 // Variables for toggleRoutes function
 var showRoutes, loadedRoutes;
 

@@ -86,21 +86,19 @@ function loadlist(list, fitbounds) {
         if (!item.id || item.id === "")
             continue;
 
-        var alreadyExists = false;
-        for (var j = 0; j < markers.length; ++j) {
-            if (markers[j].name === item.id) {
-                alreadyExists = true;
-                break;
-            }
-        }
-        if (alreadyExists) continue;
+        if (markerAlreadyExists(item.id)) continue;
 
         ++numberAdded;
-        --nlist;
-        // set up icon
-        var zindexm = 5000 + nlist;
-        if (item.stars)
-            zindexm += item.stars * 1000;
+
+        var zindexm;
+        if (!item.zindex) {
+            --nlist;
+            zindexm = 5000 + nlist;
+            if (item.stars)
+                zindexm += item.stars * 1000;
+        } else {
+            zindexm = item.zindex;
+        }
 
         var iconm = "";
         if (item.icon)
@@ -611,13 +609,13 @@ function setSpecifiedLocationsQuery() {
 }
 
 function setLoadingInfoText() { //called at the end of updateTable()
+    var loadingInfo = document.getElementById("loadinginfo");
+    if (!loadingInfo) return;
 
     setHeadingTextForRegion();
     
     updateUrlWithVisibleLocations();
-
-    var loadingInfo = document.getElementById("loadinginfo");
-
+    
     if (loadingInfo.innerHTML.includes("Error")) return;
 
     if (locationsTotalWithinArea === undefined) {
@@ -818,6 +816,10 @@ function setHeadingTextForRegion() {
 var originalUrl;
 var maxSpecified = 95; //97 seems to be the max before erroring due to wiki limitation on query size or depth
 function updateUrlWithVisibleLocations() {
+
+    var tableCurrentBody = document.getElementById("loctablebody");
+    if (!tableCurrentBody) return;
+
     if (!originalUrl) originalUrl = window.location.href;
 
     var currentUrl = window.location.href;
@@ -834,7 +836,6 @@ function updateUrlWithVisibleLocations() {
         var visibleLocations = [];
         var i;
 
-        var tableCurrentBody = document.getElementById("loctablebody");
         //this will pick the items from the top of the sorted table first
         for (i = 0; i < tableCurrentBody.rows.length; i++) {
             visibleLocations.push(tableCurrentBody.rows[i].pageid);
@@ -976,6 +977,18 @@ function centermap() {
     google.maps.event.trigger(map, 'resize');
 
     map.panTo(center);
+}
+
+function markerAlreadyExists(id)
+{
+    var alreadyExists = false;
+    for (var j = 0; j < markers.length; ++j) {
+        if (markers[j].name === id) {
+            alreadyExists = true;
+            break;
+        }
+    }
+    return alreadyExists;
 }
 
 //function calculateRankRating(item) {
@@ -1257,4 +1270,8 @@ function parseConditionDate(conditionsSummary) {
 
 function isMapPage() {
     return mw.config.get("wgPageName") === "Map";
+}
+
+function isNearbyPhotosPage() {
+    return mw.config.get("wgPageName") === "Nearby_Photos";
 }

@@ -220,3 +220,7 @@ function addUACAStyle() {
     sheet.innerHTML = french ? " .uaca0 { display: none ; }" : " .uaca1 { display: none ; }";
     if (document.body) document.body.appendChild(sheet);
 }
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}

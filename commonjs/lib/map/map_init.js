@@ -45,31 +45,29 @@ function loadMapInterface() {
         initializemap();
     }
 
-    // recent pictures
-    pictureinit();
-
     // waterflow
     var table = document.getElementById('waterflow-table');
     if (!!table) {
-        //if (typeof waterflow == 'undefined')
-        //    $.getScript(geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
-        //else
-        //    setTimeout(waterflowinit, 100);
+        if (typeof waterflow == 'undefined')
+            $.getScript(geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
+        else
+            setTimeout(waterflowinit, 100);
 
-        $.ajax({
-            url: geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"),
-            dataType: "script",
-            //timeout: 5 * 1000,
-            success: function () { waterflowinit(); },
-            error: function (jqXHR, exception) { return; },
-            complete: function(xhr, status) {
-                if (status === 'error' || !xhr.responseText) {
-                    return;
-                } else if (status === 'parsererror') {
-                    waterflowinit();
-                }
-            }
-        });
+        //alternate loading method:
+        //$.ajax({
+        //    url: geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"),
+        //    dataType: "script",
+        //    //timeout: 5 * 1000,
+        //    success: function () { waterflowinit(); },
+        //    error: function (jqXHR, exception) { return; },
+        //    complete: function(xhr, status) {
+        //        if (status === 'error' || !xhr.responseText) {
+        //            return;
+        //        } else if (status === 'parsererror') {
+        //            waterflowinit();
+        //        }
+        //    }
+        //});
     }
 }
 
@@ -77,7 +75,8 @@ function initializemap() {
 
     if ($("#kmllistquery").length !== 0 || //region page
         !!document.getElementById("waterflow-table") || //waterflow analysis
-        isMapPage()) //map page
+        isMapPage() || //map page
+        isNearbyPhotosPage()) //map page
         loadInteractiveMap();
     else
         loadStaticMap();
@@ -453,7 +452,7 @@ function loadInteractiveMap() {
         controls += spstart + initShowTracksControl() + spend;
 
         // map search
-        if (document.getElementById('locsearch')) {
+        if (document.getElementById('locsearch') || getUrlParam(window.location.href, 'location')) {
             initSearchMapControl();
         }
     }
@@ -650,6 +649,9 @@ function loadInteractiveMap() {
     initFullscreenControl();
     initResizeControl();
     initCurrentPositionControl();
+    
+    // recent pictures
+    pictureinit();
 }
 
 function waterflowinit() {

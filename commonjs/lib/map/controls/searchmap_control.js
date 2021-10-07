@@ -78,6 +78,9 @@ var searchWasRun = false;
 var searchMapRectangle;
 var searchMapLoader;
 var regionQuery; //used to store regionQuery if search map is opened but then cancelled before running search
+var searchMapBoundsChangedCallback = searchMapCallbackRegionSearch; //default callback function, override if desired
+var clearLocationsUpdateTableCallback = updateTable; //default callback function, override if desired
+
 
 function searchMapButtonClicked() {
     
@@ -174,8 +177,15 @@ function searchMapRectangleBoundsChanged() {
 function setSearchMapRectangleBounds(checkCountOnly) {
 
     var bounds = searchMapRectangle.bounds;
+    
+    searchMapBoundsChangedCallback(checkCountOnly, bounds);
+}
+
+function searchMapCallbackRegionSearch(checkCountOnly, bounds) {
+
     var sw = bounds.getSouthWest();
     var ne = bounds.getNorthEast();
+
     var query =
         '[[Category:Canyons]]' +
         '[[Has latitude::>' + sw.lat().toFixed(3) + ']]' +
@@ -238,5 +248,5 @@ function clearLocationsOutside(bounds) {
 
     setLoadingInfoText();
 
-    updateTable();
+    clearLocationsUpdateTableCallback();
 }

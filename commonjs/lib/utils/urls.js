@@ -62,8 +62,11 @@ function addUrlParam(param, id, val) {
 }
 
 function getUrlParam(param, id, def) {
-    var idstr = "&" + id + "=";
-    return urlget(param, idstr, def);
+    var value = urlget(param, "&" + id + "=", def);
+    if (!value)
+        value = urlget(param, "?" + id + "=", def);
+
+    return value;
 }
 
 function setUrlParam(param, id, val) {
