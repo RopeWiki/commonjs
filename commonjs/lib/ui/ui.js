@@ -732,24 +732,20 @@ function setHeadingText() {
     //set text
     header.children[header.children.length - 1].innerHTML = headingText + headingTextSubscript;
 
-    //set permit status (icon and colored hr line) //TODO: this can be handled by .css ::before and ::after tags
-    var permit = document.getElementById("permit");
+    //set permit status (icon and colored hr line)
     var edit = window.location.href.toString().indexOf("&action=") > 0 || window.location.href.toString().indexOf("&diff=") > 0;
+    var permit = document.getElementById("permit");
     if (!!permit && !edit) {
         var permitStatus = permit.innerHTML;
         if (!!permitStatus && permitStatus !== "No") {
-
-            var div = document.createElement('div');
-            div.innerHTML = getTablePermitStatusIcon(permitStatus);
-            var icon = div.firstChild;
-            icon.classList.add("header");
-
-            var hr = document.createElement("hr");
-            hr.className = "permit-hr " + permitStatus;
-
-            header.prepend(icon);
-            header.parentNode.insertBefore(hr, header.nextSibling); //insert after the #firstheading element
+            header.classList.add("Permit");
+            header.classList.add(permitStatus);
         }
+    }
+
+    var unexplored = document.getElementsByClassName("permit unexplored").length > 0;
+    if (unexplored && !edit) {
+        header.classList.add("unexplored");
     }
 }
 

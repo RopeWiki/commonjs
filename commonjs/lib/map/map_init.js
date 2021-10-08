@@ -556,6 +556,7 @@ function loadInteractiveMap() {
     var kmlfilew = document.getElementById("kmlfilew");
     if (kmlfilew != null) {
         var file = kmlfilew.firstChild.href;
+        if (!file) file = kmlfilew.innerHTML;
         if (file != null && file.length > 0) {
             kmlmap = "kmlfilew";
             var mapbox = "#mapbox";
