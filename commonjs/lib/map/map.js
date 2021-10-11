@@ -467,7 +467,7 @@ function getkmllist(data, fitbounds) {
     hideSearchMapLoader();
 }
 
-const loadLimit = 100;
+var loadLimit = 100;
 var loadOffset = 0;
 var locationsTotalWithinArea;
 var locationsLoadedWithinArea = 0;
@@ -521,6 +521,11 @@ function loadMoreLocations(checkCountOnly) {
         return;
     }
 
+    var limit = getUrlParam(window.location.href, 'limit');
+    if (!!limit) {
+        loadLimit = Number(limit);
+    }
+
     var numberToLoad = locationsTotalWithinArea - (loadOffset + loadLimit * 2) > 0
         ? loadLimit
         : loadLimit * 2; //if it's less than twice the load number to load all of them, then just load all of them.
@@ -555,7 +560,7 @@ function loadMoreLocations(checkCountOnly) {
                 $.getJSON(geturl(SITE_BASE_URL + '/api.php?action=ask&format=json' +
                         '&query=' + urlencode('[[Has user::' + listUser + ']][[Has list::~' + listName + '*]][[Has location::+]]') +
                         '|?Has location|?Has tentative date|?Has comment' +
-                        '|limit=' + 100),
+                        '|limit=' + 500),
                     function (data) {
                         setUserListInfo(data);
                     });
