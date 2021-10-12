@@ -472,7 +472,7 @@ var loadOffset = 0;
 var locationsTotalWithinArea;
 var locationsLoadedWithinArea = 0;
 
-function loadMoreLocations(checkCountOnly) {
+function loadMoreLocations(checkCountOnly, numberToLoad) {
     
     displaySearchMapLoader();
 
@@ -524,11 +524,10 @@ function loadMoreLocations(checkCountOnly) {
     var limit = getUrlParam(window.location.href, 'limit');
     if (!!limit) {
         loadLimit = Number(limit);
+        if (loadLimit > 1000) loadLimit = 1000;
     }
 
-    var numberToLoad = locationsTotalWithinArea - (loadOffset + loadLimit * 2) > 0
-        ? loadLimit
-        : loadLimit * 2; //if it's less than twice the load number to load all of them, then just load all of them.
+    if (!numberToLoad) numberToLoad = loadLimit;
 
     //load location data
     var urlQuery = SITE_BASE_URL + '/api.php?action=ask&format=json' +
@@ -644,10 +643,8 @@ function setLoadingInfoText() { //called at the end of updateTable()
         if (!moreToLoad) return;
     }
 
-    // more button
-    var loadmore = document.getElementById("loadmore");
-    loadmore.innerHTML = '<button onclick="loadMoreLocations()">+</button> ';
-
+    setLoadMoreButton();
+    
     var info = "Loaded ";
 
     var totalLoaded = markers.length;
@@ -815,6 +812,27 @@ function setHeadingTextForRegion() {
     if (firstHeadingText !== "") {
         var heading = document.getElementById("firstHeading");
         heading.children[heading.children.length - 1].innerHTML = firstHeadingText;
+    }
+}
+
+function setLoadMoreButton() {
+
+    var remaining = locationsTotalWithinArea - locationsLoadedWithinArea;
+    
+    var loadmore = document.getElementById("loadmore");
+
+    var loadAlot = 500;
+    if (loadLimit > loadAlot) loadAlot = loadLimit;
+    
+    //if it's less than twice the load number to load all of them, then just load all of them
+    if (remaining >= loadAlot * 2) {
+        loadmore.innerHTML = '<button title="Load ' + loadAlot + ' more" onclick="loadMoreLocations(false, ' + loadAlot + ')">+' + loadAlot + '</button> ';
+    } else {
+        loadmore.innerHTML = '<button title="Load remaining" onclick="loadMoreLocations(false, ' + loadAlot * 2 + ')">All</button> ';
+    }
+
+    if (remaining > loadLimit * 2 && loadLimit < loadAlot) { //also add the '+' button
+        loadmore.innerHTML = '<button title="Load ' + loadLimit + ' more" onclick="loadMoreLocations(false, ' + loadLimit + ')">+</button> ' + loadmore.innerHTML;
     }
 }
 
