@@ -479,14 +479,13 @@ function loadUserInterface(document) {
                                 w = Math.round(num) + "km<sup>2</sup>";
                             else
                                 w = Math.round(num * 0.386) + "mi<sup>2</sup>";
-                            w = '<span class="notranslate">~' + w + '</span>';
+                            w = '<span class="umi2 notranslate">~' + w + '</span>';
                             if (num > 100)
-                                w +=
-                                    '<hr id="cd5" title="May massively flood with heavy rains and keep flooded for many days afterwards">';
+                                w += '<hr class="cicons" id="cd5" title="May massively flood during heavy rains and remain flooded for many days afterwards">';
                             else if (num > 50)
-                                w += '<hr id="cd4" title="May massively flood with heavy rains">';
+                                w += '<hr class="cicons" id="cd4" title="May massively flood during heavy rains">';
                             else if (num > 25)
-                                w += '<hr id="cd3" title="May flood with heavy rains">';
+                                w += '<hr class="cicons" id="cd3" title="May flood during heavy rains">';
                         }
                     }
                     waterflowdiv.innerHTML += ' ' + w;

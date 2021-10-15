@@ -48,6 +48,10 @@ function convertUnitElements(element) {
     texts = element.getElementsByClassName('umi-ex'); //extended miles, may have text other than the miles
     for (i = 0; i < texts.length; i++)
         texts[i].innerHTML = uconv(texts[i].innerHTML, miExStr);
+
+    texts = element.getElementsByClassName('umi2');
+    for (i = 0; i < texts.length; i++)
+        texts[i].innerHTML = uconv(texts[i].innerHTML, mi2Str);
 }
 
 function adjustHtmlStringForMetric(txt) {
@@ -155,6 +159,35 @@ function miExStr(milesEx) { //locate the mi string within and convert it, leavin
     converted += milesEx.substr(cursor);
 
     return converted;
+}
+
+// See uconv below
+function mi2Str(miles2, space) { //square miles
+    if (typeof miles2 == "undefined" || miles2 === null) return ""; //empty 
+
+    miles2 = miles2.toString().trim();
+    if (!miles2) return ""; //whitespace
+    
+    miles2 = miles2.replace(",", "");
+
+    var wasMetric = miles2.includes("km");
+
+    var estimate = miles2.startsWith('~');
+    if (estimate) miles2 = miles2.substring(1);
+
+    miles2 = parseFloat(miles2);
+
+    if (isNaN(miles2)) return "";
+
+    if (metric && !wasMetric) //convert to metric
+        miles2 /= mi2tokm2;
+
+    if (!metric && wasMetric) //convert to imperial
+        miles2 *= mi2tokm2;
+    
+    var decimalPos = (miles2 >= 1) ? 2 : (miles2 > 0) ? 1 : 0;
+
+    return (estimate ? "~" : "") + Number(miles2.toPrecision(decimalPos)) + (space ? "&nbsp;" : "") + (metric ? "km" : "mi") + '<sup>2</sup>';
 }
 
 // called by uconv below

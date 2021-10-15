@@ -52,6 +52,7 @@ const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 // geo constants
 const km2mi = 0.621371;
 const m2ft = 3.28084;
+const mi2tokm2 = 0.386;
 
 // ===== Map global variables =====
 
