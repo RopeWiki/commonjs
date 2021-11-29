@@ -139,8 +139,9 @@ function filterMarkers(refreshTable) {
                 display = false;
 
             var extraRisk = filters["extra_risk"];
-            if (!!extraRisk && extraRisk.length > 0 && !(extraRisk.includes(p.technicalRating.risk)))
-                display = false;
+            if (!!extraRisk && extraRisk.length > 0)
+                if (!(extraRisk.includes(p.technicalRating.risk)) && !(extraRisk.includes('n/a') && !p.technicalRating.risk))
+                    display = false;
 
             //technical rating French
             var vertical = filters["vertical"];
