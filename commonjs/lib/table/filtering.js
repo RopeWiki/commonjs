@@ -278,6 +278,8 @@ function updateTable() {
     metricCheckbox[0].firstChild.firstChild.checked = metric;
 
     setLoadingInfoText();
+
+    scrollTableFirstRowToTop();
 }
 
 function showAllTableRows() {
@@ -466,5 +468,23 @@ function predicateBy(propString, direction) {
             return -1 * direction;
         }
         return 0;
+    }
+}
+
+function scrollTableFirstRowToTop() {
+    //because of the sticky header row in the table, resorting it will result in the top rows being offscreen if the table was scrolled down
+    //scroll it back to the first row if it was offscreen
+
+    var rows = document.getElementById('loctabledata').rows;
+    if (!!rows && rows.length > 1) { //row[0] is the header row, see if there are any other rows
+        var firstRow = rows[0];
+        var rect = firstRow.getBoundingClientRect();
+        if (rect.top < 0) {
+            var offsetPosition = rect.top + window.pageYOffset - 22;
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "instant"
+            });
+        }
     }
 }
