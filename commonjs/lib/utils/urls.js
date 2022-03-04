@@ -143,6 +143,17 @@ function geturl(url) {
     return url;
 }
 
+function getUrlWithoutCache(url) {
+    
+    var newUrl = geturl(url);
+
+    //add timestamp to end of url to bypass the cache
+    if (!!newUrl && getLocalUrl(url).baseurl === SITE_HOSTNAME) //only do this for files hosted on our own site
+        newUrl += "?" + new Date().getTime();
+
+    return newUrl;
+}
+
 function getdomain(link) {
     var base = link.split('http');
     if (link.length <= 0)

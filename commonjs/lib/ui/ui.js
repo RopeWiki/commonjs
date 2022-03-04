@@ -365,6 +365,12 @@ function loadUserInterface(document) {
         }
     }
 
+    //add timestamp to KML file download to break caching
+    elem = document.getElementById("kmldownload");
+    if (elem) {
+        elem.firstChild.href = getUrlWithoutCache(elem.firstChild.href);
+    }
+
     // flashing warning
     var wdir = 1, wval = 0xFF, wstep = 0x80;
     var wtimer = setInterval(function() {

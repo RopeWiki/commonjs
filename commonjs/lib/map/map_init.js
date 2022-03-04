@@ -482,6 +482,8 @@ function loadInteractiveMap() {
 
                 file = file.split("&amp;").join("&");
 
+                file = getUrlWithoutCache(file);
+
                 var selection = bskmlfile.innerHTML.toString().split("&amp;").join("&").split(',');
 
                 if (urldecode(file).indexOf(urldecode(selection[0])) < 0)
