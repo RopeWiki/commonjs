@@ -230,6 +230,8 @@ function getBoundsForSearchRectangle() {
 function clearLocationsOutside(bounds) {
     if (!searchMapRectangle.editable) return;
 
+    searchWasRun = true;
+
     var newMarkers = [];
     var newBounds = new google.maps.LatLngBounds();
 
@@ -245,7 +247,7 @@ function clearLocationsOutside(bounds) {
 
     markers = newMarkers;
     boundslist = newBounds;
-
+    
     setLoadingInfoText();
 
     clearLocationsUpdateTableCallback();

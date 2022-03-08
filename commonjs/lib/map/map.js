@@ -1038,7 +1038,7 @@ function parseNameWithoutRegion(name, item) {
         for (var i = 0; i < extractedRegions.length; ++i) {
             if (!item.regionList.includes(extractedRegions[i]) &&
                 !item.regionList.includes(extractedRegions[i] + " National Park")) { //special case, i.e. Death Valley because it's such a long name
-                if (i > 0) newParenthetical += ', ';
+                if (!!newParenthetical) newParenthetical += ', ';
                 newParenthetical += extractedRegions[i]; //not a region so add it
             }
         }
