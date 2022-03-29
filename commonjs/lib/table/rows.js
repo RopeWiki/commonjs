@@ -216,6 +216,8 @@ function getTableParentRegionLinks(regions) {
 function getTableTechnicalRating(rating) {
     var tableRatingDisplay = "";
 
+    if (!rating) return tableRatingDisplay;
+
     var tableRating = !french
         ? rating.combinedACA
         : rating.combinedFrench;
