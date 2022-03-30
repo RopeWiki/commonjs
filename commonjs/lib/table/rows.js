@@ -189,6 +189,8 @@ function getTablePermitStatusIcon(permitStatus) {
 function getTableRegionLink(item) {
     if (!item.region) return "no region specified";
 
+    if (item.noregionlink) return item.region;
+
     return '<a href="/[RegionLink]" title="[RegionFull]">[Region]</a>'
         .replace(/\[Region]/g, item.regionWithoutParents)
         .replace(/\[RegionFull]/g, item.region)
