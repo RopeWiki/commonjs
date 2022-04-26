@@ -42,6 +42,7 @@ function setConstants() { //set these automatically based on the browser url
         GOOGLE_MAPS_APIKEY = "AIzaSyCRtJb1twFPUpCKG_yHwvNgkwQTmf7NqaI"; //dev (mine)
         break;
     case 'dev.ropewiki.com': //proddev
+    case 'dev.rope.wiki': //proddev
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "dev.ropewiki.com/luca";
         GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw"; //public (mine)
