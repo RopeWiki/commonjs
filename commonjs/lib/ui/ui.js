@@ -738,6 +738,7 @@ function setHeadingText() {
     header.children[header.children.length - 1].innerHTML = headingText + headingTextSubscript;
 
     //set permit status (icon and colored hr line)
+    var tooltipText;
     var edit = window.location.href.toString().indexOf("&action=") > 0 || window.location.href.toString().indexOf("&diff=") > 0;
     var permit = document.getElementById("permit");
     if (!!permit && !edit) {
@@ -745,12 +746,34 @@ function setHeadingText() {
         if (!!permitStatus && permitStatus !== "No") {
             header.classList.add("Permit");
             header.classList.add(permitStatus);
+
+            switch (permitStatus) {
+            case 'Yes':
+                tooltipText = 'Permit required';
+                break;
+            case 'Restricted':
+                tooltipText = 'Access is restricted';
+                break;
+            case 'Closed':
+                tooltipText = 'Closed to entry';
+                break;
+            }
         }
     }
 
     var unexplored = document.getElementsByClassName("permit unexplored").length > 0;
     if (unexplored && !edit) {
         header.classList.add("unexplored");
+        tooltipText = 'Unexplored';
+    }
+
+    if (tooltipText) {
+        //add span object to give something for permit tooltip to show over
+        var span = document.createElement("span");
+        span.className = "firstHeadingTooltip";
+        span.title = tooltipText;
+
+        header.insertBefore(span, header.children[0]);
     }
 }
 
