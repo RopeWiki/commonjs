@@ -196,7 +196,7 @@ function curposGetMagneticDeclination(lat, lon) {
 
     if (!!curposMagneticDeclination) return;
     
-    var url = "https://www.ngdc.noaa.gov/geomag-web/calculators/calculateDeclination?lat1=" + lat + "&lon1=" + lon + "&resultFormat=json";
+    var url = "https://www.ngdc.noaa.gov/geomag-web/calculators/calculateDeclination?lat1=" + lat + "&lon1=" + lon + "&key=zNEw7&resultFormat=json"; //api key is on their website for use by everyone
 
     $.getJSON(geturl(url),
         function(data) {
