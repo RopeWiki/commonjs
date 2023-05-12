@@ -46,6 +46,7 @@
       "lib/utils/compression.js",
       "lib/utils/urls.js",
       "lib/wikieditor_customization.js",
+      "lib/yelp.js",
       "lib/zzz_onload.js"
     ],
     "minify": {

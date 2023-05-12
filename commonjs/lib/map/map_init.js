@@ -655,6 +655,14 @@ function loadInteractiveMap() {
     
     // recent pictures
     pictureinit();
+
+    //2022 april fools, add yelp icons:
+    if ($("#kmllistquery").length !== 0 //region page
+        && urlget(window.location.href, 'yelp') === ''
+    ) {
+        google.maps.event.addListener(map, "idle", updateYelpLocations);
+        google.maps.event.addListener(map, "tilesloaded", updateYelpPending);
+    }
 }
 
 function waterflowinit() {

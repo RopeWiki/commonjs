@@ -22,6 +22,9 @@ function displayinfowindow(marker) {
         shouldFocus: false
     });
     lastinfowindow = marker.infowindow;
+
+    if (marker.isYelp)
+        showYelpInfoPopup();
 }
 
 function pinicon(id, icon) {
@@ -289,6 +292,7 @@ function loadlist(list, fitbounds) {
                 displayinfowindow(this);
             });
 
+        if (item.noregionlink) marker.isYelp = true;
         
         item.stars = (item.stars != null ? item.stars : -1);
         
