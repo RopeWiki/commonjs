@@ -2,7 +2,7 @@
 // https://www.codemag.com/Article/2011031/Using-Geolocation-and-Google-Maps
 
 function initCurrentPositionControl() {
-    if (PROTOCOL !== HTTPS || !navigator.geolocation) return;
+    if ((PROTOCOL !== HTTPS && SITE_HOSTNAME !== 'localhost:8080') || !navigator.geolocation) return;
 
     curposCreateButton();
 }
@@ -26,6 +26,7 @@ function curposCreateButton() {
 var curposShowing = false, curposZoomed = false;
 var curposMarker, curposCompassMarker, curposWatchId, curposOriginalBounds;
 var curposCoords, curposCompassHeading, curposMagneticDeclination;
+var compassMinZoom = 12;
 
 function curposMarkerAnchorPt() { //if this isn't a function we get a compile error 'google. not found'
      return new google.maps.Point(12, 12);
@@ -39,6 +40,10 @@ var curposOptions = {
 
 function curposToggle(force) {
 
+    //first click:  show position. if position is outside of the current map scale, zoom out map to include it
+    //second click: zoom in and scroll to current position, unless already zoomed in enough and showing -- in which case go to third click
+    //third click:  hide position and reset original zoom
+
     if (!!force) curposShowing = force;
     else {
         if (!curposShowing)
@@ -50,10 +55,19 @@ function curposToggle(force) {
     }
 
     if (curposZoomed && !!curposMarker) {
-        map.panTo(curposMarker.position);
-        if (map.getZoom() < 12)
-            map.setZoom(12);
-        return;
+        var inView = map.getBounds().contains(curposMarker.position);
+        var zoomedOut = map.getZoom() < compassMinZoom;
+
+        if (!inView || zoomedOut) {
+            map.panTo(curposMarker.position);
+            if (zoomedOut)
+                map.setZoom(compassMinZoom); //zoom in enough to show the compass
+
+            return;
+        }
+
+        //already in view and zoomed in, so proceed with hiding the cursor
+        curposShowing = curposZoomed = false;
     }
 
     if (curposShowing) {
@@ -92,7 +106,7 @@ function curposToggle(force) {
         }
 
         if (!!curposOriginalBounds) {
-            map.fitBounds(curposOriginalBounds); //set back to original
+            map.fitBounds(curposOriginalBounds, 0); //set back to original
             map.panToBounds(curposOriginalBounds);
         }
     }
@@ -122,7 +136,7 @@ function curposInitialize(position) {
         var newBounds = map.getBounds();
         newBounds.extend(curposCoords);
 
-        map.fitBounds(newBounds);
+        map.fitBounds(newBounds, 0);
         map.panToBounds(newBounds);
     }
 
@@ -151,7 +165,7 @@ function curposInitializeCompass() {
 function curposUpdateCompassMarker() {
     
     if (!curposCompassHeading || !curposCoords
-        || map.getZoom() < 12
+        || map.getZoom() < compassMinZoom
             ) { //don't display
         if (!!curposCompassMarker) {
             curposCompassMarker.setMap(null);
