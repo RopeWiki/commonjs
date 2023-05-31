@@ -12,8 +12,7 @@ function initSearchMapControl() {
 
     searchMapControl.appendChild(searchMapText);
 
-    google.maps.event.addDomListener(searchMapControl,
-        "click",
+    searchMapControl.addEventListener("click",
         function() {
             searchMapButtonClicked();
         });

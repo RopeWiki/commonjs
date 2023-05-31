@@ -41,8 +41,7 @@ function dropdownItem(options) {
     controlText.innerHTML = options.text;
     control.appendChild(controlText);
 
-    google.maps.event.addDomListener(control,
-        "click",
+    control.addEventListener("click",
         function () {
             options.action();
         });
@@ -69,9 +68,8 @@ function dropdownCheckbox(options) {
     container.appendChild(chk);
     container.appendChild(controlText);
 
-    google.maps.event.addDomListener(chk,
-        "change",
-        function () {
+    chk.addEventListener("change",
+        function() {
             options.action();
         });
 
@@ -133,15 +131,13 @@ function createDropdownControl(options) {
         setArrow(dropdown);
     }
 
-    google.maps.event.addDomListener(selectedItem,
-        "click",
-        function () {
+    selectedItem.addEventListener("click",
+        function() {
             if (dropdown.style.display === "" ||
                 dropdown.style.display === "none") {
                 dropdown.style.display = "block";
                 setArrow(dropdown);
-            }
-            else
+            } else
                 hideDropdownList(dropdown);
         });
 
@@ -159,18 +155,16 @@ function createDropdownControl(options) {
         });
 
     if (!!options.dropdownHideTimer) {
-        google.maps.event.addDomListener(container,
-            "mouseleave",
-            function () {
-                options.dropdownHideTimer = setTimeout(function () {
-                    hideDropdownList(dropdown);
-                },
+        container.addEventListener("mouseleave",
+            function() {
+                options.dropdownHideTimer = setTimeout(function() {
+                        hideDropdownList(dropdown);
+                    },
                     1000);
             });
 
-        google.maps.event.addDomListener(container,
-            "mouseenter",
-            function () {
+        container.addEventListener("mouseenter",
+            function() {
                 clearTimeout(options.dropdownHideTimer);
             }
         );

@@ -44,19 +44,16 @@ function initLegendControl() {
     legendBox.appendChild(controlText);
     legendBox.appendChild(condenseButton);
     legendBox.appendChild(legendContent);
-    
-    google.maps.event.addDomListener(chk,
-        "change",
-        function () {
+
+    chk.addEventListener("change",
+        function() {
             toggleLegend();
         });
 
-    google.maps.event.addDomListener(condenseButton,
-        "click",
-        function () {
+    condenseButton.addEventListener("click",
+        function() {
             toggleLegendWidth();
         });
-
 
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legendBox);
 
