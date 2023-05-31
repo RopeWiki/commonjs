@@ -26,7 +26,8 @@ function curposCreateButton() {
 var curposShowing = false, curposZoomed = false;
 var curposMarker, curposCompassMarker, curposWatchId, curposOriginalBounds;
 var curposCoords, curposCompassHeading, curposMagneticDeclination;
-var compassMinZoom = 12;
+var compassMinZoom = 12; //don't display compass when zoomed out further than this
+var compassFocusZoom = 14; //level to zoom when focusing on current position
 
 function curposMarkerAnchorPt() { //if this isn't a function we get a compile error 'google. not found'
      return new google.maps.Point(12, 12);
@@ -61,7 +62,7 @@ function curposToggle(force) {
         if (!inView || zoomedOut) {
             map.panTo(curposMarker.position);
             if (zoomedOut)
-                map.setZoom(compassMinZoom); //zoom in enough to show the compass
+                map.setZoom(compassFocusZoom); //zoom in enough to focus on user's position
 
             return;
         }
