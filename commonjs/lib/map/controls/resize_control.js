@@ -18,8 +18,8 @@ function initResizeControl() {
 
     map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(resizeControl);
 
-    google.maps.event.addDomListener(resizeControl,
-        'mousedown', function() {
+    resizeControl.addEventListener('mousedown',
+        function() {
             var ghostbar = createGhostbar();
 
             $(document).mousemove(function(e) {
@@ -27,14 +27,15 @@ function initResizeControl() {
             });
         });
 
-    google.maps.event.addDomListener(resizeControl,
-        'touchstart', function (e) {
+    resizeControl.addEventListener('touchstart',
+        function(e) {
             var ghostbar = createGhostbar();
 
-            $(document).bind('touchmove', function (e) {
-                var y = (e.originalEvent.touches[0] || e.originalEvent.changedTouches[0]).pageY;
-                ghostbar.css("top", y + 2);
-            });
+            $(document).bind('touchmove',
+                function(e) {
+                    var y = (e.originalEvent.touches[0] || e.originalEvent.changedTouches[0]).pageY;
+                    ghostbar.css("top", y + 2);
+                });
 
             e.preventDefault();
         });
