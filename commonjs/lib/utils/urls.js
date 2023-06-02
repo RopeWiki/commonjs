@@ -41,48 +41,19 @@ function urlget(url, idstr, defstr) {
     return str;
 }
 
-function addUrlParam(param, id, val) {
+function getUrlParam(url, key, defaultValue) {
+    var uri = new URL(url);
+    var value = uri.searchParams.get(key);
 
-    var pid = "&" + id + "=";
-    var i = param.indexOf(pid);
-    if (i < 0)
-        param += pid + val;
-    else {
-        var a = param.substr(0, i);
-        var b = param.substr(i + pid.length);
-        param = a + pid + val;
-        if (b !== val) {
-            if (b.length > 0 && b[0] !== "&")
-                param += ",";
-            param += b;
-        }
-    }
-
-    return param;
-}
-
-function getUrlParam(param, id, def) {
-    var value = urlget(param, "&" + id + "=", def);
-    if (!value)
-        value = urlget(param, "?" + id + "=", def);
+    if (!value) value = defaultValue;
 
     return value;
 }
 
-function setUrlParam(param, id, val) {
-
-    var pid = "&" + id + "=";
-    var i = param.indexOf(pid);
-    if (i >= 0) {
-        var b = "";
-        var a = param.substr(0, i);
-        var l = param.indexOf("&", i + 1);
-        if (l >= 0)
-            b = param.substr(l);
-        param = a + b;
-    }
-    param += pid + val;
-    return param;
+function setUrlParam(url, key, value) {
+    var uri = new URL(url);
+    uri.searchParams.set(key, value);
+    return uri.toString();
 }
 
 function getLocalUrl(url) {
@@ -143,15 +114,24 @@ function geturl(url) {
     return url;
 }
 
+function getKmlFileWithoutCache(url) {
+    //if it is a ropewiki.com file, add a timestamp to the end of the url to bypass the cache
+    //for other urls (such as wikiloc), do not do this because it is not needed and causes a lengthy delay in downloading the file
+    var isropewiki = getdomain(url).includes(SITE_HOSTNAME);
+
+    if (isropewiki) url = getUrlWithoutCache(url);
+
+    return url;
+}
+
 function getUrlWithoutCache(url) {
     
     var newUrl = geturl(url);
 
     //add timestamp to end of url to bypass the cache
-    if (!!newUrl && getLocalUrl(url).baseurl === SITE_HOSTNAME) //only do this for files hosted on our own site
-        newUrl += "?" + new Date().getTime();
-
-    return newUrl;
+    newUrl = setUrlParam(newUrl, 'ts', new Date().getTime());
+    
+    return newUrl.toString();
 }
 
 function getdomain(link) {

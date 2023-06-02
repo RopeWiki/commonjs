@@ -128,14 +128,29 @@ function rwlink(url, opts) {
     var rwext = 'ext=.rw';
 
     // apply opts
-    var urlopts = urlcheckbox;
+    var urlopts = "";
     var olist = opts.split("&");
     for (var i = 0; i < olist.length; ++i) {
         var idval = olist[i].split("=");
         if (idval.length != 2) continue;
         urlopts = setUrlParam(urlopts, idval[0], idval[1]);
     }
-
+    
+    function setUrlParam(param, id, val) {
+        var pid = "&" + id + "=";
+        var i = param.indexOf(pid);
+        if (i >= 0) {
+            var b = "";
+            var a = param.substr(0, i);
+            var l = param.indexOf("&", i + 1);
+            if (l >= 0)
+                b = param.substr(l);
+            param = a + b;
+        }
+        param += pid + val;
+        return param;
+    }
+    
     if (metric)
         url = url.replace(rwext, 'metric=on&' + rwext);
     if (french)

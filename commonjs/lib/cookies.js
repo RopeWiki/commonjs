@@ -1,5 +1,7 @@
 
 function setCookie(cname, cvalue, exdays) {
+    if (!exdays) exdays = 360 * 10; // 10 years
+    
     var d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     var expires = "expires="+d.toUTCString();
@@ -32,12 +34,12 @@ function initializeCookies() {
          //$.getJSON(geturl(url), function( data ) {
          //    if (data && data.country_code)
          //    {
-         //        setCookie("country", "on", 360*10); // 10 years
+         //        setCookie("country", "on", 360*10);
          //        console.log("country:"+data.country_code);
          //        if (data.country_code!="US")
          //        {
-         //            setCookie("metric", "on", 360*10); // 10 years
-         //            setCookie("french", "on", 360*10); // 10 years
+         //            setCookie("metric", "on", 360*10);
+         //            setCookie("french", "on", 360*10);
          //            window.location.reload();
          //        }
          //    }
@@ -47,9 +49,9 @@ function initializeCookies() {
     var url = window.location.href.toString();
     // language quick setup
     if (url[url.length - 3] === "#") {
-        setCookie("metric", "on", 360 * 10); // 10 years
-        setCookie("french", "on", 360 * 10); // 10 years
-        setCookie("country", "on", 360 * 10); // 10 years
-        setCookie("googtrans", "/en/" + url.substr(url.length - 2), 360 * 10); // 10 years
+        setCookie("metric", "on");
+        setCookie("french", "on");
+        setCookie("country", "on");
+        setCookie("googtrans", "/en/" + url.substr(url.length - 2));
     }
 }

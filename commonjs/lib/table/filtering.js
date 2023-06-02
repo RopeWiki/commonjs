@@ -372,12 +372,10 @@ function setTableHeaderSortIcons() {
 }
 
 function setOptionCheckboxes() {
-    var url = window.location.href.toString();
-
     var chks = document.getElementsByClassName('optionchk');
     for (var i = 0; i < chks.length; i++) {
         var id = chks[i].id + 'chk';
-        var checked = url.indexOf('&' + id) > 0;
+        var checked = getCookie(id) !== "";
         chks[i].innerHTML = '<label style="white-space: nowrap;"><input id="' + id + '" class="optionschk submitoff" type="checkbox" onclick="toggle' + id + '(' + "'" + id + "'" + ')" ' + (checked ? 'checked' : '') + '>' + chks[i].innerHTML + '</label>';
         toggleOption(id, checked);
     }

@@ -1,6 +1,6 @@
 function toggleMetric() {
     metric = !metric;
-    setCookie("metric", metric ? "on" : "", 360*10); // 10 years
+    setCookie("metric", metric ? "on" : "");
 
     setMetricFields();
 
@@ -9,7 +9,7 @@ function toggleMetric() {
 
 function toggleFrench() {
     french = !french;
-    setCookie("french", french ? "on" : "", 360 * 10); // 10 years
+    setCookie("french", french ? "on" : "");
 
     if (sortProp.includes("technicalRating"))
         setTableSortProperty("technicalRating"); //resort table when changing aca/french rating if currently sorting by rating

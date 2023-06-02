@@ -382,7 +382,7 @@ function getrwlist(data) {
                     obj.thumbnail = geturl(v[0]);
                 v = item.printouts["Has KML file"];
                 if (v && v.length > 0)
-                    obj.kmlfile = getUrlWithoutCache(v[0]);
+                    obj.kmlfile = getKmlFileWithoutCache(v[0]);
                 v = item.printouts["Has info regions"];
                 if (v && v.length > 0) {
                     obj.regionList = v[0].split(/[;/]+/); //split on both ; and /
