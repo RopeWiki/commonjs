@@ -71,4 +71,24 @@ function locsearch() {
 
     document.body.style.cursor = 'wait';
     window.location.href = url;
+
+
+    function addUrlParam(param, id, val) {
+        var pid = "&" + id + "=";
+        var i = param.indexOf(pid);
+        if (i < 0)
+            param += pid + val;
+        else {
+            var a = param.substr(0, i);
+            var b = param.substr(i + pid.length);
+            param = a + pid + val;
+            if (b !== val) {
+                if (b.length > 0 && b[0] !== "&")
+                    param += ",";
+                param += b;
+            }
+        }
+
+        return param;
+    }
 }

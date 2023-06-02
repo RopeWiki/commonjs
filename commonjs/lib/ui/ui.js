@@ -1,15 +1,8 @@
 
-function toggleUrlcheckbox(elem) {
-    urlcheckbox = setUrlParam(urlcheckbox, elem.id, elem.checked ? "on" : "off");
-    setCookie("urlcheckbox", urlcheckbox, 360*10); // 10 years
-    gtrans2 = 'x';
-    loadTranslation();
-}
-
 function togglewchk(varname) {
     var varval = !eval(varname);
     weather = varval ? "on" : "";
-    setCookie(varname, weather, 360*10); // 10 years
+    setCookie(varname, weather);
 
     loadInlineWeather(weather);
 }
@@ -18,14 +11,14 @@ function toggleStarrate() {
     starrate = $("div#starrate :checkbox")[0].checked;
 
     if (!isUserStarRatingsTable())
-        setCookie("starrate", starrate ? "on" : "", 360 * 10); // 10 years
+        setCookie("starrate", starrate ? "on" : "");
 
     updateTable();
 }
 
 function toggleLabels() {
     labels = !labels;
-    setCookie("labels", labels ? "on" : "", 360*10); // 10 years
+    setCookie("labels", labels ? "on" : "");
     document.body.style.cursor = 'wait';
     window.location.reload();
 }
@@ -34,7 +27,7 @@ function toggleSlideshow(force) {
     slideshowchk = !slideshowchk;
     if (typeof force != 'undefined')
         slideshowchk = force;
-    setCookie("slideshowchk", slideshowchk ? "on" : "", 360 * 10); // 10 years
+    setCookie("slideshowchk", slideshowchk ? "on" : "");
     var elems = document.getElementsByClassName('slideshow');
     for (var i = 0; i < elems.length; i++)
         elems[i].style.display = slideshowchk ? "" : "none";
@@ -220,15 +213,6 @@ function loadUserInterface(document) {
             texts[i].innerHTML = acaconv(texts[i].innerHTML, true);
     }
 
-    elem = document.getElementsByClassName('urlcheckbox');
-    for (var i = 0; i < elem.length; i++) {
-        var on = getUrlParam(urlcheckbox, elem[i].id, elem[i].innerHTML);
-        elem[i].className += " notranslate";
-        elem[i].innerHTML = '<input id="' +
-            elem[i].id +
-            '" class="gmnoprint" type="checkbox" onclick="toggleUrlcheckbox(this)" ' + (on == 'on' ? 'checked' : '') + '>';
-    }
-
     elem = document.getElementsByClassName('uchk');
     for (var i = 0; i < elem.length; i++) {
         elem[i].className += " notranslate";
@@ -368,7 +352,7 @@ function loadUserInterface(document) {
     //add timestamp to KML file download to break caching
     elem = document.getElementById("kmldownload");
     if (elem) {
-        elem.firstChild.href = getUrlWithoutCache(elem.firstChild.href);
+        elem.firstChild.href = getKmlFileWithoutCache(elem.firstChild.href);
     }
 
     // flashing warning
@@ -541,6 +525,8 @@ function loadUserInterface(document) {
 }
 
 function loadFormInterface() {
+    var url = window.location.href.toString();
+    
     //console.log('setting form');
     function setinput(id, inputstr, keysubmit) {
         elem = document.getElementById(id);
@@ -555,8 +541,6 @@ function loadFormInterface() {
         elem.innerHTML = inputstr + 'color:' + color + ';" onfocus="inputfocus(this)" onkeydown="inputkey(event,' + keysubmit + ')" value="' + str + '">';
     }
 
-    var url = window.location.href.toString();
-    
     // location search
     var locfind = document.getElementById('locfind');
     if (locfind) {

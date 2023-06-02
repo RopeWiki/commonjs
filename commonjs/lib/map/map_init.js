@@ -482,7 +482,7 @@ function loadInteractiveMap() {
 
                 file = file.split("&amp;").join("&");
 
-                file = getUrlWithoutCache(file);
+                file = getKmlFileWithoutCache(file);
 
                 var selection = bskmlfile.innerHTML.toString().split("&amp;").join("&").split(',');
 

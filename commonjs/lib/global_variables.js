@@ -8,7 +8,6 @@ var french = null;
 var labels = null;
 var slideshowchk = null;
 var starrate = null;
-var urlcheckbox = null;
 var watershed = null;
 var weather = null;
 
@@ -26,7 +25,6 @@ function initializeGlobalVariables() {
     if (window.location.href.toString().indexOf('starratechk=') >= 0)
         starrate = true;
 
-    urlcheckbox = getCookie("urlcheckbox");
     watershed = getCookie("watershed");
     weather = getCookie("weather");
     

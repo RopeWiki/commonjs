@@ -25,6 +25,8 @@ function toggleOption(id, forcechecked) {
         toggleDisplayTechnicalFilters("filterdisplay-french", true);
     }
 
+    setCookie(id, (checked ? "on" : ""));
+
     return checked;
 }
 
