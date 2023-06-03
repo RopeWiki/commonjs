@@ -41,8 +41,8 @@ function urlget(url, idstr, defstr) {
     return str;
 }
 
-function getUrlParam(url, key, defaultValue) {
-    var uri = new URL(url);
+function getUrlParam(key, defaultValue) {
+    var uri = new URL(window.location.href);
     var value = uri.searchParams.get(key);
 
     if (!value) value = defaultValue;

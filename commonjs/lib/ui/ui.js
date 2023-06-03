@@ -1,4 +1,11 @@
 
+function toggleUrlcheckbox(elem) {
+    urlcheckbox = setUrlParam(urlcheckbox, elem.id, elem.checked ? "on" : "off");
+    setCookie("urlcheckbox", urlcheckbox, 360 * 10); // 10 years
+    gtrans2 = 'x';
+    loadTranslation();
+}
+
 function togglewchk(varname) {
     var varval = !eval(varname);
     weather = varval ? "on" : "";
@@ -211,6 +218,23 @@ function loadUserInterface(document) {
         var texts = document.getElementsByClassName('uacamore');
         for (var i = 0; i < texts.length; i++)
             texts[i].innerHTML = acaconv(texts[i].innerHTML, true);
+    }
+
+    elem = document.getElementsByClassName('urlcheckbox');
+    for (var i = 0; i < elem.length; i++) {
+        var on = getUrlParam(urlcheckbox, elem[i].id, elem[i].innerHTML);
+        elem[i].className += " notranslate";
+        elem[i].innerHTML = '<input id="' +
+            elem[i].id +
+            '" class="gmnoprint" type="checkbox" onclick="toggleUrlcheckbox(this)" ' + (on == 'on' ? 'checked' : '') + '>';
+    }
+
+    function getUrlParam(param, id, def) {
+        var value = urlget(param, "&" + id + "=", def);
+        if (!value)
+            value = urlget(param, "?" + id + "=", def);
+
+        return value;
     }
 
     elem = document.getElementsByClassName('uchk');
@@ -525,14 +549,12 @@ function loadUserInterface(document) {
 }
 
 function loadFormInterface() {
-    var url = window.location.href.toString();
-    
     //console.log('setting form');
     function setinput(id, inputstr, keysubmit) {
         elem = document.getElementById(id);
         if (!elem) return;
 
-        var str = getUrlParam(url, id, elem.innerHTML);
+        var str = getUrlParam(id, elem.innerHTML);
 
         var color;
         color = 'black';

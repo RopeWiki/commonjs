@@ -452,7 +452,7 @@ function loadInteractiveMap() {
         controls += spstart + initShowTracksControl() + spend;
 
         // map search
-        if (document.getElementById('locsearch') || getUrlParam(window.location.href, 'location')) {
+        if (document.getElementById('locsearch') || getUrlParam('location')) {
             initSearchMapControl();
         }
     }

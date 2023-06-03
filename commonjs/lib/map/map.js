@@ -525,7 +525,7 @@ function loadMoreLocations(checkCountOnly, numberToLoad) {
         return;
     }
 
-    var limit = getUrlParam(window.location.href, 'limit');
+    var limit = getUrlParam('limit');
     if (!!limit) {
         loadLimit = Number(limit);
         if (loadLimit > 1000) loadLimit = 1000;
@@ -579,13 +579,12 @@ var isSpecifiedListTable = function () { return false; }
 
 function setSpecifiedLocationsQuery() {
     //get list from url and decode
-    var url = window.location.href;
-    var unencoded = getUrlParam(url, 'pages');
+    var unencoded = getUrlParam('pages');
     var i;
     if (!!unencoded) {
         unencoded = unencoded.split(','); //convert to array
     } else {
-        var encoded = getUrlParam(url, 'pagesEnc');
+        var encoded = getUrlParam('pagesEnc');
         if (!encoded) return;
         encoded = encoded.replaceAll(' ', '+'); //our urldecode replaces '+' with ' ', but these are needed in base64 encoding
 
