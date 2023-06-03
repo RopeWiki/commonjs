@@ -128,14 +128,15 @@ function rwlink(url, opts) {
     var rwext = 'ext=.rw';
 
     // apply opts
-    var urlopts = "";
+    var urlopts = urlcheckbox;
     var olist = opts.split("&");
     for (var i = 0; i < olist.length; ++i) {
         var idval = olist[i].split("=");
         if (idval.length != 2) continue;
         urlopts = setUrlParam(urlopts, idval[0], idval[1]);
     }
-    
+
+
     function setUrlParam(param, id, val) {
         var pid = "&" + id + "=";
         var i = param.indexOf(pid);
@@ -150,7 +151,7 @@ function rwlink(url, opts) {
         param += pid + val;
         return param;
     }
-    
+
     if (metric)
         url = url.replace(rwext, 'metric=on&' + rwext);
     if (french)
@@ -161,7 +162,7 @@ function rwlink(url, opts) {
         url = url.replace('&' + rwext, urlopts + '&' + rwext);
     if (urlopts.indexOf('smallscreen=on') < 0)
         url = url.replace(rwext, 'docwidth=' + $(window).width() + '&' + rwext);
-    
+
     return url;
 }
 

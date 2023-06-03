@@ -8,6 +8,7 @@ var french = null;
 var labels = null;
 var slideshowchk = null;
 var starrate = null;
+var urlcheckbox = null; //this is used by /PDFDownload page to transfer settings
 var watershed = null;
 var weather = null;
 
@@ -15,7 +16,7 @@ function initializeGlobalVariables() {
     metric = getCookie("metric");
     french = getCookie("french");
     labels = getCookie("labels");
-    
+
     slideshowchk = getCookie("slideshowchk", "undefined");
     if (slideshowchk === "undefined")// && $(window).width()<1200)
         slideshowchk = "on";
@@ -25,9 +26,10 @@ function initializeGlobalVariables() {
     if (window.location.href.toString().indexOf('starratechk=') >= 0)
         starrate = true;
 
+    urlcheckbox = getCookie("urlcheckbox");
     watershed = getCookie("watershed");
     weather = getCookie("weather");
-    
+
     var curuser = document.getElementById("curuser");
     if (curuser) currentuser = curuser.innerHTML;
 }
