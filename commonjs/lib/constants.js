@@ -29,25 +29,34 @@ function setConstants() { //set these automatically based on the browser url
     var local = getLocalUrl();
 
     switch (local.baseurl) {
-    case 'ropewiki.com': //prod
-    case 'www.ropewiki.com': //prod
+    // prod
+    case 'ropewiki.com':
+    case 'www.ropewiki.com':
     default:
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "ropewiki.com/luca";
-        //GOOGLE_MAPS_APIKEY = "AIzaSyDdkcexZV-p5Nj8RwgLYTcegm5jorJpbyw"; //ben's
-        GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw"; //public (mine)
+        GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw";
         break;
-    case 'localhost:8080': //dev
-    case '192.168.1.40:8080': //dev
+    // dev
+    case 'localhost:8080':
+    case '192.168.1.40:8080':
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "luca.ropewiki.com";
-        GOOGLE_MAPS_APIKEY = "AIzaSyCRtJb1twFPUpCKG_yHwvNgkwQTmf7NqaI"; //dev (mine)
+        GOOGLE_MAPS_APIKEY = "AIzaSyCRtJb1twFPUpCKG_yHwvNgkwQTmf7NqaI";
         break;
-    case 'dev.ropewiki.com': //proddev
-    case 'dev.rope.wiki': //proddev
+    //proddev
+    case 'dev.ropewiki.com':
+    case 'dev.rope.wiki': 
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "dev.ropewiki.com/luca";
-        GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw"; //public (mine)
+        GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw";
+        break;
+    // coops
+    case 'ropewiki.attack-kitten.com':
+    case 'ropewiki.ak':
+        SITE_HOSTNAME = local.baseurl;
+        LUCA_HOSTNAME = "ropewiki.com/luca";
+        GOOGLE_MAPS_APIKEY = "AIzaSyC3yTnJxJqOSIWoQ3D__6BLPIjZ55DPZtw";
         break;
     }
 
