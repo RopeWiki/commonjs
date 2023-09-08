@@ -53,7 +53,11 @@ function setConstants() { //set these automatically based on the browser url
         break;
     // coops
     case 'ropewiki.attack-kitten.com':
+    case 'ropewiki2.attack-kitten.com':
+    case 'ropewiki3.attack-kitten.com':
     case 'ropewiki.ak':
+    case 'ropewiki2.ak':
+    case 'ropewiki3.ak':
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "ropewiki.com/luca";
         GOOGLE_MAPS_APIKEY = "AIzaSyC3yTnJxJqOSIWoQ3D__6BLPIjZ55DPZtw";
