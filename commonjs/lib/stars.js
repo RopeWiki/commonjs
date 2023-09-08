@@ -16,7 +16,7 @@ function LoadStarRatings() {
                     '/api.php?action=ask&format=json' +
                     '&query=' +
                     urlencode('[[Has page rating::+]][[Has page rating user::' + user + ']]') +
-                    '|?Has_page_rating_page=|?Has_page_rating=|mainlabel=-' +
+                    '|?Has_page_rating|mainlabel=-' +
                     '|limit=' +
                     2000), //load all ratings the user has made
                 function(data) {
@@ -157,7 +157,7 @@ function setUserStarRatings(data) {
             var endIndex = pagename.indexOf('/');
             if (startIndex < 0 || endIndex < 0) return;
             var name = pagename.substring(startIndex + 1, endIndex);
-            var stars = item.printouts[""][0];
+            var stars = item.printouts["Has page rating"][0];
 
             var newRating = { name: name, stars: stars };
             var index = userStarRatings.findIndex(function(x) { return x.location === name; });
