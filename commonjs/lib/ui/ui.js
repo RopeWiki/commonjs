@@ -292,14 +292,21 @@ function loadUserInterface(document) {
     var hdr = document.getElementById('firstHeading');
     var pdf = document.getElementById('idcredits');
     var kml = document.getElementById('kmlmapdisplay');
+    var kmlfilep = document.getElementById("kmlfilep");
+    var file = kmlfilep.innerHTML;
     var edit = window.location.href.toString().indexOf("&action=") > 0 || window.location.href.toString().indexOf("&diff=") > 0;
     if (hdr && pdf && kml && !edit) {
         //download icon
         var text = ' <select class="notranslate" id="pdfselect" value="" onchange="pdfselect(this)">';
         text += '<option selected disabled hidden style="display: none" value=""></option>';
         text += '<option value="P">PDF: Page</option>';
-        text += '<option value="PM">PDF: Map</option><option value="KM">KML: Map</option><option value="GM">GPX: Map</option>';
-        text += '<option value="ZPM">ZIP: Page + Maps</option><option value="ZALL">ZIP: P + M + Links</option>';
+        text += '<option value="PM">PDF: Map</option>';
+        if (file) {
+            text += '<option value="KM">KML: Map</option>';
+            text += '<option value="GM">GPX: Map</option>';
+        };
+        text += '<option value="ZPM">ZIP: Page + Maps</option>';
+        text += '<option value="ZALL">ZIP: P + M + Links</option>';
         text += '<option value="S">*: Settings</option></select>';
         text += '<img id="ptext" height="32" style="display:none;vertical-align:top" src="' + SITE_BASE_URL + '/extensions/SemanticForms/skins/loading.gif"/>';
 
