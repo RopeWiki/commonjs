@@ -293,7 +293,7 @@ function loadUserInterface(document) {
     var pdf = document.getElementById('idcredits');
     var kml = document.getElementById('kmlmapdisplay');
     var kmlfilep = document.getElementById("kmlfilep");
-    var file = kmlfilep.innerHTML;
+    var file = (kmlfilep) ? kmlfilep.innerHTML : null;
     var edit = window.location.href.toString().indexOf("&action=") > 0 || window.location.href.toString().indexOf("&diff=") > 0;
     if (hdr && pdf && kml && !edit) {
         //download icon
