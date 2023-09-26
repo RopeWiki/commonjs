@@ -28,7 +28,7 @@ function initBasicEditor() {
     if (first)
         first.parentNode.insertBefore(tb, first);
 
-    if (window.mw && !!mw) {
+    if (window.mw && !!mw.toolbar) {
         mw.loader.using("mediawiki.action.edit", function () {
 
             var tb = document.getElementById('toolbar');

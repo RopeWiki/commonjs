@@ -9,7 +9,7 @@ var options = {
     "warnings": true,
     "output": {
         "preamble": "// Do not modify this page directly; instead build from https://github.com/RopeWiki/commonjs",
-        "beautify": false
+        "beautify": true
     }
 };
 
