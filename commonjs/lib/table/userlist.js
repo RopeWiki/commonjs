@@ -202,7 +202,17 @@ var editComment = function (elementId) {
         
         if (editingRowItem) {
             userDateElement.originalText = userDateElement.innerHTML;
-            userDateElement.innerHTML = "<input type=\"date\" value=" + new Date(userDateElement.innerHTML).toLocaleDateString('en-CA') + ">";
+
+            var dateString = userDateElement.innerHTML;
+
+            // Extract the parts of the string
+            var datePart = dateString.slice(dateString.length - 9, dateString.length - 7);
+            var monthPart = dateString.slice(dateString.length - 7, dateString.length - 4);
+            var yearPart = dateString.slice(dateString.length - 4);
+
+            var formattedDateString = datePart + ' ' + monthPart + ' ' + yearPart;
+
+            userDateElement.innerHTML = "<input type=\"date\" value=" + new Date(formattedDateString).toLocaleDateString('en-CA') + ">";
         }
 
         commentElement.originalText = commentElement.innerHTML;
