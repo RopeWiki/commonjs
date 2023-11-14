@@ -59,6 +59,8 @@ function loadcredits(pagename, mode, divid) {
                 for (var i = 0; i < rev.length; ++i) {
                     var isRobot = isUserRobot(rev[i].user);
 
+                    if (isRobot && (mode === modeBannerPhoto || mode === modeKmlMap))
+                        continue;
                     // patch Barranquismo.net = BetaRobot2
                     if (bqnlist.length > 0 && isRobot)
                         rev[i].user = bqnuser;
