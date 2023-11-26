@@ -166,6 +166,7 @@ function prettyPrint(url) {
     if (url.includes("onropecanyoneer"))  name = "On Rope";
     if (url.includes("descente-canyon"))  name = "Descente Canyon";
     if (url.includes("carto.net"))        name = "Canyon Carto";
+    if (url.includes("unodeaventuras"))   name = "Uno de Aventuras";
 
     var maxLength = 17;
     name = name.substring(0, maxLength);
