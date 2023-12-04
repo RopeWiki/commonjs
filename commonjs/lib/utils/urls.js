@@ -91,13 +91,17 @@ function getLocalUrl(url) {
 function geturl(url) {
     
     // patch for sitename mismatch ('ropewiki.com' vs other ropewiki site)
-    var urlParams = getLocalUrl(urldecode(url));
-    var local = getLocalUrl();
-    if (urlParams.baseurl.indexOf('ropewiki') >= 0 && urlParams.protocol !== local.protocol) { //reassemble with correct site url
-        var baseurl = urlParams.baseurl.indexOf('luca') < 0
-            ? local.siteurl
-            : LUCA_BASE_URL;
-        url = baseurl + urlParams.link;
+    //var urlParams = getLocalUrl(urldecode(url));
+    //var local = getLocalUrl();
+    //if (urlParams.baseurl.indexOf('ropewiki') >= 0 && urlParams.protocol !== local.protocol) { //reassemble with correct site url
+    //    var baseurl = urlParams.baseurl.indexOf('luca') < 0
+    //        ? local.siteurl
+    //        : LUCA_BASE_URL;
+    //    url = baseurl + urlParams.link;
+    //}
+    var hostnameIndex = url.indexOf(LUCA_HOSTNAME_PROD);
+    if (hostnameIndex >= 0 && LUCA_HOSTNAME_PROD !== LUCA_HOSTNAME) {
+        url = LUCA_BASE_URL + url.substr(hostnameIndex + LUCA_HOSTNAME_PROD.length);
     }
 
     // patch CORS for alternate site names
