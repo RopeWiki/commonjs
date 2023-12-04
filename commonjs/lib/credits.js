@@ -59,8 +59,8 @@ function loadcredits(pagename, mode, divid) {
                 for (var i = 0; i < rev.length; ++i) {
                     var isRobot = isUserRobot(rev[i].user);
 
-                    if (isRobot && (mode === modeBannerPhoto || mode === modeKmlMap))
-                        continue;
+                    //if (isRobot && (mode === modeBannerPhoto || mode === modeKmlMap))
+                    //    continue;
                     // patch Barranquismo.net = BetaRobot2
                     if (bqnlist.length > 0 && isRobot)
                         rev[i].user = bqnuser;
@@ -114,7 +114,7 @@ function loadcredits(pagename, mode, divid) {
                     else if (users[u].user.indexOf('http') > 0) {
                         var userlink = users[u].user.split('http');
                         credits += userlink[0].link('http' + userlink[1]);
-                    } else
+                    } else if (!isUserRobot(users[u].user))
                         credits += users[u].user.link(SITE_BASE_URL + "/User:" + users[u].user);
                     if (users[u].user === bqnuser)
                         credits += " [" + bqnlist.join(", ") + "]";
