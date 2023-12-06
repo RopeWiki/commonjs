@@ -191,8 +191,11 @@ function getTableRegionLink(item) {
 
     if (item.noregionlink) return item.region;
 
+    var regionDisplayName = item.regionWithoutParents;
+    if (regionDisplayName === "Western Juan Castro Blanco Parque Nacional") regionDisplayName = "Western JCP NP"; //special case for extremely long region name
+
     return '<a href="/[RegionLink]" title="[RegionFull]">[Region]</a>'
-        .replace(/\[Region]/g, item.regionWithoutParents)
+        .replace(/\[Region]/g, regionDisplayName)
         .replace(/\[RegionFull]/g, item.region)
         .replace(/\[RegionLink]/, linkify(item.region));
 }
@@ -206,8 +209,10 @@ function getTableParentRegionLinks(regions) {
     var parentRegionLinks = [];
     
     for (var i = 0; i < regions.length; ++i) {
+        var parentRegionDisplayName = regions[i];
+        parentRegionDisplayName = parentRegionDisplayName.replace("National Park", "NP"); //special case for long region names
         var link = ParentRegionLink
-            .replace(/\[ParentRegion]/g, regions[i])
+            .replace(/\[ParentRegion]/g, parentRegionDisplayName)
             .replace(/\[ParentRegionLink]/, linkify(regions[i]));
         parentRegionLinks.push(link);
     }
