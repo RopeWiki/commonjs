@@ -2713,7 +2713,9 @@ GeoXml.prototype.handlePlacemarkGeometry = function (mark, geom, idx, depth, ful
                 }
                 break;
             case "visibility":
-                if (nv == "0") { visible = false; }
+                //ignore this setting, it is for initially hiding items when loaded on Google Earth but will
+                //prevent them from showing on our map until the map overlay changes when it will show anyway
+                //if (nv == "0") { visible = false; }
                 break;
             case "Snippet":
             case "snippet":
