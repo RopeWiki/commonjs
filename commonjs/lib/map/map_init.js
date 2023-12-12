@@ -156,7 +156,7 @@ function loadInteractiveMap() {
     var pageName = mw.config.get("wgPageName");
     var kmlmarker = document.getElementById("kmlmarker");
     if (kmlmarker != null) {
-        coords = kmlmarker.innerHTML.split(",");
+        coords = kmlmarker.innerText.split(",");
         if (coords != null && coords.length > 1) {
             kmlmap = "kmlmarker";            
             setPrimaryMarker(pageName, coords[0], coords[1], 0, PROTOCOL + 'maps.google.com/mapfiles/ms/icons/red-dot.png');
@@ -681,7 +681,7 @@ function getGoogleMapsStaticUrl() {
 
     var kmlmarker = document.getElementById("kmlmarker");
     if (kmlmarker != null) {
-        var coords = kmlmarker.innerHTML.split(",");
+        var coords = kmlmarker.innerText.split(",");
         if (coords != null && coords.length > 1) {
             lat = coords[0];
             lon = coords[1];

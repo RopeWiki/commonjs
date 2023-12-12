@@ -69,7 +69,7 @@ function runFlickrSearch() {
         picloading.innerHTML = '<div style="color:red">ERROR!</div>';
     });
 
-    var latlng = document.getElementById("kmlmarker").innerHTML.split(',');
+    var latlng = document.getElementById("kmlmarker").innerText.split(',');
     var mainloc = { lat: parseFloat(latlng[0]), lng: parseFloat(latlng[1]) };
 
     function callbackFlickr(results) {
