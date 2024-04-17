@@ -305,13 +305,7 @@ function loadlist(list, fitbounds) {
         boundslist.extend(positionm);
     }
 
-    // highlight
-    var kmladdlist = document.getElementById("kmladdlist");
-    if (kmladdlist) {
-        var addlist = kmladdlist.innerHTML.split(';');
-        if (addlist.length > 0)
-            addhighlight(addlist);
-    }
+    updateUserlistHighlights();
 
     if (numberAdded > 0 && fitbounds) {
         // auto zoom & center map
@@ -329,6 +323,8 @@ function loadlist(list, fitbounds) {
     }
 
     addNewItemsToTable(list);
+
+    updateRatingHighlights();
 }
 
 function getrwlist(data) {
@@ -543,6 +539,7 @@ function loadMoreLocations(checkCountOnly, numberToLoad) {
                 hideSearchMapLoader();
                 return;
             }
+
             var fitBounds = searchMapRectangle === undefined;
             getkmllist(data, fitBounds);
             

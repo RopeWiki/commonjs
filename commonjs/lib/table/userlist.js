@@ -560,7 +560,7 @@ function commitAddToList(elementId) {
 
     //set marker highlight
     if (list !== "") {
-        addhighlight([elementId]);
+        addhighlight([elementId], MARKER_USERLIST_HIGHLIGHT);
     } else {
         var marker = markers.filter(function (x) {
             return x.name === state.elementId;

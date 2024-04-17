@@ -55,6 +55,7 @@ var STARLIST = [
 const PINMAP_ICON = SITE_BASE_URL + "/images/8/86/PinMap.png";
 const MARKER_MOUSEOVER_HIGHLIGHT = SITE_BASE_URL + "/images/3/39/Starn_b.png"; //blue outline
 const MARKER_USERLIST_HIGHLIGHT = SITE_BASE_URL + "/images/e/e6/Starn_y.png"; //yellow outline
+const MARKER_USERRATED_HIGHLIGHT = SITE_BASE_URL + "/images/8/87/Starn_g.png"; //green outline
 
 const WEATHER_MINI_ICON = SITE_BASE_URL + "/images/d/d5/Wforecast.png";
 const OPENWEATHER_LOGO = SITE_BASE_URL + "/images/f/f2/OpenWeatherLogo.png";

@@ -143,17 +143,18 @@ var tooltip = function () {
     };
 }();
 
-function addhighlight(idlist) {
+function addhighlight(idlist, style, force) {
     var i;
     for (i = 0; i < markers.length; ++i)
         if (idlist.includes(markers[i].name)) {
             var m = markers[i];
-            if (m.highlight)
+
+            if (m.highlight && !force)
                 continue;
 
             var highlight = new google.maps.Marker({
                 position: m.getPosition(),
-                icon: MARKER_USERLIST_HIGHLIGHT,
+                icon: style,
                 draggable: false,
                 clickable: false,
                 optimized: false,
@@ -170,5 +171,44 @@ function addhighlight(idlist) {
     var pinicons = document.getElementsByClassName('pinicon');
     for (i = 0; i < pinicons.length; ++i)
         if (idlist.indexOf(pinicons[i].id) >= 0)
-            pinicons[i].style.backgroundImage = "url(" + MARKER_USERLIST_HIGHLIGHT + ")";
+            pinicons[i].style.backgroundImage = "url(" + style + ")";
+}
+
+function removehighlight(idlist, style) {
+    var i;
+    for (i = 0; i < markers.length; ++i)
+        if (idlist.includes(markers[i].name)) {
+            var m = markers[i];
+            if (!m.highlight || m.highlight.icon !== style)
+                continue;
+
+            m.highlight.setMap(null);
+            m.highlight = null;
+        }
+}
+
+function updateUserlistHighlights() {
+
+    var kmladdlist = document.getElementById("kmladdlist");
+    if (kmladdlist) {
+        var addlist = kmladdlist.innerHTML.split(';');
+        if (addlist.length > 0)
+            addhighlight(addlist, MARKER_USERLIST_HIGHLIGHT);
+    }
+}
+
+function updateRatingHighlights() {
+
+    if (userStarRatings == undefined) return;
+
+    var ratinglist = userStarRatings.map(function(item) { return item.name; });
+
+    if (starrate)
+        addhighlight(ratinglist, MARKER_USERRATED_HIGHLIGHT, true);
+    else {
+        removehighlight(ratinglist, MARKER_USERRATED_HIGHLIGHT);
+
+        //add yellow userlist highlights back
+        updateUserlistHighlights();
+    }
 }

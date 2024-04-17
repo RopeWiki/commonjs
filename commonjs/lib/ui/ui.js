@@ -21,6 +21,8 @@ function toggleStarrate() {
         setCookie("starrate", starrate ? "on" : "");
 
     updateTable();
+
+    updateRatingHighlights();
 }
 
 function toggleLabels() {
