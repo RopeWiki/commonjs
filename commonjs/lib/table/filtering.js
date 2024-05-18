@@ -277,6 +277,8 @@ function updateTable() {
     var metricCheckbox = document.getElementsByClassName('uchk');
     metricCheckbox[0].firstChild.firstChild.checked = metric;
 
+    updateRatingHighlights();
+
     setLoadingInfoText();
 
     scrollTableFirstRowToTop();

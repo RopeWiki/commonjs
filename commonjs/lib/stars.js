@@ -170,7 +170,6 @@ function setUserStarRatings(data) {
         });
 
     updateTable();
-    updateRatingHighlights();
 }
 
 function getUserStarDisplay(location, stars, ustars, numRatings, size) {

@@ -152,6 +152,11 @@ function addhighlight(idlist, style, force) {
             if (m.highlight && !force)
                 continue;
 
+            if (m.highlight) { //remove old highlight
+                m.highlight.setMap(null);
+                m.highlight = null;
+            }
+
             var highlight = new google.maps.Marker({
                 position: m.getPosition(),
                 icon: style,

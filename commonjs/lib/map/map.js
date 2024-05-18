@@ -323,8 +323,6 @@ function loadlist(list, fitbounds) {
     }
 
     addNewItemsToTable(list);
-
-    updateRatingHighlights();
 }
 
 function getrwlist(data) {
