@@ -1,4 +1,6 @@
-This repository enables more effective development for MediaWiki:Common.js than attempting to edit a 5500-line monolithic file.
+This repository enables more effective development for [MediaWiki:Common.js](https://ropewiki.com/MediaWiki:Common.js) than attempting to edit a 5500-line monolithic file.
+
+Note mediawiki automatically minifys & mangles the javascript it serves, so the MediaWiki:Common.js wikipage can be kept in a human readable format.
 
 ## Usage
 
@@ -12,6 +14,18 @@ Then execute the build:
 
 ```shell
 npm run build
+```
+
+## Auto build & upload
+`commonjs/upload.py` is a script to take the minify output and upload it to MediaWiki via its API.
+
+Combined with inotify you can automatically run the build and have the output uplaoded every time a file is changed.
+
+```
+while inotifywait -r -e modify lib; do
+    echo "** BUILDING **"; node build.js &&
+    echo "** UPLOADING **"; ./upload.py;
+done;
 ```
 
 ## Usage (Visual Studio)

@@ -5,7 +5,7 @@ var path = require('path');
 // Note: enabling `compress` breaks functionality on ropewiki.com currently
 var options = {
     "compress": false,
-    "mangle": true,
+    "mangle": false,
     "warnings": true,
     "output": {
         "preamble": "// Do not modify this page directly; instead build from https://github.com/RopeWiki/commonjs",
