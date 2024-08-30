@@ -19,7 +19,7 @@ npm run build
 ## Auto build & upload
 `commonjs/upload.py` is a script to take the minify output and upload it to MediaWiki via its API.
 
-Combined with inotify you can automatically run the build and have the output uplaoded every time a file is changed.
+Combined with inotify you can automatically run the build and have the output uploaded every time a source file is changed - great for fast developement.
 
 ```
 while inotifywait -r -e modify lib; do
