@@ -94,10 +94,12 @@ function loadcredits(pagename, mode, divid) {
                 }
             }
 
-            if (typeof data['continue'] != "undefined") {
-                $.getJSON(origurl + "&rvcontinue=" + data['continue'].rvcontinue, getjs);
-                return;
-            }
+            // Disabled when upgrading MW 1.24.1 -> 1.27.7 which changes the parameter from "rvcontinue" to "continue".
+            // But when updating the paramater I couldn't understand why this was needed anyhow.
+            // if (typeof data['continue'] != "undefined") {
+            //     $.getJSON(origurl + "&rvcontinue=" + data['continue'].rvcontinue, getjs);
+            //     return;
+            // }
 
             // finished processing
 
