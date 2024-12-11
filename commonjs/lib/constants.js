@@ -36,7 +36,8 @@ function setConstants() { //set these automatically based on the browser url
     default:
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = LUCA_HOSTNAME_PROD;
-        GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw";
+        // GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw";  // Michelle
+        GOOGLE_MAPS_APIKEY = "AIzaSyCjAsmHKkUuAZsvC0tIBWnhXa5QSp0GEmU"; // Coops
         break;
     // dev
     case 'localhost:8080':
