@@ -311,15 +311,18 @@ function loadlist(list, fitbounds) {
         // auto zoom & center map
         var ne = boundslist.getNorthEast();
         var sw = boundslist.getSouthWest();
-        if (distance({ lat: ne.lat(), lng: ne.lng() }, { lat: sw.lat(), lng: sw.lng() }) < 1) {
-            map.setZoom(11);
-            map.panTo(markers[0].position);
-        } else {
-            map.fitBounds(boundslist);
-            map.panToBounds(boundslist);
-        }
 
-        zindex = 6000;
+        if (ne && sw) {
+            if (distance({ lat: ne.lat(), lng: ne.lng() }, { lat: sw.lat(), lng: sw.lng() }) < 1) {
+                map.setZoom(11);
+                map.panTo(markers[0].position);
+            } else {
+                map.fitBounds(boundslist);
+                map.panToBounds(boundslist);
+            }
+
+            zindex = 6000;
+        }
     }
 
     addNewItemsToTable(list);
