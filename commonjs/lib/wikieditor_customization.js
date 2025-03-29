@@ -1,9 +1,5 @@
 /* WikiEditor Customization */
 
-function loadEditor()
-{
-}
-
 // Basic Editor
 function initBasicEditor() {
     var tb = document.getElementById('toolbar');
