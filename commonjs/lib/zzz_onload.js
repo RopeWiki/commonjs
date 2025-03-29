@@ -26,5 +26,16 @@ window.onload = function() {
     if (isIOS())
         $(window).scrollTop(0); //iOS doesn't start at the top after sizing from '@media only screen' query in the .css
 
-    loadmapScript();
+        // loadSkin();  // custom skins - ever used?
+        loadMapInterface();
+        loadUserInterface(document);  // pdf links, reference photos, credits
+        loadFormInterface();  // user options (metric etc)
+
+        // translation stuff
+        loadTranslation();
+        setInterval(function () { loadTranslation(); }, 2000);
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        document.body.appendChild(script);
 };

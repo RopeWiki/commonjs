@@ -2,28 +2,6 @@
 
 //import { boundslist, map } from "../global_variables";
 
-function loadmapScript() {
-
-    loadSkin();
-
-    loadEditor();
-
-    loadFacebook();
-
-    loadMapInterface();
-
-    loadUserInterface(document);
-    loadFormInterface();
-    loadTranslation();
-    setInterval(function () { loadTranslation(); }, 2000);
-
-    // translate script
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    document.body.appendChild(script);
-}
-
 function loadMapInterface() {
     var elem = document.getElementById("mapbox");
     if (elem == null) {
