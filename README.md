@@ -21,6 +21,8 @@ npm run build
 
 Combined with inotify you can automatically run the build and have the output uploaded every time a source file is changed - great for fast developement.
 
+Note: This is broke on MW < 1.27.1, reported here: https://github.com/mwclient/mwclient/issues/257
+
 ```
 while inotifywait -r -e modify lib; do
     echo "** BUILDING **"; node build.js &&
