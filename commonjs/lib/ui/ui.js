@@ -380,10 +380,10 @@ function loadUserInterface(document) {
         }
     }
 
-    //add timestamp to KML file download to break caching
-    elem = document.getElementById("kmldownload");
-    if (elem) {
-        elem.firstChild.href = getKmlFileWithoutCache(elem.firstChild.href);
+    // add timestamp to KML file download to break caching
+   kml_link = document.querySelector('#kmldownload a')
+    if (kml_link) {
+        kml_link.href = getKmlFileWithoutCache(kml_link.href);
     }
 
     // flashing warning

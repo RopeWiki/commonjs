@@ -111,7 +111,6 @@ function createAndDisplaySearchRectangle(bounds) {
     var editable = true;
     if (!!document.getElementById('waterflow-table')) {
         return; //don't draw search rectangle at all -- drawing is handled within waterflow
-        editable = false;
     }
 
     searchMapRectangle = new google.maps.Rectangle({
