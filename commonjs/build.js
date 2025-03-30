@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var UglifyJS = require("uglify-js");
 var fs = require('fs');
 var path = require('path');
