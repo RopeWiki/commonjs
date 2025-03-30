@@ -1,6 +1,6 @@
 
 var piciconlist = [];
-var picloadingmsg = "<img height=12 src='" + SITE_BASE_URL + "/extensions/SemanticForms/skins/loading.gif'/> Loading... ";
+var picloadingmsg = "<img height=12 src='" + SITE_BASE_URL + "/extensions/PageForms/skins/loading.gif'/> Loading... ";
 var piclist, picloading, picloadingerr, picloadingn, picCoords = [];
 
 function pictureinit() {

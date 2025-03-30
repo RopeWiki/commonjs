@@ -308,7 +308,7 @@ function loadUserInterface(document) {
         text += '<option value="ZPM">ZIP: Page + Maps</option>';
         text += '<option value="ZALL">ZIP: P + M + Links</option>';
         text += '<option value="S">*: Settings</option></select>';
-        text += '<img id="ptext" height="32" style="display:none;vertical-align:top" src="' + SITE_BASE_URL + '/extensions/SemanticForms/skins/loading.gif"/>';
+        text += '<img id="ptext" height="32" style="display:none;vertical-align:top" src="' + SITE_BASE_URL + '/extensions/PageForms/skins/loading.gif"/>';
 
         var div = document.createElement('SPAN');
         div.className = "gmnoprint";
