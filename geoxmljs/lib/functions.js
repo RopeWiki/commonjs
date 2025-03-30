@@ -10,6 +10,7 @@ var coorded = "</" + "coordinates" + ">";
 var webproxy = LUCA_BASE_URL + "\/rwr?url=";
 var maxpathlen = 255; // max path len allowed for elevation
 var mi2ft = 5280;
+const km2mi = 0.621371;
 
 // Constructor
 function KMLObj(title2, desc, op, fid) {
