@@ -20,22 +20,25 @@ adjustFaviconElements();
 initBasicEditor();
 initToolbarCustomization();
 
+/* The upgrade to MW 1.27.1 brings with it a new version of jQuery.
+   It takes control of the load & DOMContentLoaded events, which cause
+   unpredictable behavior in various browsers when we try to override/append
+   to it. So the logic below is no longer gated by the window.onload event.
+   I haven't found an issue with this yet.
+*/
 
-window.onload = function() {
-    
-    if (isIOS())
-        $(window).scrollTop(0); //iOS doesn't start at the top after sizing from '@media only screen' query in the .css
+if (isIOS())
+    $(window).scrollTop(0); //iOS doesn't start at the top after sizing from '@media only screen' query in the .css
 
-        // loadSkin();  // custom skins - ever used?
-        loadMapInterface();
-        loadUserInterface(document);  // pdf links, reference photos, credits
-        loadFormInterface();  // user options (metric etc)
+// loadSkin();  // custom skins - ever used?
+loadMapInterface();
+loadUserInterface(document);  // pdf links, reference photos, credits
+loadFormInterface();  // user options (metric etc)
 
-        // translation stuff
-        loadTranslation();
-        setInterval(function () { loadTranslation(); }, 2000);
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-        document.body.appendChild(script);
-};
+// translation stuff
+loadTranslation();
+setInterval(function () { loadTranslation(); }, 2000);
+var script = document.createElement("script");
+script.type = "text/javascript";
+script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+document.body.appendChild(script);
