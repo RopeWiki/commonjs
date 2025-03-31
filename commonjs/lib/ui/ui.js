@@ -283,11 +283,6 @@ function loadUserInterface(document) {
         }
     }
 
-    // Facebook user name
-    var fbuser = document.getElementById('fbuser');
-    if (fbuser)
-        fbuser.innerHTML = '<input class="submitoff" type="submit" onclick="fbusersearch()" value="' + fbuser.innerHTML + '">';
-
     // PDF button only for credited pages
     var hdr = document.getElementById('firstHeading');
     var pdf = document.getElementById('idcredits');
