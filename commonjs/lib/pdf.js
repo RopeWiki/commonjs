@@ -13,19 +13,12 @@ function pdfselect(elem) {
     var opts = "";
     var opt = elem.value;
 
-    if (opt == "P")
+    if (opt == "PDF")
         file = id + ".pdf", url = base + "filename=" + file + "&pdfx=" + id + "&ext=.rw", opts = "summary=off";
-    else if (opt == "PM")
-        file = id + "_MAP.pdf", url = base + "filename=" + file + "&pdfx=Map?pagename=" + id + "&ext=.rw", opts = "summary=off";
-    else if (opt == "KM")
-        file = id + ".kml", url = $('#kmlfilep').html(), count = 1; //url = $('a:contains("Extract KML")').href()
-    else if (opt == "GM")
-        //file = id + ".gpx", url = $('#kmlfilep').html().split("gpx%3Doff").join("gpx%3Don"), count = 1; //url = $('a:contains("Extract KML")').href()
-        file = id + ".gpx", url = base + "gpx=on" + "filename=" + file.split('.')[0] + "&url=" + $('#kmlfilep').html(), count = 1;
-    else if (opt == "ZPM")
-        file = id + ".zip", url = base + "filename=" + file + "&zipx=" + id + "&ext=.rw", opts = "bslinks=off&trlinks=off&summary=off";
-    else if (opt == "ZALL")
-        file = id + "+.zip", url = base + "filename=" + file + "&zipx=" + id + "&ext=.rw", opts = "bslinks=on&summary=off";
+    else if (opt == "KML")
+        file = id + ".kml", url = $('#kmlfilep').html(), count = 1;
+    else if (opt == "GPX")
+        url = SITE_BASE_URL + "/kml_to_gpx.php?url=" + $('#kmlfilep').html(), count = 1;
     else if (opt == "S")
         url = SITE_BASE_URL + "/PDFDownload?pagename=" + id + "&ext=.rw";
 

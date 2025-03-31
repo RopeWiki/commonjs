@@ -299,14 +299,11 @@ function loadUserInterface(document) {
         //download icon
         var text = ' <select class="notranslate" id="pdfselect" value="" onchange="pdfselect(this)">';
         text += '<option selected disabled hidden style="display: none" value=""></option>';
-        text += '<option value="P">PDF: Page</option>';
-        text += '<option value="PM">PDF: Map</option>';
+        text += '<option value="PDF">PDF: Page</option>';
         if (file) {
-            text += '<option value="KM">KML: Map</option>';
-            text += '<option value="GM">GPX: Map</option>';
+            text += '<option value="KML">KML: Map</option>';
+            text += '<option value="GPX">GPX: Map</option>';
         };
-        text += '<option value="ZPM">ZIP: Page + Maps</option>';
-        text += '<option value="ZALL">ZIP: P + M + Links</option>';
         text += '<option value="S">*: Settings</option></select>';
         text += '<img id="ptext" height="32" style="display:none;vertical-align:top" src="' + SITE_BASE_URL + '/extensions/PageForms/skins/loading.gif"/>';
 
