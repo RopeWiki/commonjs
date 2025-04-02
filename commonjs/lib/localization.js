@@ -4,7 +4,8 @@ function toggleMetric() {
 
     setMetricFields();
 
-    loadInlineWeather(weather);
+    // Disabled due to https://github.com/RopeWiki/app/issues/120
+    // loadInlineWeather(weather);
 }
 
 function toggleFrench() {

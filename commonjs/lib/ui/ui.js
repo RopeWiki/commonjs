@@ -11,7 +11,8 @@ function togglewchk(varname) {
     weather = varval ? "on" : "";
     setCookie(varname, weather);
 
-    loadInlineWeather(weather);
+    // Disabled due to https://github.com/RopeWiki/app/issues/120
+    // loadInlineWeather(weather);
 }
 
 function toggleStarrate() {
@@ -250,7 +251,7 @@ function loadUserInterface(document) {
         elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()" ' + (french ? 'checked' : '') + '>' + label + '</label>';
     }
 
-    // Inline weather checkbox disabled until weather API issues sorted out. (Maybe just a new key?)
+    // Disabled due to https://github.com/RopeWiki/app/issues/120
     // elem = document.getElementsByClassName('wchk');
     // for (var i = 0; i < elem.length; i++) {
     //     var id = elem[i].id;
@@ -459,7 +460,8 @@ function loadUserInterface(document) {
     }
 
     // load inline weather
-    loadInlineWeather(weather);
+    // disabled due to https://github.com/RopeWiki/app/issues/120
+    // loadInlineWeather(weather);
 
     // waterflow
     var maptype = document.getElementById("kmltype");
