@@ -250,12 +250,13 @@ function loadUserInterface(document) {
         elem[i].innerHTML = '<label><input class="gmnoprint" type="checkbox" onclick="toggleFrench()" ' + (french ? 'checked' : '') + '>' + label + '</label>';
     }
 
-    elem = document.getElementsByClassName('wchk');
-    for (var i = 0; i < elem.length; i++) {
-        var id = elem[i].id;
-        var label = elem[i].innerHTML;
-        elem[i].innerHTML = '<label><input class="wchk__chk gmnoprint" type="checkbox" onclick="togglewchk(\'' + id + '\')" ' + (eval(id) ? 'checked' : '') + '>' + label + '</label>';
-    }
+    // Inline weather checkbox disabled until weather API issues sorted out. (Maybe just a new key?)
+    // elem = document.getElementsByClassName('wchk');
+    // for (var i = 0; i < elem.length; i++) {
+    //     var id = elem[i].id;
+    //     var label = elem[i].innerHTML;
+    //     elem[i].innerHTML = '<label><input class="wchk__chk gmnoprint" type="checkbox" onclick="togglewchk(\'' + id + '\')" ' + (eval(id) ? 'checked' : '') + '>' + label + '</label>';
+    // }
 
     if (!currentuser) starrate = false;
 
