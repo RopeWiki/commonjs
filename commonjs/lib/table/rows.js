@@ -71,7 +71,7 @@ function getStandardTableRow(item) {
     const Location =
         '<td><table><tbody>' +
             '<tr>' +
-                '<td rowspan="2" class="pinmap" id="[LocationNameFull]"><img src="[Star Icon png]" id="[LocationNameFull]" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick="pinmap(this.id)"></td>' +
+                '<td rowspan="2" class="pinmap" id="[LocationNameFull]"><img src="[Star Icon png]" id="[LocationNameFull]" class="pinicon" title="Show location on map" style="cursor:pointer;vertical-align:middle" onclick="centerMapOnMarkerById(this.id)"></td>' +
                 '<td class="loc">[PermitStatusIcon]<a href="[LocationNameLink]" title="[LocationName]" target="_blank">[LocationName]</a></td>' +
             '</tr>' +
             '<tr>' +
@@ -139,13 +139,12 @@ function getStandardTableRow(item) {
     return html;
 }
 
-function addNewItemsToTable(list) {
-
+function addNewItemsToTable(rwresults) {
     var tableCurrentBody = document.getElementById("loctablebody");
     if (!tableCurrentBody) return;
 
-    for (var i = 0; i < list.length; ++i) {
-        var item = list[i];
+    for (var i = 0; i < rwresults.length; ++i) {
+        var item = rwresults[i];
 
         var html = assembleTableRow(item);
 

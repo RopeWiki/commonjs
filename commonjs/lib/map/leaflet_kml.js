@@ -1,5 +1,6 @@
 /*!
     Taken from: https://github.com/windycom/leaflet-kml
+    Hacked on for ropewiki.com
 	Copyright (c) 2011-2015, Pavel Shramov, Bruno Bergot - MIT licence
 */
 
@@ -142,7 +143,7 @@ function setupLeafletKML() {
             if (el && el[0]) { ioptions = _parse(el[0]); }
 
             /* Something weird here causes some KML files to show the leaflet default icons because
-               "href" isn't parsed properly, causing KMLIcon to not get set. So just always set it. */
+               "href" isn't parsed properly, causing KMLDiamondIcon to not get set. So just always set it. */
             // if (ioptions.href) {
                 var iconOptions = {
                     anchorRef: {x: ioptions.x, y: ioptions.y},
@@ -153,7 +154,8 @@ function setupLeafletKML() {
                     L.Util.extend(iconOptions, kmlOptions.iconOptions);
                 }
 
-                style.icon = new L.KMLIcon(iconOptions);
+                // style.icon = new L.KMLDiamondIcon(iconOptions);
+                style.icon = KMLDiamond();  // Use the icon from leaflet_icons.js
             // }
 
             id = xml.getAttribute('id');
@@ -221,6 +223,11 @@ function setupLeafletKML() {
         parsePlacemark: function (place, xml, style, options) {
             var h, i, j, k, el, il, opts = options || {};
 
+            n = place.getElementsByTagName('name');
+            if (n) {
+                opts["name"] = n[0].innerHTML
+            }
+
             el = place.getElementsByTagName('styleUrl');
             for (i = 0; i < el.length; i++) {
                 var url = el[i].childNodes[0].nodeValue;
@@ -232,17 +239,12 @@ function setupLeafletKML() {
             il = place.getElementsByTagName('Style')[0];
             if (il) {
                 var inlineStyle = this.parseStyle(place);
+                // ok
                 if (inlineStyle) {
                     for (k in inlineStyle) {
                         opts[k] = inlineStyle[k];
                     }
                 }
-            }
-
-            // Extract the name field and add it to options
-            el = place.getElementsByTagName('name');
-            if (el.length && el[0].childNodes.length) {
-                opts.name = el[0].childNodes[0].nodeValue;
             }
 
             var multi = ['MultiGeometry', 'MultiTrack', 'gx:MultiTrack'];
@@ -296,7 +298,10 @@ function setupLeafletKML() {
         }
 
         if (name) {
-        layer.bindPopup('<b>' + name + '</b>' + descr, { className: 'kml-popup'});
+            // Popup contains full title & description.
+            layer.bindPopup('<b>' + name + '</b><br>' + descr, { className: 'kml-popup'});
+            // Tooltop is just the title.
+            layer.bindTooltip('<b>' + name + '</b>', { className: 'kml-popup'});
         }
     },
 
@@ -435,37 +440,39 @@ function setupLeafletKML() {
 
     });
 
-    L.KMLIcon = L.Icon.extend({
-        options: {
-            iconSize: [20, 20],
-            iconAnchor: [16, 16],
-            iconUrl: '/leaflet/images/open-diamond.png'
-        },
-        _setIconStyles: function (img, name) {
-            L.Icon.prototype._setIconStyles.apply(this, [img, name]);
-        },
-        _createImg: function (src, el) {
-            el = el || document.createElement('img');
-            el.onload = this.applyCustomStyles.bind(this,el)
-            el.src = src;
-            return el;
-        },
-        applyCustomStyles: function(img) {
-            var options = this.options;
-            var width = options.iconSize[0];
-            var height = options.iconSize[1];
+    // For now just using basic icons from leaflet_icons.js - but some of this more advanced
+    // logic might some in useful later if we need to display more complex KML objects.
+    // L.KMLDiamondIcon = L.Icon.extend({
+    //     options: {
+    //         iconSize: [20, 20],
+    //         iconAnchor: [16, 16],
+    //         iconUrl: '/leaflet/images/open-diamond.png'
+    //     },
+    //     _setIconStyles: function (img, name) {
+    //         L.Icon.prototype._setIconStyles.apply(this, [img, name]);
+    //     },
+    //     _createImg: function (src, el) {
+    //         el = el || document.createElement('img');
+    //         el.onload = this.applyCustomStyles.bind(this,el)
+    //         el.src = src;
+    //         return el;
+    //     },
+    //     applyCustomStyles: function(img) {
+    //         var options = this.options;
+    //         var width = options.iconSize[0];
+    //         var height = options.iconSize[1];
 
-            this.options.popupAnchor = [0,(-0.83*height)];
-            if (options.anchorType.x === 'fraction')
-                img.style.marginLeft = (-options.anchorRef.x * width) + 'px';
-            if (options.anchorType.y === 'fraction')
-                img.style.marginTop  = ((-(1 - options.anchorRef.y) * height) + 1) + 'px';
-            if (options.anchorType.x === 'pixels')
-                img.style.marginLeft = (-options.anchorRef.x) + 'px';
-            if (options.anchorType.y === 'pixels')
-                img.style.marginTop  = (options.anchorRef.y - height + 1) + 'px';
-        }
-    });
+    //         this.options.popupAnchor = [0,(-0.83*height)];
+    //         if (options.anchorType.x === 'fraction')
+    //             img.style.marginLeft = (-options.anchorRef.x * width) + 'px';
+    //         if (options.anchorType.y === 'fraction')
+    //             img.style.marginTop  = ((-(1 - options.anchorRef.y) * height) + 1) + 'px';
+    //         if (options.anchorType.x === 'pixels')
+    //             img.style.marginLeft = (-options.anchorRef.x) + 'px';
+    //         if (options.anchorType.y === 'pixels')
+    //             img.style.marginTop  = (options.anchorRef.y - height + 1) + 'px';
+    //     }
+    // });
 
     // Inspired by https://github.com/bbecquet/Leaflet.PolylineDecorator/tree/master/src
     L.RotatedImageOverlay = L.ImageOverlay.extend({

@@ -8,7 +8,7 @@ var sites = [];
 function sitelink(siteid, label, url) {
     if (typeof url == "undefined") {
         url = siteid;
-        var site = findsite(siteid);
+        var site = returnSiteByID(siteid);
         if (site) {
             var id = siteid.split(":")[1];
             url = site.urls[0].replace("%id", id);
@@ -20,7 +20,7 @@ function sitelink(siteid, label, url) {
     return aref(url, label, label, 'target="_blank"');
 }
 
-function findsite(id) {
+function returnSiteByID(id) {
     for (var c = 0; c < sites.length; c++)
         if (sites[c].id === id)
             return sites[c];
@@ -163,7 +163,7 @@ function cleanup(str) {
 
 function wfsitelink(siteid, label, date, days, today) {
     url = "";
-    var site = findsite(siteid);
+    var site = returnSiteByID(siteid);
     if (site) {
         var mode = site.mode;
         var stamp = new Date().getTime();
@@ -383,7 +383,7 @@ function waterflow() {
 
                     for (var i = 0; i < ts.length; ++i) {
                         var siteid = "USGS:" + ts[i].sourceInfo.siteCode[0].value;
-                        if (findsite(siteid) == null) {
+                        if (returnSiteByID(siteid) == null) {
                             var sitename = ts[i].sourceInfo.siteName;
                             sitename = sitename.split(' A ').join(' AT ').split(' NEAR ').join(' NR ');
                             addsite(siteid,
@@ -598,7 +598,7 @@ function waterflow() {
                     }
 
                     for (i = 0; i < forecast.length; ++i) {
-                        var site = findsite(forecast[i].id);
+                        var site = returnSiteByID(forecast[i].id);
                         if (!site)
                             continue;
 
@@ -835,7 +835,7 @@ function waterflow() {
     function addval(siteid, val) {
         if (val.length < 2)
             return;
-        var site = findsite(siteid);
+        var site = returnSiteByID(siteid);
         var dmatch = finddate(val[0].substr(0, 10));
         if (dmatch >= 0) {
             var cells = document.getElementsByClassName(datesid[dmatch] + "x" + siteid);
@@ -909,7 +909,7 @@ function waterflow() {
 
     function addsite(id, name, lat, lng, mode, conf, urls, datecounter) {
         sites.push({ id: id });
-        var site = findsite(id);
+        var site = returnSiteByID(id);
 
         site.name = cleanup(name).toUpperCase();
         site.loc = { lat: parseFloat(cleanup(lat.toString())), lng: parseFloat(cleanup(lng.toString())) };
@@ -936,7 +936,7 @@ function waterflow() {
         var before = null;
         var rows = table.childNodes;
         for (r = 1; !before && r < rows.length; ++r)
-            if (findsite(rows[r].id).dist > site.dist)
+            if (returnSiteByID(rows[r].id).dist > site.dist)
                 before = rows[r];
         table.insertBefore(newrow, before);
 
@@ -978,14 +978,13 @@ function waterflow() {
         if (wficonlist.length == 0 || markers.length == 0)
             return;
 
-        // change marker
         for (var i = 0; i < markers.length; ++i) {
-            var site = findsite(markers[i].name);
+            marker = markers[i];
+            var site = returnSiteByID(marker.locationData.id);
             if (site) {
-                markers[i].setIcon(wficonlist[site.icon]);
-                markers[i].setZIndex(site.icon * 100);
-                markers[i].infowindow.content = markers[i].infowindow.content.replace(statusloading, site.status);
-                markers[i].description = markers[i].description.replace(statusloading, site.status);
+                marker.setIcon(waterFlowIcon(wficonlist[site.icon]));
+                marker.bindTooltip(marker.getTooltip().getContent().replace(statusloading, site.status))
+                marker.bindPopup(marker.getPopup().getContent().replace(statusloading, site.status))
             }
         }
     }
@@ -1078,7 +1077,7 @@ function waterflow() {
                 description: sites[c].name.split(",").join(" ").split(";").join(" ") + statuslabel + statusloading
             });
         if (map != null) {
-            loadlist(list);
+            loadRWResultsListIntoMap(list);
             updatemarkers();
         }
 
@@ -1099,7 +1098,7 @@ function waterflow() {
     }
 
     function datecountdown(siteid, val) {
-        site = findsite(siteid);
+        site = returnSiteByID(siteid);
         if (site == null)
             return;
 
