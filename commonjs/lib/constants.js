@@ -19,9 +19,6 @@ var LUCA_HOSTNAME_PROD = "ropewiki.com/luca";
 // Base Url of the RWServer server.
 var LUCA_BASE_URL;
 
-// Google Maps API key
-var GOOGLE_MAPS_APIKEY;
-
 // Open Weather API key for inline weather widget
 const OPENWEATHER_APIKEY = "1d5f0c74f9119e20765fed256ecfadc5";
 
@@ -36,8 +33,6 @@ function setConstants() { //set these automatically based on the browser url
     default:
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = LUCA_HOSTNAME_PROD;
-        // GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw";  // Michelle
-        GOOGLE_MAPS_APIKEY = "AIzaSyCjAsmHKkUuAZsvC0tIBWnhXa5QSp0GEmU"; // Coops
         break;
     // dev
     case 'localhost:8080':
@@ -45,14 +40,12 @@ function setConstants() { //set these automatically based on the browser url
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "3.87.207.135/luca"; //direct ip to prod Luca server to bypass CORS
         //LUCA_HOSTNAME = "192.168.1.40"; //local debugging
-        GOOGLE_MAPS_APIKEY = "AIzaSyCRtJb1twFPUpCKG_yHwvNgkwQTmf7NqaI";
         break;
     //proddev (defunct)
     case 'dev.ropewiki.com':
     case 'dev.rope.wiki': 
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "dev.ropewiki.com/luca";
-        GOOGLE_MAPS_APIKEY = "AIzaSyCzx6LOfuFbI0ZpdoEKKvf77EO8-YXP_Cw";
         break;
     // coops
     case 'ropewiki.attack-kitten.com':
@@ -63,7 +56,6 @@ function setConstants() { //set these automatically based on the browser url
     case 'ropewiki3.ak':
         SITE_HOSTNAME = local.baseurl;
         LUCA_HOSTNAME = "ropewiki.com/luca";
-        GOOGLE_MAPS_APIKEY = "AIzaSyC3yTnJxJqOSIWoQ3D__6BLPIjZ55DPZtw";
         break;
     }
 

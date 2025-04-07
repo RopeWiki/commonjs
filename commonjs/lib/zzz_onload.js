@@ -26,7 +26,7 @@ jQuery(document).ready(function () {
         $(window).scrollTop(0); //iOS doesn't start at the top after sizing from '@media only screen' query in the .css
 
     // loadSkin();  // custom skins - ever used?
-    loadMapInterface();  // leaflet map
+    initializeLeafletMap();
     loadUserInterface(document);  // pdf links, reference photos, credits
     loadFormInterface();  // user options (metric etc)
 
