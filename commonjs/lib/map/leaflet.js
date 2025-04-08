@@ -11,13 +11,6 @@ function initializeLeafletMap() {
         );
 }
 
-function getThunderForestAPIKey() {
-    var keys = [
-        "935a461724d540d79a7ca1c705637192",  // coops+tf@fawk.eu
-        "bdbb04f2d5df40cbb86e9e6e1acff6f7",  // unknown key, Michelle(?)
-    ]
-    return keys[Math.floor(Math.random() * keys.length)];
-}
 
 function waterflowinit() {
     waterflow(); //this is in waterflow.js, which needs to be loaded first
@@ -126,7 +119,6 @@ function findAndAddDataToMap(map) {
                     function printLayerNames(layers) {
                         Object.keys(layers).forEach(function (key) {
                             var layer = layers[key];
-                            console.log(layer);
                             if (layer.options && layer.options.name && layer.options.color) {
 
                                 // TODO make hoverover highlight the track
@@ -161,8 +153,6 @@ function findAndAddDataToMap(map) {
         locationsQuery = kmllistquery.innerHTML.split("+").join(" "); //mediawiki encodes spaces as "+" characters
         locationsQuery = decodeURIComponent(locationsQuery); //now decode the url encoded string
         locationsQuery = locationsQuery.replaceAll('\n', '');
-
-        console.log("Found locations query: " + locationsQuery);
 
         var loadLimit = 100;
         var loadOffset = 0;
