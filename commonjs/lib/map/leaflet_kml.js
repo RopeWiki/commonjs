@@ -224,7 +224,7 @@ function setupLeafletKML() {
             var h, i, j, k, el, il, opts = options || {};
 
             n = place.getElementsByTagName('name');
-            if (n) {
+            if (n && n[0]) {
                 opts["name"] = n[0].innerHTML
             }
 

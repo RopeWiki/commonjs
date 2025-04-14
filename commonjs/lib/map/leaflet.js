@@ -25,7 +25,7 @@ function buildLeafletMap() {
             $.getScript(geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
         else
             setTimeout(waterflowinit, 100);
-}
+    }
 
     // Ensure the "mapbox" div exists
     const mapDiv = document.getElementById('mapbox');
