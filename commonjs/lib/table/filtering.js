@@ -249,7 +249,7 @@ function updateTable() {
     }
     
     //hide star rate checkbox if user isn't logged in
-    if (!currentuser && !isUserStarRatingsTable())
+    if (!currentUser && !isUserStarRatingsTable())
         $("div#starrate")[0].style.display = "none";
 
     //add 'star rating info bar' table row if star rating is checked

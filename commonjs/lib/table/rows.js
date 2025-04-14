@@ -24,7 +24,7 @@ function assembleTableRow(item) {
 }
 
 function getStandardTableHeaderRow() {
-    var showingMyRatings = (!isUserStarRatingsTable() || starRatingsUser === currentuser);
+    var showingMyRatings = (!isUserStarRatingsTable() || starRatingsUser === currentUser);
 
     const Header =
         '<th class="rwHdr">' +

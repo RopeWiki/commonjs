@@ -30,16 +30,12 @@ function initializeGlobalVariables() {
     watershed = getCookie("watershed");
     weather = getCookie("weather");
 
-    var curuser = document.getElementById("curuser");
-    if (curuser) currentuser = curuser.innerHTML;
+    currentUser = mw.config.get("wgUserName");
 }
 
 // ===== other global variables:
 
 var skinuser = "";
-
-var currentuser;
-
 var gtrans = null;
 var gtrans2 = "x";
 var glist, genlist;

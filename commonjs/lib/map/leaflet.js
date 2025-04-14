@@ -55,7 +55,6 @@ function buildLeafletMap() {
 
 
 
-
 function findAndAddDataToMap(map) {
     /* Extract the metadata stored in hidden page elements, and use them to generate data to add to the map */
 

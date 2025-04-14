@@ -8,7 +8,7 @@ function LoadStarRatings() {
         if (isUserStarRatingsTable())
             user = starRatingsUser;
         else {
-            if (!!currentuser) user = currentuser;
+            if (!!currentUser) user = currentUser;
         }
 
         if (user) {
@@ -79,7 +79,7 @@ function getStarsVote(num, unum, ratings) {
     var text = ['Delete', 'Not worth doing', 'Worthwhile', 'Ok', 'Great', 'Among the best'];
     var i;
 
-    if (!currentuser)
+    if (!currentUser)
         for (i = 0; i <= 5; ++i)
             text[i] = 'Log in to rate';
 
@@ -114,9 +114,9 @@ function starVote(elem) {
     var stars = elem.id;
     var id = getStarsId(elem);
     
-    if (stars && id && !!currentuser) {
+    if (stars && id && !!currentUser) {
         //alert(id+ " " + stars + "*");
-        var user = currentuser;
+        var user = currentUser;
         var fr = document.createElement("IFRAME");
         var target = 'Votes:' + id + '/' + user;
         if (stars === '0') {
@@ -175,7 +175,7 @@ function setUserStarRatings(data) {
 function getUserStarDisplay(location, stars, ustars, numRatings, size) {
 
     if (starrate &&
-        (!isUserStarRatingsTable() || (isUserStarRatingsTable() && !!currentuser && starRatingsUser === currentuser)))
+        (!isUserStarRatingsTable() || (isUserStarRatingsTable() && !!currentUser && starRatingsUser === currentUser)))
     {
         return getUsersStarswithVotingDisplay(stars, ustars, numRatings);
     }
@@ -196,7 +196,7 @@ function getUsersStarswithVotingDisplay(stars, ustars, numRatings) {
     var line = '<span class="starRate" style="white-space: nowrap;">';
     var text = ['Delete', 'Not worth doing', 'Worthwhile', 'Ok', 'Great', 'Among the best'];
     
-    if (!currentuser)
+    if (!currentUser)
         for (i = 0; i <= 5; ++i)
             text[i] = 'Log in to rate';
 
