@@ -31,6 +31,7 @@ function initializeGlobalVariables() {
     weather = getCookie("weather");
 
     currentUser = mw.config.get("wgUserName");
+    pageName = mw.config.get("wgPageName");
 }
 
 // ===== other global variables:

@@ -30,6 +30,9 @@ function initializeLeafletMap() {
         );
 }
 
+function logLeafletUsage() {
+    $.get(geturl(SITE_BASE_URL + "/rwlog?leaflet&" + currentUser + "&" + pageName));
+}
 
 function waterflowinit() {
     waterflow(); //this is in waterflow.js, which needs to be loaded first
@@ -45,6 +48,8 @@ function buildLeafletMap() {
         else
             setTimeout(waterflowinit, 100);
     }
+
+    logLeafletUsage();
 
     // Create the map instance
     map = L.map('mapbox', {
