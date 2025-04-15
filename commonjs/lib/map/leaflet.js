@@ -2,6 +2,25 @@
 mw.loader.load('/leaflet/1.9.4/leaflet.css', 'text/css');
 
 function initializeLeafletMap() {
+
+    // Ensure the "mapbox" div exists
+    const mapbox = document.getElementById('mapbox');
+    if (!mapbox) {
+        console.log('No "mapbox" div found, so no map to build.');
+        return;
+    }
+
+    // Logged in users don't currently get maps.
+    if (!currentUser) {
+        mapbox.style = "";
+        mapbox.id = "mapbox_disabled";
+        getMWPage("{{Template:Warning|Maps are currently limited to logged-in users only. " +
+            "Unfortunately this also disables other map-dependent pages like region overviews.}}",
+            function (html) { mapbox.innerHTML = html }
+        );
+        return;
+    }
+
     // This ensures the external leaflet code is loaded before going further.
     // In future versions of mediawiki this will change to mw.loader.getScript()
     $.when($.getScript('/leaflet/1.9.4/leaflet.js'))
@@ -25,13 +44,6 @@ function buildLeafletMap() {
             $.getScript(geturl(SITE_BASE_URL + "/index.php?title=MediaWiki:Waterflow.js&action=raw&ctype=text/javascript"), waterflowinit);
         else
             setTimeout(waterflowinit, 100);
-    }
-
-    // Ensure the "mapbox" div exists
-    const mapDiv = document.getElementById('mapbox');
-    if (!mapDiv) {
-        console.error('No "mapbox" div found, so no map to build.');
-        return;
     }
 
     // Create the map instance
@@ -272,13 +284,13 @@ function addRWResultMarker(item, map) {
 
     // This implements a "setMap" method which mimics the google maps API.
     // It avoids the need to change the code in filtering.js during migration.
-    // It adds/removes the marker from the map. 
+    // It adds/removes the marker from the map.
     marker.setMap = function(map) {
         map ? this.addTo(map) : this.remove();
     }
 
     addMouseoverHighlightToMarker(marker, map);
-    
+
     // item.stars = (item.stars != null ? item.stars : -1);
 
     status_icons = {
@@ -292,7 +304,7 @@ function addRWResultMarker(item, map) {
         "Restricted": "Access Restricted",
         "Closed": "Closed to Entry"
     }
-    
+
     if (item.permits && item.permits !== 'None') {
 
         // We take the popup & tooltip from the underlying marker and add access warnings.

@@ -15,6 +15,16 @@ function togglewchk(varname) {
     // loadInlineWeather(weather);
 }
 
+function getMWPage(name, callback) {
+    $.getJSON(mw.util.wikiScript("api"), {
+        action: "parse",
+        text: name,
+        format: "json"
+    }).done(function (data) {
+        callback(data.parse.text["*"]);
+    });
+}
+
 function toggleStarrate() {
     starrate = $("div#starrate :checkbox")[0].checked;
 
