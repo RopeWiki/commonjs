@@ -706,6 +706,19 @@ function setHeadingText() {
     var location = "";
 
     var header = document.getElementById("firstHeading");
+
+    // Theme upgrades break if the header isn't wrapped in a span.
+    // The better solution is to fix all instanced assuming header.children.length
+    if (!header.querySelector('span')) {
+        console.log('Adding hacky span');
+        var span = document.createElement("span");
+        span.textContent = header.textContent;
+        header.textContent = '';
+        header.appendChild(span);
+      } else {
+        console.log('No hacky span needed');
+      }
+
     var headingText = header.children[header.children.length - 1].innerHTML;
     var headingTextSubscript = "";
 
