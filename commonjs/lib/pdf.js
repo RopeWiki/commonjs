@@ -19,8 +19,6 @@ function pdfselect(elem) {
         file = id + ".kml", url = $('#kmlfilep').html(), count = 1;
     else if (opt == "GPX")
         url = SITE_BASE_URL + "/kml_to_gpx.php?url=" + $('#kmlfilep').html(), count = 1;
-    else if (opt == "S")
-        url = SITE_BASE_URL + "/PDFDownload?pagename=" + id + "&ext=.rw";
 
     url = rwlink(url, opts);
     if (url == "")

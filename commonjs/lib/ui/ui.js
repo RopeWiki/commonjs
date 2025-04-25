@@ -1,11 +1,3 @@
-
-function toggleUrlcheckbox(elem) {
-    urlcheckbox = setUrlParam(urlcheckbox, elem.id, elem.checked ? "on" : "off");
-    setCookie("urlcheckbox", urlcheckbox, 360 * 10); // 10 years
-    gtrans2 = 'x';
-    loadTranslation();
-}
-
 function togglewchk(varname) {
     var varval = !eval(varname);
     weather = varval ? "on" : "";
@@ -231,15 +223,6 @@ function loadUserInterface(document) {
             texts[i].innerHTML = acaconv(texts[i].innerHTML, true);
     }
 
-    elem = document.getElementsByClassName('urlcheckbox');
-    for (var i = 0; i < elem.length; i++) {
-        var on = getUrlParam(urlcheckbox, elem[i].id, elem[i].innerHTML);
-        elem[i].className += " notranslate";
-        elem[i].innerHTML = '<input id="' +
-            elem[i].id +
-            '" class="gmnoprint" type="checkbox" onclick="toggleUrlcheckbox(this)" ' + (on == 'on' ? 'checked' : '') + '>';
-    }
-
     function getUrlParam(param, id, def) {
         var value = urlget(param, "&" + id + "=", def);
         if (!value)
@@ -311,7 +294,6 @@ function loadUserInterface(document) {
             text += '<option value="KML">KML: Map</option>';
             text += '<option value="GPX">GPX: Map</option>';
         };
-        text += '<option value="S">*: Settings</option></select>';
         text += '<img id="ptext" height="32" style="display:none;vertical-align:top" src="' + SITE_BASE_URL + '/extensions/PageForms/skins/loading.gif"/>';
 
         var div = document.createElement('SPAN');

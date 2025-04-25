@@ -641,6 +641,19 @@ function setHeadingTextForRegion() {
 
     if (firstHeadingText !== "") {
         var heading = document.getElementById("firstHeading");
+
+        // Theme upgrades break if the header isn't wrapped in a span.
+        // The better solution is to fix all instanced assuming header.children.length
+        if (!heading.querySelector('span')) {
+            console.log('Adding hacky span');
+            var span = document.createElement("span");
+            span.textContent = heading.textContent;
+            heading.textContent = '';
+            heading.appendChild(span);
+        } else {
+            console.log('No hacky span needed');
+        }
+
         heading.children[heading.children.length - 1].innerHTML = firstHeadingText;
     }
 }

@@ -8,7 +8,6 @@ var french = null;
 var labels = null;
 var slideshowchk = null;
 var starrate = null;
-var urlcheckbox = null; //this is used by /PDFDownload page to transfer settings
 var watershed = null;
 var weather = null;
 
