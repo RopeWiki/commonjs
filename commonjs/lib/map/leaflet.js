@@ -70,6 +70,14 @@ function buildLeafletMap() {
     findAndAddDataToMap(map);
 }
 
+function computeLength(polyline) {
+    var latlngs = polyline.getLatLngs();
+    var total = 0;
+    for (var i = 0; i < latlngs.length - 1; i++) {
+        total += latlngs[i].distanceTo(latlngs[i + 1]); // returns meters
+    }
+    return total;
+}
 
 
 function findAndAddDataToMap(map) {
@@ -137,10 +145,20 @@ function findAndAddDataToMap(map) {
                             var layer = layers[key];
                             if (layer.options && layer.options.name && layer.options.color) {
 
+                                // Calculate lengths
+                                var length = 0;
+                                if (layer instanceof L.Polyline) {
+                                    length = computeLength(layer); // meters
+                                }
+                                var lengthStr = '';
+                                if (length > 0) {
+                                    lengthStr = ' (' + (length / 1000).toFixed(2) + ' km)';
+                                }
+
                                 // TODO make hoverover highlight the track
                                 document.getElementById("legend").innerHTML += '<i style="background: '
                                     + layer.options.color + '; width: 12px; height: 12px; display: inline-block;"></i> '
-                                    + layer.options.name + '<br>';
+                                    + layer.options.name + ' ' + lengthStr + '<br>';
                             }
                             if (layer._layers) {
                                 printLayerNames(layer._layers);
