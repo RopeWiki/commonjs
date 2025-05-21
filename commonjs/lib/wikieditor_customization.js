@@ -110,25 +110,49 @@ jQuery( document ).ready( function ( $ ) {
 function customizeToolbar() {
     console.log("customizeToolbar");
 
+    // Add the youtube icon
     $('#wpTextbox1').wikiEditor('addToToolbar', {
         section: 'main',
-        group: 'format',
+        group: 'insert',
         tools: {
-            bullist: {
-                label: 'Bulleted list',
-                type: 'button',
-                icon: BULLET_LIST_ICON,
-                action: {
-                    type: 'encapsulate',
-                    options: {
-                        pre: '* ',
-                        peri: 'Bulleted list item',
-                        post: ''
-                    }
+          embedvideo: {
+            label: 'Embed YouTube',
+            type: 'button',
+            icon: 'https://ropewiki.com/images/video.png',
+            action: {
+              type: 'callback',
+              execute: function () {
+                var url = prompt('Enter a YouTube URL (e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ)');
+                if (!url) return;
+    
+                // Try to extract video ID
+                var match = url.match(/[?&]v=([^&]+)/) || url.match(/youtu\.be\/([^?&]+)/);
+                if (!match || !match[1]) {
+                  alert('Could not extract YouTube video ID.');
+                  return;
                 }
+    
+                var videoId = match[1];
+                var wikitext = '{{#ev:youtube|' + videoId + '}}';
+    
+                // Insert the wikitext at cursor position
+                var textbox = document.getElementById('wpTextbox1');
+                if (textbox) {
+                  var start = textbox.selectionStart;
+                  var end = textbox.selectionEnd;
+                  var currentText = textbox.value;
+                  textbox.value = currentText.substring(0, start) + wikitext + currentText.substring(end);
+                  // Move the cursor to after the inserted text
+                  textbox.selectionStart = textbox.selectionEnd = start + wikitext.length;
+                  textbox.focus();
+                }
+              }
             }
+          }
         }
-    });
+      });
+      
+    // Add the "{{pic}}" icon
     $('#wpTextbox1').wikiEditor('addToToolbar', {
         section: 'main',
         group: 'format',
@@ -148,6 +172,8 @@ function customizeToolbar() {
             }
         }
     });
+
+    // Add the "{{pic}}" gallery icon
     $('#wpTextbox1').wikiEditor('addToToolbar', {
         section: 'main',
         group: 'format',
@@ -167,6 +193,8 @@ function customizeToolbar() {
             }
         }
     });
+
+    // Add the large "{{pic}}" icon
     $('#wpTextbox1').wikiEditor('addToToolbar', {
         section: 'main',
         group: 'format',
@@ -186,12 +214,22 @@ function customizeToolbar() {
             }
         }
     });
+
+    // Remove the default "gallery" icon
     $('#wpTextbox1, .wikieditor').wikiEditor('removeFromToolbar', {
             'section': 'advanced',
             'group': 'insert',
             'tool': 'gallery'
         }
     );
+    
+    // Remove the default "file" icon
+    $('#wpTextbox1, .wikieditor').wikiEditor('removeFromToolbar', {
+        'section': 'main',
+        'group': 'insert',
+        'tool': 'file'
+    }
+);
 };
 
 function initToolbarCustomization() {
