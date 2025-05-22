@@ -1,5 +1,6 @@
 // Needed to display tiles properly
 mw.loader.load('/leaflet/1.9.4/leaflet.css', 'text/css');
+mw.loader.load('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.css', 'text/css');
 
 function initializeLeafletMap() {
 
@@ -23,11 +24,16 @@ function initializeLeafletMap() {
 
     // This ensures the external leaflet code is loaded before going further.
     // In future versions of mediawiki this will change to mw.loader.getScript()
-    $.when($.getScript('/leaflet/1.9.4/leaflet.js'))
-        .then(
-            function () { buildLeafletMap() }, // Success
-            function (e) { mw.log.error(e) }   // Failure
-        );
+    $.getScript('/leaflet/1.9.4/leaflet.js')
+    .then(function () {
+        return $.getScript('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.min.js');
+    })
+    .then(function () {
+        buildLeafletMap(); // Both scripts loaded
+    })
+    .fail(function (e) {
+        mw.log.error(e);
+    });
 }
 
 function logLeafletUsage() {
@@ -53,6 +59,7 @@ function buildLeafletMap() {
 
     // Create the map instance
     map = L.map('mapbox', {
+        fullscreenControl: true,
         // maxZoom: 15
     }).setView([0, 0], 14);
 
