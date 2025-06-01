@@ -758,11 +758,15 @@ function loadMoreLocations(checkCountOnly, numberToLoad) {
         "|order=descending,ascending|sort=Has rank rating,Has name" +
         "|offset=" + loadOffset;
 
+        console.log("urlQuery: " + urlQuery);
+        console.log("locationsQuery: " + locationsQuery);
+
     $.getJSON(geturl(urlQuery),
         function (data) {
             if (data.error) {
+                throw new Error("Your fatal error message here");
                 var loadingInfo = document.getElementById("loadinginfo");
-                loadingInfo.innerHTML = '<div class="rwwarningbox"><b>Error communicating with Ropewiki server</b></div>';
+                loadingInfo.innerHTML = '<div class="rwwarningbox"><b>3 Error communicating with Ropewiki server</b></div>';
                 hideSearchMapLoader();
                 return;
             }

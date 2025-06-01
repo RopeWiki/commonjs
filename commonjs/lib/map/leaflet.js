@@ -63,7 +63,7 @@ function buildLeafletMap() {
         // maxZoom: 15
     }).setView([0, 0], 14);
 
-    addLeafletBaseMaps(map);
+    // addLeafletBaseMaps(map);
 
     // Setup an empty legend
     var legend = L.control({ position: 'bottomright' });
@@ -74,7 +74,61 @@ function buildLeafletMap() {
     };
     legend.addTo(map);
 
-    findAndAddDataToMap(map);
+
+    findAndAddDataToMap(map).then(function () {
+        // Safe to get map center and zoom
+        addStaticTile(map);
+
+        L.Control.BaseMapButton = L.Control.extend({
+            onAdd: function(map) {
+                const btn = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
+                btn.innerHTML = 'Load Interactive Maps';
+                btn.style.cursor = 'pointer';
+                btn.style.backgroundColor = 'white';
+                btn.style.padding = '4px';
+
+                btn.style.padding = '10px 16px';
+                btn.style.fontSize = '16px';
+                btn.style.height = 'auto';
+                btn.style.width = 'auto';
+                btn.style.backgroundColor = 'white';
+                btn.style.cursor = 'pointer';
+                btn.style.border = '2px solid #666';
+                btn.style.borderRadius = '4px';
+
+                L.DomEvent.on(btn, 'click', function(e) {
+                    L.DomEvent.stopPropagation(e);
+                    L.DomEvent.preventDefault(e);
+
+                    // Remove the static image overlay if it exists
+                    if (window.staticOverlay && map.hasLayer(window.staticOverlay)) {
+                        map.removeLayer(window.staticOverlay);
+                    }
+
+                    addLeafletBaseMaps(map);
+                    enabledControls(map);
+
+                     map.removeControl(this);
+                });
+
+                return btn;
+            },
+
+            onRemove: function(map) {
+                // Nothing to clean up
+            }
+        });
+
+        L.control.baseMapButton = function(opts) {
+            return new L.Control.BaseMapButton(opts);
+        };
+
+        L.control.baseMapButton({ position: 'topright' }).addTo(map);
+
+
+      });
+
+    
 }
 
 function computeLength(polyline) {
@@ -88,138 +142,117 @@ function computeLength(polyline) {
 
 
 function findAndAddDataToMap(map) {
-    /* Extract the metadata stored in hidden page elements, and use them to generate data to add to the map */
-
-    var pageName = mw.config.get("wgPageName");
-
-    // Canyon Marker
-    var kmlmarker = document.getElementById("kmlmarker");
-    if (kmlmarker != null) {
-        coords = kmlmarker.innerText.split(",");
-        if (coords != null && coords.length > 1) {
-            map.setView(coords);
-            addMarker(
-                coords,
-                map,
-                pageName.replace(/_/g, " "),
-                pinIcon('https://maps.google.com/mapfiles/kml/paddle/grn-stars.png')  //TODO - make local
-            )
+    return new Promise(function (resolve) {
+      var asyncTasks = 0;
+      var pageName = mw.config.get("wgPageName");
+      var legend = document.getElementById("legend");
+  
+      function done() {
+        asyncTasks--;
+        console.log(asyncTasks);
+        if (asyncTasks <= 0) resolve();
+      }
+  
+      function tryAddMarker(id, label, iconUrl) {
+        var el = document.getElementById(id);
+        if (el) {
+          var coords = el.innerText.split(",");
+          if (coords.length > 1) {
+            addMarker(coords, map, label, pinIcon(iconUrl));
+            return coords;
+          }
         }
-    }
-
-    // Shuttle Marker
-    var kmlmarkershuttle = document.getElementById("kmlmarkershuttle");
-    if (kmlmarkershuttle != null) {
-        coords = kmlmarkershuttle.innerText.split(",");
-        if (coords != null && coords.length > 1) {
-            addMarker(coords, map, "Shuttle", pinIcon('/leaflet/images/S.png'));
-        }
-    }
-
-    // Parking Marker
-    var kmlmarkerparking = document.getElementById("kmlmarkerparking");
-    if (kmlmarkerparking != null) {
-        coords = kmlmarkerparking.innerText.split(",");
-        if (coords != null && coords.length > 1) {
-            addMarker(coords, map, "Parking", pinIcon('/leaflet/images/P.png'));
-        }
-    }
-
-    // // KML Track (e.g. a canyon page)
-    var kmlfile = document.getElementById("kmlfilep");
-    if (kmlfile != null) {
-        var kmlurl = kmlfile.innerHTML;
-        if (kmlurl != null && kmlurl.length > 0) {
-            /* omnivore is the preferred library, but does not
-               support importing the styles from the KML file,
-               so we use leaflet-kml instead. */
-
-            setupLeafletKML();
-
-            $.get(kmlurl, function (kmltext) {
-                const parser = new DOMParser();
-                parser.parseFromString(kmltext, 'text/xml');
-
-                // Turn the parsed KML into a Leaflet layer
-                const track = new L.KML(kmltext, 'text/xml');
-
-                // This messy logic iterates through the kml layer finding any sub-layers
-                // which have a name & color option set, and adds them to the legend.
-                // (e.g. green approach tracks)
-                track.on('add', function () {
-                    function printLayerNames(layers) {
-                        Object.keys(layers).forEach(function (key) {
-                            var layer = layers[key];
-                            if (layer.options && layer.options.name && layer.options.color) {
-
-                                // Calculate lengths
-                                var length = 0;
-                                if (layer instanceof L.Polyline) {
-                                    length = computeLength(layer); // meters
-                                }
-                                var lengthStr = '';
-                                if (length > 0) {
-                                    lengthStr = ' (' + (length / 1000).toFixed(2) + ' km)';
-                                }
-
-                                // TODO make hoverover highlight the track
-                                document.getElementById("legend").innerHTML += '<i style="background: '
-                                    + layer.options.color + '; width: 12px; height: 12px; display: inline-block;"></i> '
-                                    + layer.options.name + ' ' + lengthStr + '<br>';
-                            }
-                            if (layer._layers) {
-                                printLayerNames(layer._layers);
-                            }
-                        });
-                    }
-                    printLayerNames(track._layers);
-                });
-
-                map.addLayer(track);
-                map.fitBounds(track.getBounds());
-
-
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            });
-        }
-    }
-
-
-    // This is the main logic for the region pages.
-    var kmllistquery = document.getElementById("kmllistquery");
-    if (kmllistquery != null) {
-        // kmlmap = "kmllistquery";
-        // kmllist = kmllistquery;
-        locationsQuery = kmllistquery.innerHTML.split("+").join(" "); //mediawiki encodes spaces as "+" characters
-        locationsQuery = decodeURIComponent(locationsQuery); //now decode the url encoded string
-        locationsQuery = locationsQuery.replaceAll('\n', '');
-
-        var loadLimit = 100;
-        var loadOffset = 0;
-        // if (!numberToLoad) numberToLoad = loadLimit;
-        var numberToLoad = 100;
-
-        // what this query do and how it used?
-        var urlQuery = SITE_BASE_URL + '/api.php?action=ask&format=json' +
-        '&query=' + urlencode('[[Category:Canyons]][[Has coordinates::+]]' + locationsQuery) + getLocationParameters(numberToLoad) +
-        "|order=descending,ascending|sort=Has rank rating,Has name" +
-        "|offset=" + loadOffset;
-
-        $.getJSON(geturl(urlQuery),
-        function (data) {
-            if (data.error) {
-                var loadingInfo = document.getElementById("loadinginfo");
-                loadingInfo.innerHTML = '<div class="rwwarningbox"><b>Error communicating with Ropewiki server</b></div>';
-                hideSearchMapLoader();
-                return;
+        return null;
+      }
+  
+      // Main canyon marker
+      var mainCoords = tryAddMarker(
+        "kmlmarker",
+        pageName.replace(/_/g, " "),
+        "https://maps.google.com/mapfiles/kml/paddle/grn-stars.png"
+      );
+      if (mainCoords) map.setView(mainCoords);
+  
+      // Optional shuttle/parking markers
+      tryAddMarker("kmlmarkershuttle", "Shuttle", "/leaflet/images/S.png");
+      tryAddMarker("kmlmarkerparking", "Parking", "/leaflet/images/P.png");
+  
+      // KML Track
+      var kmlfile = document.getElementById("kmlfilep");
+      if (kmlfile && kmlfile.innerHTML.length > 0) {
+        asyncTasks++;
+        setupLeafletKML();
+  
+        $.get(kmlfile.innerHTML, function (kmltext) {
+          var parser = new DOMParser();
+          parser.parseFromString(kmltext, "text/xml");
+  
+          var track = new L.KML(kmltext, "text/xml");
+  
+          track.on("add", function () {
+            function printLayerNames(layers) {
+              for (var key in layers) {
+                if (!layers.hasOwnProperty(key)) continue;
+                var layer = layers[key];
+                if (layer.options && layer.options.name && layer.options.color) {
+                  var length = 0;
+                  if (layer instanceof L.Polyline) {
+                    length = computeLength(layer);
+                  }
+                  var lengthStr = length > 0 ? " (" + (length / 1000).toFixed(2) + " km)" : "";
+                  legend.innerHTML += '<i style="background:' + layer.options.color +
+                    ';width:12px;height:12px;display:inline-block;"></i> ' +
+                    layer.options.name + lengthStr + "<br>";
+                }
+                if (layer._layers) printLayerNames(layer._layers);
+              }
             }
-            var fitBounds = searchMapRectangle === undefined;
-            loadMoreLocations();
-        });
-    }
+            printLayerNames(track._layers);
+          });
+  
+          map.addLayer(track);
+          // Don't consider the work done until the map has finished resizing.
+          map.once('moveend', function () {
+            done();
+          });
+          map.fitBounds(track.getBounds());
 
-}
+        }).fail(function (xhr, status, error) {
+          console.log(error);
+          done();
+        });
+      }
+  
+      // Region page marker list
+      var kmllistquery = document.getElementById("kmllistquery");
+      if (kmllistquery) {
+        asyncTasks++;
+        var queryRaw = decodeURIComponent(kmllistquery.innerHTML.replace(/\+/g, " ")).replace(/\n/g, "");
+        var numberToLoad = 100;
+        var urlQuery = SITE_BASE_URL + "/api.php?action=ask&format=json" +
+          "&query=" + urlencode("[[Category:Canyons]][[Has coordinates::+]]" + queryRaw) +
+          getLocationParameters(numberToLoad) +
+          "|order=descending,ascending|sort=Has rank rating,Has name" +
+          "|offset=0";
+  
+        $.getJSON(geturl(urlQuery), function (data) {
+          if (data.error) {
+            var loadingInfo = document.getElementById("loadinginfo");
+            if (loadingInfo) {
+              loadingInfo.innerHTML = '<div class="rwwarningbox"><b>2 Error communicating with Ropewiki server</b></div>';
+            }
+          } else {
+            loadMoreLocations();
+          }
+          hideSearchMapLoader();
+          done();
+        });
+      }
+  
+      if (asyncTasks === 0) resolve(); // fallback if nothing async was scheduled
+    });
+  }
+  
 
 
 function addMouseoverHighlightToMarker(marker, map) {
