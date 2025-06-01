@@ -77,7 +77,14 @@ function buildLeafletMap() {
 
     findAndAddDataToMap(map).then(function () {
         // Safe to get map center and zoom
-        addStaticTile(map);
+        // addStaticTile(map);
+        if (!document.getElementById("kmllistquery")) {
+                      addStaticTile(map);
+      }
+        // Safe to get map center and zoom
+// setTimeout(function() {
+//       addStaticTile(map);
+//   }, 100);
 
         L.Control.BaseMapButton = L.Control.extend({
             onAdd: function(map) {
@@ -228,6 +235,7 @@ function findAndAddDataToMap(map) {
       if (kmllistquery) {
         asyncTasks++;
         var queryRaw = decodeURIComponent(kmllistquery.innerHTML.replace(/\+/g, " ")).replace(/\n/g, "");
+        locationsQuery = queryRaw;  // <- ADD THIS LINE
         var numberToLoad = 100;
         var urlQuery = SITE_BASE_URL + "/api.php?action=ask&format=json" +
           "&query=" + urlencode("[[Category:Canyons]][[Has coordinates::+]]" + queryRaw) +
@@ -526,6 +534,7 @@ function loadRWResultsListIntoMap(rwresults, fitbounds) {
     updateUserlistHighlights();
 
     updateMapBounds(map);
+    addStaticTile(map);
 
     addNewItemsToTable(rwresults);
 }
