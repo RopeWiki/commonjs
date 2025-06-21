@@ -22,18 +22,20 @@ function initializeLeafletMap() {
         return;
     }
 
-    // This ensures the external leaflet code is loaded before going further.
-    // In future versions of mediawiki this will change to mw.loader.getScript()
     $.getScript('/leaflet/1.9.4/leaflet.js')
-    .then(function () {
-        return $.getScript('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.min.js');
-    })
-    .then(function () {
-        buildLeafletMap(); // Both scripts loaded
-    })
-    .fail(function (e) {
-        mw.log.error(e);
-    });
+        .then(function () {
+            return Promise.all([
+                $.getScript('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.min.js'),
+                $.getScript('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js')
+            ]);
+        })
+        .then(function () {
+            buildLeafletMap(); // All scripts loaded in correct order
+        })
+        .catch(function (e) {
+            mw.log.error(e);
+        });
+
 }
 
 function logLeafletUsage() {
@@ -202,21 +204,21 @@ function findAndAddDataToMap(map) {
 
         // what this query do and how it used?
         var urlQuery = SITE_BASE_URL + '/api.php?action=ask&format=json' +
-        '&query=' + urlencode('[[Category:Canyons]][[Has coordinates::+]]' + locationsQuery) + getLocationParameters(numberToLoad) +
-        "|order=descending,ascending|sort=Has rank rating,Has name" +
-        "|offset=" + loadOffset;
+            '&query=' + urlencode('[[Category:Canyons]][[Has coordinates::+]]' + locationsQuery) + getLocationParameters(numberToLoad) +
+            "|order=descending,ascending|sort=Has rank rating,Has name" +
+            "|offset=" + loadOffset;
 
         $.getJSON(geturl(urlQuery),
-        function (data) {
-            if (data.error) {
-                var loadingInfo = document.getElementById("loadinginfo");
-                loadingInfo.innerHTML = '<div class="rwwarningbox"><b>Error communicating with Ropewiki server</b></div>';
-                hideSearchMapLoader();
-                return;
-            }
-            var fitBounds = searchMapRectangle === undefined;
-            loadMoreLocations();
-        });
+            function (data) {
+                if (data.error) {
+                    var loadingInfo = document.getElementById("loadinginfo");
+                    loadingInfo.innerHTML = '<div class="rwwarningbox"><b>Error communicating with Ropewiki server</b></div>';
+                    hideSearchMapLoader();
+                    return;
+                }
+                var fitBounds = searchMapRectangle === undefined;
+                loadMoreLocations();
+            });
     }
 
 }
@@ -242,9 +244,9 @@ function addMouseoverHighlightToMarker(marker, map) {
 }
 
 
- function addClosedOverlayToMarker(marker, map) {
-  // TODO
- }
+function addClosedOverlayToMarker(marker, map) {
+    // TODO
+}
 
 
 function buildTooltipString(item) {
@@ -263,8 +265,8 @@ function itemDescriptionToSummary(item) {
                 var word = words[p];
                 var idot = word.indexOf(':');
                 // if (i >= 0) {  // not sure what this if does
-                    pre = word.substr(0, idot + 1);
-                    word = word.substr(idot + 1);
+                pre = word.substr(0, idot + 1);
+                word = word.substr(idot + 1);
                 // }
                 if (word[0] >= '0' && word[0] <= '9') {
                     var unit = word.slice(-2);
@@ -315,7 +317,7 @@ function addRWResultMarker(item, map) {
     // This implements a "setMap" method which mimics the google maps API.
     // It avoids the need to change the code in filtering.js during migration.
     // It adds/removes the marker from the map.
-    marker.setMap = function(map) {
+    marker.setMap = function (map) {
         map ? this.addTo(map) : this.remove();
     }
 
@@ -369,8 +371,8 @@ function addMarker(coords, map, popup_text, icon, tooltip_text) {
     if (coords != null && coords.length > 1) {
         var marker = L.marker(coords, { icon: icon })
             .addTo(map)
-            .bindPopup(popup_text, {maxWidth: 186, maxHeight: 300, autoPan: true})
-            .bindTooltip(tooltip_text, {offset: [10, -10]});
+            .bindPopup(popup_text, { maxWidth: 186, maxHeight: 300, autoPan: true })
+            .bindTooltip(tooltip_text, { offset: [10, -10] });
 
         return marker;
     }
@@ -380,7 +382,7 @@ function addMarker(coords, map, popup_text, icon, tooltip_text) {
 function updateMapBounds(map) {
     const allBounds = L.latLngBounds();
 
-    map.eachLayer(function(layer) {
+    map.eachLayer(function (layer) {
         if (layer.getBounds) {
             allBounds.extend(layer.getBounds());
         } else if (layer.getLatLng) {
@@ -416,7 +418,7 @@ function buildPopupString(item) {
 
     // Show the "Add to list" button
     if (document.getElementById("kmladdbutton"));
-        contentString += '<input class="submitoff addbutton" title="Add to a custom list" type="submit" onclick="addToList(\'' + item.id.split("'").join("%27") + '\')" value="+">';
+    contentString += '<input class="submitoff addbutton" title="Add to a custom list" type="submit" onclick="addToList(\'' + item.id.split("'").join("%27") + '\')" value="+">';
 
     /* The "extra" links at the bottom of the popup window are likely very infrequently used. Disabled until complaints arrive.*/
 
