@@ -25,8 +25,8 @@ function initializeLeafletMap() {
     $.getScript('/leaflet/1.9.4/leaflet.js')
         .then(function () {
             return Promise.all([
-                $.getScript('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.min.js'),
-                $.getScript('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js')
+                $.getScript('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js'),
+                $.getScript('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.min.js')
             ]);
         })
         .then(function () {
@@ -67,12 +67,18 @@ function buildLeafletMap() {
 
     addLeafletBaseMaps(map);
 
-    // Setup an empty legend
     var legend = L.control({ position: 'bottomright' });
     legend.onAdd = function (map) {
-        legendDiv = L.DomUtil.create('div', 'info legend');
-        legendDiv.id = 'legend';
-        return legendDiv;
+        // Create a collapsible legend
+        var container = L.DomUtil.create('details', 'leaflet-control-layers leaflet-control');
+        var summary = document.createElement('summary');
+        summary.innerHTML = '<b>Map Legend</b>';
+        summary.style.padding = "5px";
+        container.appendChild(summary);
+        var legendContents = L.DomUtil.create('div', 'info legend', container);
+        legendContents.id = 'legend-contents';
+        legendContents.style.padding = '5px';
+        return container;
     };
     legend.addTo(map);
 
@@ -165,7 +171,7 @@ function findAndAddDataToMap(map) {
                                 }
 
                                 // TODO make hoverover highlight the track
-                                document.getElementById("legend").innerHTML += '<i style="background: '
+                                document.getElementById("legend-contents").innerHTML += '<i style="background: '
                                     + layer.options.color + '; width: 12px; height: 12px; display: inline-block;"></i> '
                                     + layer.options.name + ' ' + lengthStr + '<br>';
                             }
