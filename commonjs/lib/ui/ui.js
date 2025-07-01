@@ -61,6 +61,9 @@ function loadUserInterface(document) {
     $('.mw-headline').addClass('ctranslate');
     $('.toctext').addClass('ctranslate');
 
+    // Apply type-ahead to the large search boxes
+    $('input.mw-ui-input.mw-ui-input-inline[name="search"][type="text"]').addClass('mw-searchInput');
+
     // table columns
     var colgroup = document.getElementsByClassName("colgroup");
     for (var i = 0; i < colgroup.length; ++i) {
