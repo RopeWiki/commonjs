@@ -1,11 +1,9 @@
 This repository enables more effective development of the javascript which powers many features on ropewiki.com
 
- Rather than attempting to edit a 5500-line monolithic file, the code is broken down in smaller files, which are combined and published to the site in three places:
+ Rather than attempting to edit a 5500-line monolithic file, the code is broken down in smaller files, which are combined and published to the site:
 
 * [MediaWiki:Common.js](https://ropewiki.com/MediaWiki:Common.js)
 * [MediaWiki:Waterflow.js](https://ropewiki.com/MediaWiki:Waterflow.js)
-* [MediaWiki:Geoxml.js](https://ropewiki.com/MediaWiki:Geoxml.js)
-
 
 Note mediawiki automatically minifys & mangles the javascript it serves, so the MediaWiki:Common.js wikipage can be kept in a human readable format.
 
