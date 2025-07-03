@@ -20,6 +20,11 @@ adjustFaviconElements();
 initBasicEditor();
 initToolbarCustomization();
 
+initSmartImports({
+    'inline_waterflow_chart': '/MediaWiki:InlineWaterflowChart.js?action=raw&ctype=text/javascript'
+    // 'some_other_element': '/MediaWiki:SomeOtherScript.js?action=raw&ctype=text/javascript'
+});
+
 jQuery(document).ready(function () {
 
     if (isIOS())
