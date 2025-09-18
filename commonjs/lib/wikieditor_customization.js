@@ -232,23 +232,20 @@ function customizeToolbar() {
 );
 };
 
-function initToolbarCustomization() {
-    /* Check if view is in edit mode and that the required modules are available. Then, customize the toolbar � */
-    if (typeof mw != "undefined") {
-        if (!!mw && $.inArray(mw.config.get('wgAction'), ['edit', 'submit']) !== -1) {
-            mw.loader.using('user.options', function () {
-                // This can be the string "0" if the user disabled the preference ([[phab:T54542#555387]])
-                if (mw.user.options.get('usebetatoolbar') == 1) {
-                    $.when(
-                        mw.loader.using('ext.wikiEditor.toolbar'), $.ready
-                    ).then(customizeToolbar);
-                }
-            });
-
-            // Add the customizations to LiquidThreads' edit toolbar, if available
-            mw.hook('ext.lqt.textareaCreated').add(customizeToolbar);
-        }
-
-        //rwuser = mw.config.get( 'wgUserName' );
+$(function() {
+    // Only run on edit pages
+    if (!['edit', 'submit'].includes(mw.config.get('wgAction'))) {
+        return;
     }
-}
+    
+    // Wait for WikiEditor to be ready
+    mw.hook('wikiEditor.toolbarReady').add(function($textarea) {
+        // Your customization code here
+        customizeToolbar($textarea);
+    });
+    
+    // Ensure WikiEditor is loaded
+//    mw.loader.using('ext.wikiEditor').then(function() {
+        // Additional setup if needed
+  //  });
+});

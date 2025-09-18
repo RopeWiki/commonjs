@@ -18,7 +18,6 @@ adjustFaviconElements();
 
 //addHashChangeListener();
 initBasicEditor();
-initToolbarCustomization();
 
 initSmartImports({
     'inline_waterflow_chart': '/MediaWiki:InlineWaterflowChart.js?action=raw&ctype=text/javascript'
