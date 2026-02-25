@@ -82,6 +82,8 @@ function buildLeafletMap() {
     };
     legend.addTo(map);
 
+    addMapResizeHandle();
+
     findAndAddDataToMap(map);
 }
 
