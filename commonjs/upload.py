@@ -7,12 +7,15 @@ Requires 3 envvars:
   MEDIAWIKI_USERNAME
   MEDIAWIKI_PASSWORD
 
-Requires the `mwclient` pip package.
+Requires the `mwclient` and `python-dotenv` pip packages.
 '''
 
 import mwclient
 import os
 import sys
+from dotenv import load_dotenv
+
+load_dotenv()
 
 site_url, username, password = (
     os.getenv(var)
@@ -23,6 +26,9 @@ if not all([site_url, username, password]):
     sys.exit(
         "Error: Ensure MEDIAWIKI_SITE_URL, MEDIAWIKI_USERNAME, and MEDIAWIKI_PASSWORD are all set."
     )
+
+# Strip protocol from URL if present
+site_url = site_url.replace("https://", "").replace("http://", "")
 
 site = mwclient.Site(site_url, path="/")
 site.login(username, password)

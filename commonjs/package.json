@@ -8,8 +8,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/googlemaps": "^3.43.0",
     "@types/jquery": "^3.5.5",
+    "dotenv": "^17.3.1",
     "fs": "~0.0.1-security",
     "path": "~0.12.7",
     "uglify-js": "~3.17.0",
@@ -17,6 +19,7 @@
     "webpack-cli": "^4.3.0"
   },
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js",
+    "test": "playwright test"
   }
 }
