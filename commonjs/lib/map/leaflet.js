@@ -147,9 +147,6 @@ function findAndAddDataToMap(map) {
             setupLeafletKML();
 
             $.get(kmlurl, function (kmltext) {
-                const parser = new DOMParser();
-                parser.parseFromString(kmltext, 'text/xml');
-
                 // Turn the parsed KML into a Leaflet layer
                 const track = new L.KML(kmltext, 'text/xml');
 
