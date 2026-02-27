@@ -278,6 +278,7 @@ function updateLegendFromGroup(featureGroup) {
 function addEditControls() {
     if (!document.getElementById('kmlfilep')) return;
     if (!currentUser) return;
+    if (!isKMLEditor()) return;
 
     var existingControls = document.getElementById('map-edit-controls');
     if (existingControls) return;

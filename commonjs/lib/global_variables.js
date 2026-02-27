@@ -35,6 +35,15 @@ function initializeGlobalVariables() {
     pageName = mw.config.get("wgPageName");
 }
 
+// Check if current user is in TrustedTester group
+function isKMLEditor() {
+    var userGroups = mw.config.get("wgUserGroups");
+    if (!userGroups || !Array.isArray(userGroups)) {
+        return false;
+    }
+    return userGroups.indexOf("TrustedTester") !== -1;
+}
+
 // ===== other global variables:
 
 var skinuser = "";
