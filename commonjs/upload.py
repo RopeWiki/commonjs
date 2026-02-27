@@ -3,11 +3,15 @@
 '''
 Script to take the contents of file, and upload it to a MediaWiki page.
 Requires 3 envvars:
-  MEDIAWIKI_SITE_URL
+  MEDIAWIKI_SITE_URL (or use --prod flag for https://ropewiki.com)
   MEDIAWIKI_USERNAME
   MEDIAWIKI_PASSWORD
 
 Requires the `mwclient` and `python-dotenv` pip packages.
+
+Usage:
+  ./upload.py           # Upload to site specified in .env
+  ./upload.py --prod    # Upload to production (ropewiki.com)
 '''
 
 import mwclient
@@ -17,15 +21,24 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-site_url, username, password = (
+# Check for --prod flag
+if '--prod' in sys.argv:
+    site_url = 'https://ropewiki.com'
+    print("🚀 Production mode: uploading to ropewiki.com")
+else:
+    site_url = os.getenv("MEDIAWIKI_SITE_URL")
+
+username, password = (
     os.getenv(var)
-    for var in ["MEDIAWIKI_SITE_URL", "MEDIAWIKI_USERNAME", "MEDIAWIKI_PASSWORD"]
+    for var in ["MEDIAWIKI_USERNAME", "MEDIAWIKI_PASSWORD"]
 )
 
 if not all([site_url, username, password]):
     sys.exit(
         "Error: Ensure MEDIAWIKI_SITE_URL, MEDIAWIKI_USERNAME, and MEDIAWIKI_PASSWORD are all set."
     )
+
+print(f"Target: {site_url}")
 
 # Strip protocol from URL if present
 site_url = site_url.replace("https://", "").replace("http://", "")
