@@ -1,6 +1,7 @@
 // Needed to display tiles properly
 mw.loader.load('/leaflet/1.9.4/leaflet.css', 'text/css');
 mw.loader.load('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.css', 'text/css');
+mw.loader.load('https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css', 'text/css');
 
 function initializeLeafletMap() {
 
@@ -26,7 +27,8 @@ function initializeLeafletMap() {
         .then(function () {
             return Promise.all([
                 $.getScript('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js'),
-                $.getScript('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.min.js')
+                $.getScript('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.min.js'),
+                $.getScript('https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.js')
             ]);
         })
         .then(function () {
@@ -145,50 +147,7 @@ function findAndAddDataToMap(map) {
                so we use leaflet-kml instead. */
 
             setupLeafletKML();
-
-            $.get(kmlurl, function (kmltext) {
-                // Turn the parsed KML into a Leaflet layer
-                const track = new L.KML(kmltext, 'text/xml');
-
-                // This messy logic iterates through the kml layer finding any sub-layers
-                // which have a name & color option set, and adds them to the legend.
-                // (e.g. green approach tracks)
-                track.on('add', function () {
-                    function printLayerNames(layers) {
-                        Object.keys(layers).forEach(function (key) {
-                            var layer = layers[key];
-                            if (layer.options && layer.options.name && layer.options.color) {
-
-                                // Calculate lengths
-                                var length = 0;
-                                if (layer instanceof L.Polyline) {
-                                    length = computeLength(layer); // meters
-                                }
-                                var lengthStr = '';
-                                if (length > 0) {
-                                    lengthStr = ' (' + (length / 1000).toFixed(2) + ' km)';
-                                }
-
-                                // TODO make hoverover highlight the track
-                                document.getElementById("legend-contents").innerHTML += '<i style="background: '
-                                    + layer.options.color + '; width: 12px; height: 12px; display: inline-block;"></i> '
-                                    + layer.options.name + ' ' + lengthStr + '<br>';
-                            }
-                            if (layer._layers) {
-                                printLayerNames(layer._layers);
-                            }
-                        });
-                    }
-                    printLayerNames(track._layers);
-                });
-
-                map.addLayer(track);
-                map.fitBounds(track.getBounds());
-
-
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            });
+            loadKMLToEditableGroup(map, kmlurl);
         }
     }
 

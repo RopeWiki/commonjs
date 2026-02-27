@@ -169,6 +169,12 @@ test.describe('KML Track Loading', () => {
           'Lower Fulton Parking'
         ];
 
+        // Verify we have exactly the expected number of tracks and markers
+        expect(trackInfo.polylines.length).toBe(expectedTracks.length);
+        expect(trackInfo.markers.length).toBe(expectedMarkers.length);
+        console.log(`  ✓ Track count matches: ${expectedTracks.length}`);
+        console.log(`  ✓ Marker count matches: ${expectedMarkers.length}`);
+
         expectedTracks.forEach(expected => {
           const found = trackInfo.polylines.find(p => p.name === expected.name && p.color === expected.color);
           expect(found).toBeDefined();
@@ -179,6 +185,24 @@ test.describe('KML Track Loading', () => {
           const found = trackInfo.markers.find(m => m.name === expected);
           expect(found).toBeDefined();
           console.log(`  ✓ Found expected marker: ${expected}`);
+        });
+
+        // Check for any unexpected tracks
+        trackInfo.polylines.forEach(actual => {
+          const expected = expectedTracks.find(e => e.name === actual.name && e.color === actual.color);
+          if (!expected) {
+            console.log(`  ❌ UNEXPECTED TRACK: ${actual.name} (${actual.color})`);
+          }
+          expect(expected).toBeDefined();
+        });
+
+        // Check for any unexpected markers
+        trackInfo.markers.forEach(actual => {
+          const expected = expectedMarkers.find(e => e === actual.name);
+          if (!expected) {
+            console.log(`  ❌ UNEXPECTED MARKER: ${actual.name}`);
+          }
+          expect(expected).toBeDefined();
         });
 
         // Verify legend was populated
