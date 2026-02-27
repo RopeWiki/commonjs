@@ -4,3 +4,4 @@ node_modules
 *.vs
 *.user
 *Properties
+test-results
