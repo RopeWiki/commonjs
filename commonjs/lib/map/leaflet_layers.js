@@ -70,9 +70,13 @@ function add_risk_map(map) {
         div.style.padding = '5px';
         div.style.cursor = 'pointer';
         div.title = 'Toggle Layer';
+
+        // Check cookie for initial state (default to checked if no cookie)
+        var isChecked = publiclands !== "" && publiclands !== "off";
+
         div.innerHTML =
             '<label style="font-size: 13px; user-select: none; background-color: white;">' +
-            '<input type="checkbox" id="landLayerToggle" checked> ' +
+            '<input type="checkbox" id="landLayerToggle" ' + (isChecked ? 'checked' : '') + '> ' +
             'US Public lands are at risk!<br>' +
             '<i style="background: #e06666; width: 12px; height: 12px; display: inline-block;"></i> USFS ' +
             '<i style="background: #e69138; width: 12px; height: 12px; display: inline-block;"></i> BLM ' +
@@ -86,12 +90,22 @@ function add_risk_map(map) {
 
         var checkbox = div.querySelector('#landLayerToggle');
 
-        checkbox.onclick = function () {
+        // Set initial layer state based on checkbox
+        if (!isChecked) {
             if (map.hasLayer(usfsLayer)) map.removeLayer(usfsLayer);
-            else map.addLayer(usfsLayer);
-
             if (map.hasLayer(blmLayer)) map.removeLayer(blmLayer);
-            else map.addLayer(blmLayer);
+        }
+
+        checkbox.onclick = function () {
+            if (map.hasLayer(usfsLayer)) {
+                map.removeLayer(usfsLayer);
+                map.removeLayer(blmLayer);
+                setCookie("publiclands", "off");
+            } else {
+                map.addLayer(usfsLayer);
+                map.addLayer(blmLayer);
+                setCookie("publiclands", "on");
+            }
         };
 
         return div;

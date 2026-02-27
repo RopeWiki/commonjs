@@ -10,6 +10,7 @@ var slideshowchk = null;
 var starrate = null;
 var watershed = null;
 var weather = null;
+var publiclands = null;
 
 function initializeGlobalVariables() {
     metric = getCookie("metric");
@@ -28,6 +29,7 @@ function initializeGlobalVariables() {
     urlcheckbox = getCookie("urlcheckbox");
     watershed = getCookie("watershed");
     weather = getCookie("weather");
+    publiclands = getCookie("publiclands");
 
     currentUser = mw.config.get("wgUserName");
     pageName = mw.config.get("wgPageName");
