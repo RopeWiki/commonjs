@@ -162,6 +162,8 @@ function loadPictureList(list) {
         var sanitisedOwner = escapeHtml(entry.owner);
         var sanitisedId = escapeHtml(entry.id);
         var sanitisedThumb = escapeHtml(entry.thumb);
+        var sanitisedDate = escapeHtml(entry.date);
+        var sanitisedDist = escapeHtml(String(entry.dist));
 
         var content = //Note: can't use the MultimediaViewer box here because images are inserted after page is loaded from Ropewiki
             '<div class="thumbinner" style="width:154px">' +
@@ -169,7 +171,7 @@ function loadPictureList(list) {
                 '<div class="thumbcaption">' +
                     '<div>' + pinicon(entry.id, entry.icon) + ' <b>' + sanitisedTitle + '</b></div>' +
                     '<div>' + sanitisedText + '</div>' +
-                    '<div><b>' + escapeHtml(entry.date) + ' ~' + escapeHtml(String(entry.dist)) + 'mi</b></div>' +
+                    '<div><b>' + sanitisedDate + ' ~' + sanitisedDist + 'mi</b></div>' +
                     '<div>' + sanitisedOwner + '</div>' +
                 '</div>' +
             '</div>';
