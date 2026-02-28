@@ -1,4 +1,4 @@
-﻿var listUser, listName, isUserListTableVar;
+var listUser, listName, isUserListTableVar;
 
 function isUserListTable() {
     if (isUserListTableVar === undefined) {
@@ -82,7 +82,7 @@ function drawUserListGeneralComment(comment) {
     }
 
     var commentElement = document.getElementById("generalcomment-comment");
-    commentElement.innerHTML = comment;
+    commentElement.textContent = comment;
 }
 
 function setUserListInfo(data) {
@@ -151,13 +151,16 @@ function getUserListTableRow(item) {
                 '<input type="button" value="\u2716" id="[LocationName]-remove"     title="Remove from this list" onclick="removeLocationFromUserList(\'[LocationNameWithoutApostrophe]\')" class="userlistbutton remove"> ' +
             '</td>';
 
+    var sanitisedId = escapeHtml(item.id);
+    var sanitisedIdForJs = escapeHtml(item.id.split("'").join("%27"));
+
     var userDate = UserDate
         .replace(/\[UserDate]/, getTableUserDate(item.userDate))
-        .replace(/\[LocationName]/, item.id);
+        .replace(/\[LocationName]/, sanitisedId);
 
     var comment = Comment
-        .replace(/\[Comment]/, (!item.comment ? "" : item.comment))
-        .replace(/\[LocationName]/, item.id);
+        .replace(/\[Comment]/, (!item.comment ? "" : escapeHtml(item.comment)))
+        .replace(/\[LocationName]/, sanitisedId);
 
     var html =
         userDate +
@@ -167,8 +170,8 @@ function getUserListTableRow(item) {
     if (isUserListTableEditable()) {
 
         var editDelete = EditDelete
-            .replace(/\[LocationName]/g, item.id)
-            .replace(/\[LocationNameWithoutApostrophe]/g, item.id.split("'").join("%27"));
+            .replace(/\[LocationName]/g, sanitisedId)
+            .replace(/\[LocationNameWithoutApostrophe]/g, sanitisedIdForJs);
 
         html += editDelete;
     }
@@ -215,7 +218,7 @@ var editComment = function (elementId) {
             userDateElement.innerHTML = "<input type=\"date\" value=" + new Date(formattedDateString).toLocaleDateString('en-CA') + ">";
         }
 
-        commentElement.originalText = commentElement.innerHTML;
+        commentElement.originalText = commentElement.textContent;
         commentElement.contentEditable = true;
         commentElement.focus();
 
@@ -288,7 +291,7 @@ var cancelEditComment = function (elementId) {
         userDateElement.innerHTML = userDateElement.originalText;
 
     commentElement.contentEditable = false;
-    commentElement.innerHTML = commentElement.originalText;
+    commentElement.textContent = commentElement.originalText;
 
     editButton.value = "Edit";
     editButton.title = elementId === "generalcomment" ? "Edit general comment" : "Edit date and comment";
@@ -503,8 +506,8 @@ function addToList(elementId) {
         '<input type="button" value="Save" onclick="commitAddToList(\'[LocationName]\')" class="map-control dropdown selection">';
 
     var modalHtml = ModalHtml
-        .replace(/\[LocationNameWithApostrophe]/, elementId.split("%27").join("'"))
-        .replace(/\[LocationName]/, elementId);
+        .replace(/\[LocationNameWithApostrophe]/, escapeHtml(elementId.split("%27").join("'")))
+        .replace(/\[LocationName]/, escapeHtml(elementId));
 
     createModal(name, modalHtml);
     openModal(name);
@@ -618,14 +621,14 @@ function setUserListModalExistingInfo(data) {
 
     v = item.printouts["Has comment"];
     if (v && v.length > 0) {
-        commentElement.innerHTML = v[0];
+        commentElement.textContent = v[0];
     }
 }
 
 function toggleUserListEnableEditing() {
 
     var commentElement = document.getElementById("generalcomment-comment");
-    var comment = commentElement.innerHTML;
+    var comment = commentElement.textContent;
 
     var control = document.getElementById("generalcomment");
     control.parentElement.removeChild(control);
