@@ -99,6 +99,7 @@ function loadUserInterface(document) {
     // javascriptlink
     var jslink = document.getElementsByClassName('jslink');
     for (var i = 0; i < jslink.length; i++) {
+        // Only allow valid JS identifiers to prevent injection via crafted id attributes
         if (/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(jslink[i].id))
             jslink[i].innerHTML = '<a href="javascript:' + jslink[i].id + '();">' + jslink[i].innerHTML + '</a>';
     }

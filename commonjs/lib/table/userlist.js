@@ -152,7 +152,7 @@ function getUserListTableRow(item) {
             '</td>';
 
     var sanitisedId = escapeHtml(item.id);
-    var sanitisedIdForJs = escapeHtml(item.id.split("'").join("%27").split("\\").join("\\\\"));
+    var sanitisedIdForJs = escapeHtml(item.id.split("'").join("%27"));
 
     var userDate = UserDate
         .replace(/\[UserDate]/, getTableUserDate(item.userDate))
