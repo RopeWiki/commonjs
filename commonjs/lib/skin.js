@@ -29,7 +29,7 @@ function loadSkin() {
                 else
                     str += '?';
                 document.body.style.display = "none";
-                window.location.href = str + 'skinuser=' + skinuser;
+                window.location.href = str + 'skinuser=' + encodeURIComponent(skinuser);
             }
 
         // color
@@ -48,7 +48,7 @@ function loadSkin() {
         if (str.length > 2 && str[2] != "") {
             var str2 = str[2].split('|');
             if ((elem = document.getElementById('p-logo')) != null)
-                elem.innerHTML = '<a href="' + str2[0] + '"><img src="' + str2[1] + '"/></a>';
+                elem.innerHTML = '<a href="' + escapeHtml(str2[0]) + '"><img src="' + escapeHtml(str2[1]) + '"/></a>';
         }
 
         // links
@@ -58,11 +58,11 @@ function loadSkin() {
             var base = str2[0].split('|');
             for (var i = 1; i < str2.length; ++i) {
                 var line = str2[i].split('|');
-                navdiv += '<li id="n-' + i + '"><a href="' + line[0] + '">' + line[1] + '</a></li>';
+                navdiv += '<li id="n-' + i + '"><a href="' + escapeHtml(line[0]) + '">' + escapeHtml(line[1]) + '</a></li>';
             }
             if ((elem = document.getElementById(base[0])) != null)
                 if (navdiv != "")
-                    elem.innerHTML = '<h3>' + base[1] + '</h3><div class="body"><ul>' + navdiv + '</ul></div>';
+                    elem.innerHTML = '<h3>' + escapeHtml(base[1]) + '</h3><div class="body"><ul>' + navdiv + '</ul></div>';
                 else
                     elem.innerHTML = "";
         }

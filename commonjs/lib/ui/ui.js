@@ -98,8 +98,10 @@ function loadUserInterface(document) {
     
     // javascriptlink
     var jslink = document.getElementsByClassName('jslink');
-    for (var i = 0; i < jslink.length; i++)
-        jslink[i].innerHTML = '<a href="javascript:' + jslink[i].id + '();">' + jslink[i].innerHTML + '</a>';
+    for (var i = 0; i < jslink.length; i++) {
+        if (/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(jslink[i].id))
+            jslink[i].innerHTML = '<a href="javascript:' + jslink[i].id + '();">' + jslink[i].innerHTML + '</a>';
+    }
 
     // tabs
     var tablinks = document.getElementsByClassName('tablinks');
@@ -557,7 +559,7 @@ function loadFormInterface() {
         color = 'black';
         if (deftext(str))
             color = 'silver';
-        elem.innerHTML = inputstr + 'color:' + color + ';" onfocus="inputfocus(this)" onkeydown="inputkey(event,' + keysubmit + ')" value="' + str + '">';
+        elem.innerHTML = inputstr + 'color:' + color + ';" onfocus="inputfocus(this)" onkeydown="inputkey(event,' + keysubmit + ')" value="' + escapeHtml(str) + '">';
     }
 
     // location search
@@ -737,6 +739,13 @@ function setHeadingText() {
     changeStandardHeader("Waterflow", "Waterflow estimate", "location=", "Waterflow:");
 
 
+    var rawLocation = location;
+
+    if (linkify) {
+        headingText = escapeHtml(headingText);
+        location = escapeHtml(location);
+    }
+
     //add spans to de-emphasize text in parenthesis
     var index = headingText.indexOf("(");
     var endIndex = headingText.indexOf(")");
@@ -747,7 +756,7 @@ function setHeadingText() {
     }
 
     if (linkify) {
-        headingText = '<a href="/' + location + '" title="' + location + '">' + headingText + '</a>';
+        headingText = '<a href="/' + encodeURI(rawLocation) + '" title="' + location + '">' + headingText + '</a>';
     }
 
     //set text

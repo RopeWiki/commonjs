@@ -157,14 +157,20 @@ function loadPictureList(list) {
         
         if (markerAlreadyExists(entry.id)) continue;
 
+        var sanitisedTitle = escapeHtml(entry.title);
+        var sanitisedText = escapeHtml(entry.text);
+        var sanitisedOwner = escapeHtml(entry.owner);
+        var sanitisedId = escapeHtml(entry.id);
+        var sanitisedThumb = escapeHtml(entry.thumb);
+
         var content = //Note: can't use the MultimediaViewer box here because images are inserted after page is loaded from Ropewiki
             '<div class="thumbinner" style="width:154px">' +
-                '<a href="' + entry.id + '" target="_blank">' + '<img src="' + entry.thumb + '" class="nearestpics-thumb">' + '</a>' +
+                '<a href="' + sanitisedId + '" target="_blank">' + '<img src="' + sanitisedThumb + '" class="nearestpics-thumb">' + '</a>' +
                 '<div class="thumbcaption">' +
-                    '<div>' + pinicon(entry.id, entry.icon) + ' <b>' + entry.title + '</b></div>' +
-                    '<div>' + entry.text + '</div>' +
-                    '<div><b>' + entry.date + ' ~' + entry.dist + 'mi</b></div>' +
-                    '<div>' + entry.owner + '</div>' +
+                    '<div>' + pinicon(entry.id, entry.icon) + ' <b>' + sanitisedTitle + '</b></div>' +
+                    '<div>' + sanitisedText + '</div>' +
+                    '<div><b>' + escapeHtml(entry.date) + ' ~' + escapeHtml(String(entry.dist)) + 'mi</b></div>' +
+                    '<div>' + sanitisedOwner + '</div>' +
                 '</div>' +
             '</div>';
 
@@ -180,7 +186,7 @@ function loadPictureList(list) {
             },
             thumbnail: entry.thumb,
             description: '',
-            infodescription: '<b>' + entry.title + '</b><br>' + entry.text, //tooltip
+            infodescription: '<b>' + sanitisedTitle + '</b><br>' + sanitisedText, //tooltip
             infocontent: content,
 
             //piclist specific
