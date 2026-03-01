@@ -14,6 +14,11 @@ function urlencode(str)
     return encodeURIComponent(str);
 }
 
+function escapeHtml(str) {
+    if (!str) return str;
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function linkify(str) {
     return !!str
         ? str.split(" ").join("_")
@@ -153,7 +158,7 @@ function aref(url, label, title, attribs) {
         title = "";
     if (typeof attribs == "undefined")
         attribs = "";
-    return '<A href="' + url + '" title="' + title + '" ' + attribs + '>' + label + '</A>';
+    return '<A href="' + escapeHtml(url) + '" title="' + escapeHtml(title) + '" ' + attribs + '>' + escapeHtml(label) + '</A>';
 }
 
 function deftext(str) {
