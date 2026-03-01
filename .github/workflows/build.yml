@@ -18,11 +18,14 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
+        cache-dependency-path: 'commonjs/package-lock.json'
 
     - name: Install dependencies
+      working-directory: ./commonjs
       run: npm ci
 
     - name: Build
+      working-directory: ./commonjs
       run: npm run build
 
     - name: Upload build artifact
@@ -30,5 +33,5 @@ jobs:
       if: success()
       with:
         name: common-js-build
-        path: out/Common.min.js
+        path: commonjs/out/Common.min.js
         retention-days: 90
