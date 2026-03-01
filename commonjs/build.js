@@ -46,4 +46,10 @@ if (result.error != null) {
     console.log("No errors.")
 }
 
+// Ensure output directory exists
+const outDir = path.join(__dirname, 'out');
+if (!fs.existsSync(outDir)) {
+    fs.mkdirSync(outDir, { recursive: true });
+}
+
 fs.writeFileSync("out/Common.min.js", result.code, "utf8");
