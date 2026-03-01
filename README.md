@@ -9,7 +9,7 @@ Note mediawiki automatically minifys & mangles the javascript it serves, so the 
 
 ## Usage
 
-[Common.min.js](out/Common.min.js) is built by minifying the contents of all files in the [lib](lib) folder tree.  To perform the build, first install dependencies:
+`out/Common.min.js` is produced by combining the contents of all files in the [lib](lib) folder tree. To perform the build, first install dependencies:
 
 ```shell
 npm install
