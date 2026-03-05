@@ -58,6 +58,7 @@ To improve clickability of thin tracks, the system uses "ghost layers":
 - Visible layers are non-interactive
 - Ghost layers are excluded from legend and KML export
 - When editing properties, both layers are synchronized
+- Improves clickability by ~7.5x while maintaining visual appearance
 
 #### Access Control
 - Edit button only appears for logged-in users
@@ -66,16 +67,25 @@ To improve clickability of thin tracks, the system uses "ghost layers":
 
 #### Edit Mode UI
 When enabled:
-- Yellow edit button (❌ to exit)
-- Leaflet.Draw toolbar (add polyline, add marker, delete)
+- Edit button (✏️) is hidden - cannot exit except by saving or cancelling
+- Leaflet.Draw toolbar (add polyline, add marker)
 - Save button (💾) - only enabled when changes are made
 - Cancel button (🚫) - discards changes and reloads
+- Delete functionality moved to individual item popups (no toolbar delete button)
 
 #### Saving
 1. Converts all layers to KML format
 2. Uses MediaWiki API (`mw.Api().upload()`)
 3. Overwrites original KML file
-4. Reloads page after successful save
+4. Reloads page with cache-busting parameter (`?_kmlrefresh=<timestamp>`)
+5. KML loading detects parameter and bypasses cache to show fresh data
+
+#### Cache Busting
+After saving changes, the system prevents stale cached KML from being displayed:
+- Page URL gets `?_kmlrefresh=<timestamp>` parameter appended
+- KML loading function detects this parameter
+- Adds same timestamp to KML fetch URL as `?_=<timestamp>`
+- Forces browser to fetch fresh KML file instead of cached version
 
 ### Layer Event Handlers
 
@@ -110,9 +120,10 @@ Map-related globals (defined in `global_variables.js`):
 ## Leaflet.Draw Integration
 
 The editing system uses Leaflet.Draw with custom configuration:
-- **Enabled**: polyline drawing, marker placement, deletion
-- **Disabled**: polygon, circle, rectangle, circlemarker
+- **Enabled**: polyline drawing, marker placement
+- **Disabled**: polygon, circle, rectangle, circlemarker, toolbar delete button
 - **Edit**: Individual layer editing via popup buttons (not toolbar button)
+- **Delete**: Via popup buttons with confirmation dialog (not toolbar)
 
 ## Important Implementation Details
 
@@ -134,11 +145,27 @@ When exporting edited maps:
 - Use track color for legend icon
 
 ### Editing Workflow
-1. Click pencil icon to enter edit mode
-2. Click track/marker to open popup
-3. Use "Edit Track" button to modify geometry
-4. Use "Change Name & Type" to modify properties
-5. Click save when done (or cancel to discard)
+
+#### Entering Edit Mode
+1. Click pencil icon (✏️) to enter edit mode
+2. Edit button disappears (only exit is save or cancel)
+
+#### Drawing New Features
+1. Use toolbar to draw polyline or add marker
+2. Feature appears immediately with default properties (red "Descent" track or "New Marker")
+3. Dialog opens to customize name/type while feature remains visible
+4. Feature updates with selected properties
+
+#### Editing Existing Features
+1. Click track/marker to open popup
+2. Available buttons in popup:
+   - **Edit Track/Marker**: Enable geometry editing (move points, drag marker)
+   - **Change Name & Type**: Open dialog to modify properties
+   - **Delete**: Remove the feature (with confirmation)
+
+#### Exiting Edit Mode
+1. **Save** (💾): Uploads changes to MediaWiki and reloads with fresh KML
+2. **Cancel** (🚫): Discards all changes and reloads page
 
 ## ECMAScript 5 Compatibility
 
