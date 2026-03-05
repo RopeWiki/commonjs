@@ -872,9 +872,50 @@ function setupDrawEventHandlers() {
         var layer = e.layer;
 
         if (layer instanceof L.Polyline) {
+            // Add layer to map immediately with default styling
+            var defaultColor = '#FF0000';
+            layer.options._kmlName = 'New Track';
+            layer.options.name = 'New Track';
+            layer.options._kmlColor = defaultColor;
+            layer.options.color = defaultColor;
+            layer.options._kmlType = 'Descent';
+            layer.setStyle({ color: defaultColor });
+
+            // Create ghost layer for new track
+            var ghostLayer = L.polyline(layer.getLatLngs(), {
+                color: defaultColor,
+                weight: 15,
+                opacity: 0,
+                interactive: true
+            });
+
+            ghostLayer._visibleLayer = layer;
+            layer._ghostLayer = ghostLayer;
+
+            ghostLayer.options._kmlName = 'New Track';
+            ghostLayer.options.name = 'New Track';
+            ghostLayer.options._kmlColor = defaultColor;
+            ghostLayer.options.color = defaultColor;
+            ghostLayer.options._kmlType = 'Descent';
+
+            // Make visible layer non-interactive
+            layer.options.interactive = false;
+
+            setupTrackPopup(ghostLayer);
+            setupLayerEventHandlers(ghostLayer);
+
+            // Add to map immediately so it stays visible
+            editableGroup.addLayer(layer);
+            editableGroup.addLayer(ghostLayer);
+            hasChanges = true;
+            updateSaveButtonState();
+            updateLegendFromGroup(editableGroup);
+
+            // Now show dialog to update the properties
             showTrackTypeDialog(function(trackType, trackName) {
                 var color = TRACK_TYPES[trackType] || '#FF0000';
 
+                // Update both ghost and visible layer
                 layer.options._kmlName = trackName;
                 layer.options.name = trackName;
                 layer.options._kmlColor = color;
@@ -882,48 +923,39 @@ function setupDrawEventHandlers() {
                 layer.options._kmlType = trackType;
                 layer.setStyle({ color: color });
 
-                // Create ghost layer for new track
-                var ghostLayer = L.polyline(layer.getLatLngs(), {
-                    color: color,
-                    weight: 15,
-                    opacity: 0,
-                    interactive: true
-                });
-
-                ghostLayer._visibleLayer = layer;
-                layer._ghostLayer = ghostLayer;
-
                 ghostLayer.options._kmlName = trackName;
                 ghostLayer.options.name = trackName;
                 ghostLayer.options._kmlColor = color;
                 ghostLayer.options.color = color;
                 ghostLayer.options._kmlType = trackType;
+                ghostLayer.setStyle({ color: color });
 
-                // Make visible layer non-interactive
-                layer.options.interactive = false;
-
+                // Re-setup popup with updated properties
                 setupTrackPopup(ghostLayer);
-                setupLayerEventHandlers(ghostLayer);
 
-                editableGroup.addLayer(layer);
-                editableGroup.addLayer(ghostLayer);
-                hasChanges = true;
-                updateSaveButtonState();
                 updateLegendFromGroup(editableGroup);
-            });
+            }, 'Descent', 'New Track');
         } else if (layer instanceof L.Marker) {
+            // Add marker to map immediately
+            layer.options._kmlName = 'New Marker';
+            layer.options.name = 'New Marker';
+
+            setupMarkerPopup(layer);
+            setupLayerEventHandlers(layer);
+
+            editableGroup.addLayer(layer);
+            hasChanges = true;
+            updateSaveButtonState();
+            updateLegendFromGroup(editableGroup);
+
+            // Now show dialog to update the name
             showMarkerNameDialog(function(markerName) {
                 layer.options._kmlName = markerName;
                 layer.options.name = markerName;
 
                 setupMarkerPopup(layer);
-                setupLayerEventHandlers(layer);
-
-                editableGroup.addLayer(layer);
-                hasChanges = true;
-                updateSaveButtonState();
                 updateLegendFromGroup(editableGroup);
-            });
+            }, 'New Marker');
         }
     });
 
