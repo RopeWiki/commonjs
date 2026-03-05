@@ -38,7 +38,16 @@ function loadKMLToEditableGroup(map, kmlurl) {
     editableGroup = new L.FeatureGroup();
     map.addLayer(editableGroup);
 
-    $.get(kmlurl, function (kmltext) {
+    // Add cache-busting parameter if page has _kmlrefresh parameter
+    var urlParams = new URLSearchParams(window.location.search);
+    var kmlRefresh = urlParams.get('_kmlrefresh');
+    var finalKmlUrl = kmlurl;
+    if (kmlRefresh) {
+        var separator = kmlurl.indexOf('?') === -1 ? '?' : '&';
+        finalKmlUrl = kmlurl + separator + '_=' + kmlRefresh;
+    }
+
+    $.get(finalKmlUrl, function (kmltext) {
         var track = new L.KML(kmltext, 'text/xml');
 
         track.on('add', function () {
@@ -992,13 +1001,19 @@ function doSaveMap() {
     }).done(function (result) {
         showMessageDialog('Map saved successfully!', function() {
             disableEditMode();
-            location.reload();
+            // Add cache-busting parameter to force reload of updated KML
+            var currentUrl = window.location.href;
+            var separator = currentUrl.indexOf('?') === -1 ? '?' : '&';
+            window.location.href = currentUrl + separator + '_kmlrefresh=' + Date.now();
         });
     }).fail(function (code, result) {
         if (result.upload && result.upload.warnings) {
             showMessageDialog('Map saved successfully!', function() {
                 disableEditMode();
-                location.reload();
+                // Add cache-busting parameter to force reload of updated KML
+                var currentUrl = window.location.href;
+                var separator = currentUrl.indexOf('?') === -1 ? '?' : '&';
+                window.location.href = currentUrl + separator + '_kmlrefresh=' + Date.now();
             });
         } else {
             var errorMsg = 'Save failed';
