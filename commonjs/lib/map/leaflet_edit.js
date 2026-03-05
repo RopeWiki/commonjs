@@ -355,6 +355,8 @@ function updateLegendFromGroup(featureGroup) {
     }
 }
 
+var editControl = null;
+
 function addEditControls() {
     if (!document.getElementById('kmlfilep')) return;
     if (!currentUser) return;
@@ -383,23 +385,17 @@ function addEditControls() {
             container.onclick = function(e) {
                 L.DomEvent.stopPropagation(e);
                 L.DomEvent.preventDefault(e);
-                toggleEditMode();
+                enableEditMode();
             };
 
             return container;
         }
     });
 
-    map.addControl(new EditControl());
+    editControl = new EditControl();
+    map.addControl(editControl);
 }
 
-function toggleEditMode() {
-    if (isEditMode) {
-        disableEditMode();
-    } else {
-        enableEditMode();
-    }
-}
 
 var saveControl = null;
 var cancelControl = null;
@@ -423,6 +419,11 @@ function enableEditMode() {
     isEditMode = true;
     hasChanges = false;
 
+    // Hide the edit button when entering edit mode
+    if (editControl) {
+        map.removeControl(editControl);
+    }
+
     // Check if drawControl already exists
     if (!drawControl) {
         drawControl = new L.Control.Draw({
@@ -444,17 +445,6 @@ function enableEditMode() {
         });
         map.addControl(drawControl);
     }
-
-    var editButton = document.getElementById('map-edit-controls');
-    if (editButton) {
-        editButton.innerHTML = '❌';
-        editButton.title = 'Exit edit mode';
-        editButton.style.backgroundColor = '#ffeb3b';
-    }
-
-    // Debug: log if toolbar was created
-    console.log('Edit mode enabled, drawControl:', drawControl);
-    console.log('Leaflet.Draw toolbar elements:', document.querySelectorAll('.leaflet-draw'));
 
     var SaveControl = L.Control.extend({
         options: { position: 'topleft' },
@@ -531,11 +521,9 @@ function disableEditMode() {
         cancelControl = null;
     }
 
-    var editButton = document.getElementById('map-edit-controls');
-    if (editButton) {
-        editButton.innerHTML = '✏️';
-        editButton.title = 'Edit map tracks and markers';
-        editButton.style.backgroundColor = 'white';
+    // Re-add the edit button
+    if (editControl) {
+        map.addControl(editControl);
     }
 
     // Disable editing on all layers
