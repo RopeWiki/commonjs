@@ -1002,18 +1002,22 @@ function doSaveMap() {
         showMessageDialog('Map saved successfully!', function() {
             disableEditMode();
             // Add cache-busting parameter to force reload of updated KML
-            var currentUrl = window.location.href;
-            var separator = currentUrl.indexOf('?') === -1 ? '?' : '&';
-            window.location.href = currentUrl + separator + '_kmlrefresh=' + Date.now();
+            var url = window.location.href.split('?')[0];
+            var params = new URLSearchParams(window.location.search);
+            params.delete('_kmlrefresh');
+            params.set('_kmlrefresh', Date.now().toString());
+            window.location.href = url + '?' + params.toString();
         });
     }).fail(function (code, result) {
         if (result.upload && result.upload.warnings) {
             showMessageDialog('Map saved successfully!', function() {
                 disableEditMode();
                 // Add cache-busting parameter to force reload of updated KML
-                var currentUrl = window.location.href;
-                var separator = currentUrl.indexOf('?') === -1 ? '?' : '&';
-                window.location.href = currentUrl + separator + '_kmlrefresh=' + Date.now();
+                var url = window.location.href.split('?')[0];
+                var params = new URLSearchParams(window.location.search);
+                params.delete('_kmlrefresh');
+                params.set('_kmlrefresh', Date.now().toString());
+                window.location.href = url + '?' + params.toString();
             });
         } else {
             var errorMsg = 'Save failed';
