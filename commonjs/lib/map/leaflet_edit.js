@@ -72,10 +72,33 @@ function extractLayersToGroup(layers, group) {
 
             layer.options._kmlType = detectTrackType(layer.options.name, layer.options.color);
 
-            setupTrackPopup(layer);
-            setupLayerEventHandlers(layer);
+            // Create a wider transparent "ghost" layer for easier clicking
+            var ghostLayer = L.polyline(layer.getLatLngs(), {
+                color: layer.options.color,
+                weight: 15,
+                opacity: 0,
+                interactive: true
+            });
 
+            // Store reference to visible layer in ghost layer
+            ghostLayer._visibleLayer = layer;
+            layer._ghostLayer = ghostLayer;
+
+            // Copy all KML properties to ghost layer
+            ghostLayer.options._kmlName = layer.options._kmlName;
+            ghostLayer.options._kmlColor = layer.options._kmlColor;
+            ghostLayer.options._kmlDescription = layer.options._kmlDescription;
+            ghostLayer.options._kmlType = layer.options._kmlType;
+
+            // Make the visible layer non-interactive (ghost handles clicks)
+            layer.options.interactive = false;
+
+            setupTrackPopup(ghostLayer);
+            setupLayerEventHandlers(ghostLayer);
+
+            // Add both layers to group
             group.addLayer(layer);
+            group.addLayer(ghostLayer);
         } else if (layer instanceof L.Marker) {
             layer.options._kmlName = layer.options.name;
             layer.options._kmlDescription = layer.options.description || '';
@@ -141,9 +164,10 @@ function setupTrackPopup(layer) {
         if (pathBtn) {
             pathBtn.onclick = function() {
                 layer.closePopup();
-                // Enable editing directly on this layer
-                if (layer.editing) {
-                    layer.editing.enable();
+                // Enable editing on the visible layer (if this is a ghost layer)
+                var editLayer = layer._visibleLayer || layer;
+                if (editLayer.editing) {
+                    editLayer.editing.enable();
                     hasChanges = true;
                     updateSaveButtonState();
                 }
@@ -155,12 +179,24 @@ function setupTrackPopup(layer) {
                 showTrackTypeDialog(function(trackType, trackName) {
                     var color = TRACK_TYPES[trackType] || '#FF0000';
 
+                    // Update both ghost and visible layer
+                    var visibleLayer = layer._visibleLayer;
+
                     layer.options._kmlName = trackName;
                     layer.options.name = trackName;
                     layer.options._kmlColor = color;
                     layer.options.color = color;
                     layer.options._kmlType = trackType;
                     layer.setStyle({ color: color });
+
+                    if (visibleLayer) {
+                        visibleLayer.options._kmlName = trackName;
+                        visibleLayer.options.name = trackName;
+                        visibleLayer.options._kmlColor = color;
+                        visibleLayer.options.color = color;
+                        visibleLayer.options._kmlType = trackType;
+                        visibleLayer.setStyle({ color: color });
+                    }
 
                     setupTrackPopup(layer);
                     layer.closePopup();
@@ -253,6 +289,9 @@ function updateLegendFromGroup(featureGroup) {
     var legendHTML = '';
 
     featureGroup.eachLayer(function (layer) {
+        // Skip ghost layers (they have _visibleLayer property)
+        if (layer._visibleLayer) return;
+
         if (layer.options._kmlName && layer.options._kmlColor) {
             var length = 0;
             if (layer instanceof L.Polyline) {
@@ -278,7 +317,7 @@ function updateLegendFromGroup(featureGroup) {
 function addEditControls() {
     if (!document.getElementById('kmlfilep')) return;
     if (!currentUser) return;
-    if (!isKMLEditor()) return;
+    if (!isTrustedTester()) return;
 
     var existingControls = document.getElementById('map-edit-controls');
     if (existingControls) return;
@@ -814,10 +853,31 @@ function setupDrawEventHandlers() {
                 layer.options._kmlType = trackType;
                 layer.setStyle({ color: color });
 
-                setupTrackPopup(layer);
-                setupLayerEventHandlers(layer);
+                // Create ghost layer for new track
+                var ghostLayer = L.polyline(layer.getLatLngs(), {
+                    color: color,
+                    weight: 15,
+                    opacity: 0,
+                    interactive: true
+                });
+
+                ghostLayer._visibleLayer = layer;
+                layer._ghostLayer = ghostLayer;
+
+                ghostLayer.options._kmlName = trackName;
+                ghostLayer.options.name = trackName;
+                ghostLayer.options._kmlColor = color;
+                ghostLayer.options.color = color;
+                ghostLayer.options._kmlType = trackType;
+
+                // Make visible layer non-interactive
+                layer.options.interactive = false;
+
+                setupTrackPopup(ghostLayer);
+                setupLayerEventHandlers(ghostLayer);
 
                 editableGroup.addLayer(layer);
+                editableGroup.addLayer(ghostLayer);
                 hasChanges = true;
                 updateSaveButtonState();
                 updateLegendFromGroup(editableGroup);
@@ -908,6 +968,9 @@ function layersToKML(featureGroup) {
 
     var styles = {};
     featureGroup.eachLayer(function (layer) {
+        // Skip ghost layers
+        if (layer._visibleLayer) return;
+
         if (layer.options._kmlColor) {
             var styleId = 'style_' + layer.options._kmlColor.replace('#', '');
             if (!styles[styleId]) {
@@ -926,6 +989,9 @@ function layersToKML(featureGroup) {
     });
 
     featureGroup.eachLayer(function (layer) {
+        // Skip ghost layers
+        if (layer._visibleLayer) return;
+
         kmlDoc += layerToKMLPlacemark(layer);
     });
 
