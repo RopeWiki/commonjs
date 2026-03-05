@@ -21,9 +21,9 @@ function addInputFilesFrom(inputPath) {
         const stat = fs.statSync(filepath);
         const isFile = stat.isFile();
 
-        if (isFile) {
+        if (isFile && filepath.endsWith('.js')) {
             inputFiles[filepath] = fs.readFileSync(filepath, "utf8");
-        } else {
+        } else if (!isFile) {
             addInputFilesFrom(filepath);
         }
     });

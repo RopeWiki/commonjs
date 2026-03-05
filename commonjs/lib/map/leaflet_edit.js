@@ -141,7 +141,8 @@ function setupTrackPopup(layer) {
     popupContent += (layer.options._kmlType || 'Other') + '<br>';
     if (currentUser) {
         popupContent += '<button id="edit-track-path-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Edit Track</button>';
-        popupContent += '<button id="edit-track-type-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; display: none;">Change Name & Type</button>';
+        popupContent += '<button id="edit-track-type-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Change Name & Type</button>';
+        popupContent += '<button id="delete-track-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 3px; display: none;">Delete</button>';
     }
     popupContent += '</div>';
 
@@ -150,14 +151,17 @@ function setupTrackPopup(layer) {
     layer.on('popupopen', function() {
         var pathBtn = document.getElementById('edit-track-path-btn');
         var typeBtn = document.getElementById('edit-track-type-btn');
+        var deleteBtn = document.getElementById('delete-track-btn');
 
-        if (pathBtn && typeBtn) {
+        if (pathBtn && typeBtn && deleteBtn) {
             if (isEditMode) {
                 pathBtn.style.display = 'inline-block';
                 typeBtn.style.display = 'inline-block';
+                deleteBtn.style.display = 'inline-block';
             } else {
                 pathBtn.style.display = 'none';
                 typeBtn.style.display = 'none';
+                deleteBtn.style.display = 'none';
             }
         }
 
@@ -207,6 +211,25 @@ function setupTrackPopup(layer) {
                 }, layer.options._kmlType, layer.options._kmlName);
             };
         }
+
+        if (deleteBtn) {
+            deleteBtn.onclick = function() {
+                showConfirmDialog('Delete this track?', function(confirmed) {
+                    if (confirmed) {
+                        layer.closePopup();
+                        // Remove both ghost and visible layer
+                        var visibleLayer = layer._visibleLayer;
+                        editableGroup.removeLayer(layer);
+                        if (visibleLayer) {
+                            editableGroup.removeLayer(visibleLayer);
+                        }
+                        hasChanges = true;
+                        updateSaveButtonState();
+                        updateLegendFromGroup(editableGroup);
+                    }
+                });
+            };
+        }
     });
 }
 
@@ -215,7 +238,8 @@ function setupMarkerPopup(layer) {
     popupContent += '<b>' + (layer.options._kmlName || 'Unnamed Marker') + '</b><br>';
     if (currentUser) {
         popupContent += '<button id="edit-marker-path-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Edit Marker</button>';
-        popupContent += '<button id="edit-marker-name-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; display: none;">Change Name</button>';
+        popupContent += '<button id="edit-marker-name-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Change Name</button>';
+        popupContent += '<button id="delete-marker-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 3px; display: none;">Delete</button>';
     }
     popupContent += '</div>';
 
@@ -224,14 +248,17 @@ function setupMarkerPopup(layer) {
     layer.on('popupopen', function() {
         var pathBtn = document.getElementById('edit-marker-path-btn');
         var nameBtn = document.getElementById('edit-marker-name-btn');
+        var deleteBtn = document.getElementById('delete-marker-btn');
 
-        if (pathBtn && nameBtn) {
+        if (pathBtn && nameBtn && deleteBtn) {
             if (isEditMode) {
                 pathBtn.style.display = 'inline-block';
                 nameBtn.style.display = 'inline-block';
+                deleteBtn.style.display = 'inline-block';
             } else {
                 pathBtn.style.display = 'none';
                 nameBtn.style.display = 'none';
+                deleteBtn.style.display = 'none';
             }
         }
 
@@ -260,6 +287,20 @@ function setupMarkerPopup(layer) {
                     updateSaveButtonState();
                     updateLegendFromGroup(editableGroup);
                 }, layer.options._kmlName);
+            };
+        }
+
+        if (deleteBtn) {
+            deleteBtn.onclick = function() {
+                showConfirmDialog('Delete this marker?', function(confirmed) {
+                    if (confirmed) {
+                        layer.closePopup();
+                        editableGroup.removeLayer(layer);
+                        hasChanges = true;
+                        updateSaveButtonState();
+                        updateLegendFromGroup(editableGroup);
+                    }
+                });
             };
         }
     });
@@ -388,7 +429,7 @@ function enableEditMode() {
             edit: {
                 featureGroup: editableGroup,
                 edit: false, // Disable edit layers button - use popup instead
-                remove: true
+                remove: false // Disable delete button - use popup delete instead
             },
             draw: {
                 polyline: true,
@@ -898,11 +939,8 @@ function setupDrawEventHandlers() {
         }
     });
 
-    map.on(L.Draw.Event.DELETED, function () {
-        hasChanges = true;
-        updateSaveButtonState();
-        updateLegendFromGroup(editableGroup);
-    });
+    // Note: L.Draw.Event.DELETED event handler removed since we disabled
+    // the delete toolbar button and handle deletion via popup buttons instead
 }
 
 function saveMap() {
