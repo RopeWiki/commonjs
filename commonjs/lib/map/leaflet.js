@@ -148,6 +148,10 @@ function findAndAddDataToMap(map) {
 
             setupLeafletKML();
             loadKMLToEditableGroup(map, kmlurl);
+        } else {
+            // No KML file yet, but initialize empty editing if user is logged in
+            setupLeafletKML();
+            initializeEmptyEditableMap(map);
         }
     }
 

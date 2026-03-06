@@ -33,6 +33,16 @@ function getDiamondIcon() {
     });
 }
 
+function initializeEmptyEditableMap(map) {
+    // Initialize with no existing KML file - create empty editable group
+    originalKMLURL = null;
+    editableGroup = new L.FeatureGroup();
+    map.addLayer(editableGroup);
+
+    // Add edit controls immediately for empty map
+    addEditControls();
+}
+
 function loadKMLToEditableGroup(map, kmlurl) {
     originalKMLURL = kmlurl;
     editableGroup = new L.FeatureGroup();
@@ -367,7 +377,9 @@ function updateLegendFromGroup(featureGroup) {
 var editControl = null;
 
 function addEditControls() {
-    if (!document.getElementById('kmlfilep')) return;
+    // Allow editing if there's a kmlfilep element (even if empty) and user is logged in
+    var kmlElement = document.getElementById('kmlfilep');
+    if (!kmlElement) return;
     if (!currentUser) return;
     if (!isTrustedTester()) return;
 
@@ -977,7 +989,11 @@ function saveMap() {
         return;
     }
 
-    showConfirmDialog('Save changes to KML file? This will overwrite the existing file.', function(confirmed) {
+    var message = originalKMLURL
+        ? 'Save changes to KML file? This will overwrite the existing file.'
+        : 'Save new KML file? This will create a new map file for this page.';
+
+    showConfirmDialog(message, function(confirmed) {
         if (!confirmed) return;
 
         doSaveMap();
@@ -987,7 +1003,14 @@ function saveMap() {
 function doSaveMap() {
 
     var kmlContent = layersToKML(editableGroup);
-    var fileName = decodeURIComponent(originalKMLURL.split('/').pop());
+
+    // Always use pagename.kml as the filename
+    var pageName = mw.config.get('wgPageName');
+    if (!pageName) {
+        showMessageDialog('Error: Could not determine page name for KML file.');
+        return;
+    }
+    var fileName = pageName + '.kml';
 
     var api = new mw.Api();
 
