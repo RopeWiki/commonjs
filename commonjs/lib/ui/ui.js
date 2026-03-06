@@ -434,7 +434,7 @@ function loadUserInterface(document) {
         //id.split(' ').join('_');
         var fr = document.createElement("IFRAME");
         fr.src = SITE_BASE_URL +
-            '/api.php?action=sfautoedit&form=AutoRefresh&target=Votes:AutoRefresh&query=AutoRefresh[Location]=' +
+            '/api.php?action=pfautoedit&form=AutoRefresh&target=Votes:AutoRefresh&query=AutoRefresh[Location]=' +
             id;
         fr.style.display = "none";
         document.body.appendChild(fr);

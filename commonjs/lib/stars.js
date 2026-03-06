@@ -124,7 +124,7 @@ function starVote(elem) {
             user = "";
         }
 
-        fr.src = SITE_BASE_URL + '/api.php?action=sfautoedit&form=Page_rating&target=' + target + '&query=Page_rating[Page]=' + id + '%26Page_rating[Rating]=' + stars + '%26Page_rating[User]=' + user;
+        fr.src = SITE_BASE_URL + '/api.php?action=pfautoedit&form=Page_rating&target=' + target + '&query=Page_rating[Page]=' + id + '%26Page_rating[Rating]=' + stars + '%26Page_rating[User]=' + user;
         fr.style.display = "none";
 
         document.body.appendChild(fr);
