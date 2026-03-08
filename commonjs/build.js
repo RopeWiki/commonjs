@@ -52,4 +52,6 @@ if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true });
 }
 
-fs.writeFileSync("out/Common.min.js", result.code, "utf8");
+const outputFile = path.join(outDir, 'Common.min.js');
+fs.writeFileSync(outputFile, result.code, "utf8");
+console.log("Built: " + outputFile);
