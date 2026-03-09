@@ -1,7 +1,7 @@
 // Needed to display tiles properly
 mw.loader.load('/leaflet/1.9.4/leaflet.css', 'text/css');
 mw.loader.load('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.css', 'text/css');
-mw.loader.load('https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css', 'text/css');
+mw.loader.load('/leaflet-draw/1.0.4/leaflet.draw.css', 'text/css');
 
 function initializeLeafletMap() {
 
@@ -26,9 +26,9 @@ function initializeLeafletMap() {
     $.getScript('/leaflet/1.9.4/leaflet.js')
         .then(function () {
             return Promise.all([
-                $.getScript('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js'),
+                $.getScript('/leaflet-vectorgrid/Leaflet.VectorGrid.bundled.js'),
                 $.getScript('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.min.js'),
-                $.getScript('https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.js')
+                $.getScript('/leaflet-draw/1.0.4/leaflet.draw.js')
             ]);
         })
         .then(function () {

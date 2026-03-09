@@ -72,7 +72,7 @@ function add_risk_map(map) {
         div.title = 'Toggle Layer';
 
         // Check cookie for initial state (default to checked if no cookie)
-        var isChecked = publiclands !== "" && publiclands !== "off";
+        var isChecked = publiclands !== "off";
 
         div.innerHTML =
             '<label style="font-size: 13px; user-select: none; background-color: white;">' +
