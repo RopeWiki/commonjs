@@ -446,7 +446,7 @@ function setupLeafletKML() {
     //     options: {
     //         iconSize: [20, 20],
     //         iconAnchor: [16, 16],
-    //         iconUrl: '/leaflet/images/open-diamond.png'
+    //         iconUrl: '/images/3/3c/Open-diamond.png'
     //     },
     //     _setIconStyles: function (img, name) {
     //         L.Icon.prototype._setIconStyles.apply(this, [img, name]);

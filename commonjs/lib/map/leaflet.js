@@ -27,7 +27,7 @@ function initializeLeafletMap() {
         .then(function () {
             return Promise.all([
                 $.getScript('/leaflet-vectorgrid/Leaflet.VectorGrid.bundled.js'),
-                $.getScript('/leaflet-fullscreen/1.0.1/leaflet.fullscreen.min.js'),
+                $.getScript('/leaflet-fullscreen/1.0.1/Leaflet.fullscreen.min.js'),
                 $.getScript('/leaflet-draw/1.0.4/leaflet.draw.js')
             ]);
         })
@@ -124,7 +124,7 @@ function findAndAddDataToMap(map) {
     if (kmlmarkershuttle != null) {
         coords = kmlmarkershuttle.innerText.split(",");
         if (coords != null && coords.length > 1) {
-            addMarker(coords, map, "Shuttle", pinIcon('/leaflet/images/S.png'));
+            addMarker(coords, map, "Shuttle", pinIcon('/images/f/f9/S-marker.png'));
         }
     }
 
@@ -133,7 +133,7 @@ function findAndAddDataToMap(map) {
     if (kmlmarkerparking != null) {
         coords = kmlmarkerparking.innerText.split(",");
         if (coords != null && coords.length > 1) {
-            addMarker(coords, map, "Parking", pinIcon('/leaflet/images/P.png'));
+            addMarker(coords, map, "Parking", pinIcon('/images/b/b2/P-marker.png'));
         }
     }
 

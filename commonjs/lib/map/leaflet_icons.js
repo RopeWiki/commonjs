@@ -45,7 +45,7 @@ function waterFlowIcon(iconUrl) {
 // These are the diamon icons used by the KML library as generic point markers.
 function KMLDiamond(iconUrl) {
     if (!iconUrl) {
-        iconUrl = "/leaflet/images/open-diamond.png";
+        iconUrl = "/images/3/3c/Open-diamond.png";
     }
     iconSize = [ 20, 20 ];
     return L.icon({

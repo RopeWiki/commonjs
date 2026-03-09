@@ -27,7 +27,7 @@ function getDiamondIcon() {
     }
     // Fallback if KMLDiamond not loaded yet
     return L.icon({
-        iconUrl: '/leaflet/images/open-diamond.png',
+        iconUrl: '/images/3/3c/Open-diamond.png',
         iconSize: [20, 20],
         iconAnchor: [10, 10]
     });
