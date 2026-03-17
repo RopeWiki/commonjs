@@ -223,13 +223,29 @@ function waterflow() {
     if (window.location.href.toString().indexOf('debug=noth') >= 0)
         downloadth = 1;
 
+    console.log("=== Waterflow starting ===");
+    console.log("Settings: watershed=" + wfwatershed + " log=" + wflog + " test=" + wftest + " nousgs=" + wfnousgs + " local=" + wflocal);
+    console.log("Download threads: " + downloadth);
+
     function isloading(str) { return str.indexOf('img') >= 0; }
 
     var loading = "<img height=12 src='" + SITE_BASE_URL + "/extensions/PageForms/skins/loading.gif'/>";
     var firstcoldate = 3;
 
     var table = document.getElementById('waterflow-table');
-    if (!table) return;
+    if (!table) {
+        console.warn("Waterflow table not found - exiting");
+        return;
+    }
+
+    // Wrap table in scrollable container
+    if (!table.parentNode.classList || !table.parentNode.classList.contains('waterflow-scroll-wrapper')) {
+        var wrapper = document.createElement('div');
+        wrapper.className = 'waterflow-scroll-wrapper';
+        wrapper.style.cssText = 'width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;';
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+    }
 
     if (wfwatershed) {
         var ths = table.getElementsByTagName('TH');
@@ -243,11 +259,18 @@ function waterflow() {
 
     var box = document.getElementById('kmlrect');
     var boxrect = cleanup(box.innerHTML).split(" ").join("").split(",");
-    if (!box) return;
+    if (!box) {
+        console.warn("KML bounding box not found - exiting");
+        return;
+    }
     var center = document.getElementById('kmlmarker');
-    if (!center) return;
+    if (!center) {
+        console.warn("KML center marker not found - exiting");
+        return;
+    }
     var latlng = center.innerHTML.split(',');
     loc = { lat: latlng[0], lng: latlng[1] };
+    console.log("Location: " + loc.lat + "," + loc.lng + " bbox=[" + boxrect.join(",") + "]");
     var wficonlist;
     var kmlicons = document.getElementById("kmlicons");
     if (kmlicons != null)
@@ -326,6 +349,8 @@ function waterflow() {
     if (wfallusgs)
         datesid.push(datesid[0] + 'A');
 
+    console.log("Dates to fetch: " + datesid.join(", "));
+
     if (!wftest && !wfnousgs) // turn USGS ON/OFF
     {
         //
@@ -375,17 +400,28 @@ function waterflow() {
                 dates;
             url += "&parameterCd=00060,00065,00010" + stamp;
 
+            console.log("USGS fetch: date=" + date + " today=" + today + " mode=" + (imode ? "instantaneous" : "daily"));
+
             $.getJSON(url,
                 function(data) {
+                    console.log("USGS response: " + (data.value.timeSeries ? data.value.timeSeries.length : 0) + " time series received");
+
+                    // Remove loading indicator
+                    var loadingRow = document.getElementById("usgs-loading-row");
+                    if (loadingRow) {
+                        loadingRow.parentNode.removeChild(loadingRow);
+                    }
 
                     var sitelist = [];
                     var ts = data.value.timeSeries;
 
+                    // Process all sites
                     for (var i = 0; i < ts.length; ++i) {
                         var siteid = "USGS:" + ts[i].sourceInfo.siteCode[0].value;
                         if (returnSiteByID(siteid) == null) {
                             var sitename = ts[i].sourceInfo.siteName;
                             sitename = sitename.split(' A ').join(' AT ').split(' NEAR ').join(' NR ');
+                            console.log("USGS adding site: " + siteid + " (" + sitename + ")");
                             addsite(siteid,
                                 sitename,
                                 ts[i].sourceInfo.geoLocation.geogLocation.latitude,
@@ -501,9 +537,19 @@ function waterflow() {
                         addval(sitelist[i].id, val);
                     }
 
+                    console.log("USGS processed: " + sitelist.length + " sites with data");
                     usgs.error = false;
+                }).fail(function(jqxhr, textStatus, error) {
+                    console.error("USGS fetch failed: " + textStatus + ", " + error);
+                    // Remove loading indicator on error
+                    var loadingRow = document.getElementById("usgs-loading-row");
+                    if (loadingRow) {
+                        loadingRow.innerHTML = '<td colspan="' + table.getElementsByTagName('TH')[0].parentNode.childNodes.length + '" style="text-align:left; padding:20px; font-style:italic; color:#c00;">' +
+                            'Failed to load USGS gauge data. Please try refreshing the page.</td>';
+                    }
                 }).always(function() {
                 if (sitecountdown(usgs, -1)) {
+                    console.log("USGS complete: all dates fetched");
                     // compute reference
                     for (var i = 0; i < sites.length; ++i)
                         if (sites[i].counter == -1)
@@ -513,7 +559,16 @@ function waterflow() {
         }
 
         var usgs = { counter: 0, name: "USGS", error: true };
+
+        // Add loading indicator to table
+        var loadingRow = document.createElement("TR");
+        loadingRow.id = "usgs-loading-row";
+        loadingRow.innerHTML = '<td colspan="' + table.getElementsByTagName('TH')[0].parentNode.childNodes.length + '" style="text-align:left; padding:20px; font-style:italic; color:#666;">' +
+            '<img height=16 src="' + SITE_BASE_URL + '/extensions/PageForms/skins/loading.gif"/> Loading USGS gauge data...</td>';
+        table.appendChild(loadingRow);
+
         sitecountdown(usgs, datesid.length);
+        console.log("USGS starting: fetching " + datesid.length + " dates");
         for (var i = 0; i < datesid.length; ++i) {
             if (i == 0)
                 usgsgetval(datesid[i], true, true)
@@ -544,6 +599,8 @@ function waterflow() {
         if (winfo) {
             var url = preurl + "&winfo=" + center.innerHTML;
 
+            console.log("Watershed info fetch: center=" + center.innerHTML);
+
             $.getJSON(url,
                 function(data) {
 
@@ -566,10 +623,13 @@ function waterflow() {
                         */
                         ;
                         sum += "<span>" + str + "</span>";
+                        console.log("Watershed info received: " + str.substring(0, 80) + (str.length > 80 ? "..." : ""));
                     }
                     if (list.length > 1)
                         sum += " " + aref(list[1], "more", "more", ' target="_blank"');
                     winfo.innerHTML = sum.length > 0 ? sum : "N/A";
+                }).fail(function(jqxhr, textStatus, error) {
+                    console.error("Watershed info fetch failed: " + textStatus + ", " + error);
                 });
         }
 
@@ -586,6 +646,8 @@ function waterflow() {
         function miscgetforecast() {
             var url = preurl + "&wffrect=" + boxrect.join();
 
+            console.log("Forecast fetch: bbox=" + boxrect.join(","));
+
             $.getJSON(url,
                 function(data) {
 
@@ -597,6 +659,9 @@ function waterflow() {
                         forecast.push({ id: line[0], url: line[5] });
                     }
 
+                    console.log("Forecast received: " + forecast.length + " forecasts available");
+
+                    var matched = 0;
                     for (i = 0; i < forecast.length; ++i) {
                         var site = returnSiteByID(forecast[i].id);
                         if (!site)
@@ -609,8 +674,12 @@ function waterflow() {
                             row = document.getElementById(site.id);
                             var cols = row.childNodes;
                             addforecast(cols[firstcoldate], site.id);
+                            matched++;
                         }
                     }
+                    console.log("Forecast matched: " + matched + " sites with forecast links");
+                }).fail(function(jqxhr, textStatus, error) {
+                    console.error("Forecast fetch failed: " + textStatus + ", " + error);
                 });
         }
 
@@ -839,6 +908,9 @@ function waterflow() {
         var dmatch = finddate(val[0].substr(0, 10));
         if (dmatch >= 0) {
             var cells = document.getElementsByClassName(datesid[dmatch] + "x" + siteid);
+            if (wflog && val.length > 1 && val[1] != "") {
+                console.log("Adding value: " + siteid + " date=" + val[0].substr(0, 10) + " Q=" + val[1] + (val.length > 2 ? " G=" + val[2] : ""));
+            }
             for (c = 0; c < cells.length; ++c)
                 if (isloading(cells[c].innerHTML)) {
                     var Q3 = [-1, -1, -1, -1, -1];
@@ -1068,14 +1140,16 @@ function waterflow() {
 
         // add to map
         var list = [];
-        for (c = 0; c < sites.length; ++c)
+        for (c = 0; c < sites.length; ++c) {
+            var siteName = sites[c].name.split(",").join(" ").split(";").join(" ");
             list.push({
-                id: sites[c].id,
+                id: siteName,
                 location: sites[c].loc,
                 zindex: sites[c].icon,
                 icon: wficonlist[sites[c].icon],
-                description: sites[c].name.split(",").join(" ").split(";").join(" ") + statuslabel + statusloading
+                description: statuslabel + statusloading
             });
+        }
         if (map != null) {
             loadRWResultsListIntoMap(list);
             updatemarkers();
