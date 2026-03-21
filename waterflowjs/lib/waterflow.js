@@ -200,7 +200,6 @@ function wfsitelink(siteid, label, date, days, today) {
 
 // load waterflow
 var oldrow;
-var forecast = [];
 var watershowchk = false;
 var watershowclass = "watershow";
 
@@ -214,18 +213,33 @@ function togglewatershowchk(id) {
 function waterflow() {
     var TODAY = 'T';
     var downloadth = 4;
-    var wfwatershed = window.location.href.toString().indexOf('watershed=on') >= 0; // || url.indexOf('http')<0;
-    var wflog = window.location.href.toString().indexOf('debug=log') >= 0; // || url.indexOf('http')<0;
-    var wftest = window.location.href.toString().indexOf('debug=test') >= 0; // || url.indexOf('http')<0;
-    var wfnousgs = window.location.href.toString().indexOf('debug=nousgs') >= 0; // || url.indexOf('http')<0;
-    var wfallusgs = window.location.href.toString().indexOf('debug=allusgs') >= 0; // || url.indexOf('http')<0;
-    var wflocal = window.location.href.toString().indexOf('debug=local') >= 0; // || url.indexOf('http')<0;
+    var wflog = window.location.href.toString().indexOf('debug=log') >= 0;
+    var wftest = window.location.href.toString().indexOf('debug=test') >= 0;
+    var wfnousgs = window.location.href.toString().indexOf('debug=nousgs') >= 0;
+    var wfallusgs = window.location.href.toString().indexOf('debug=allusgs') >= 0;
     if (window.location.href.toString().indexOf('debug=noth') >= 0)
         downloadth = 1;
 
     console.log("=== Waterflow starting ===");
-    console.log("Settings: watershed=" + wfwatershed + " log=" + wflog + " test=" + wftest + " nousgs=" + wfnousgs + " local=" + wflocal);
+    console.log("Settings: log=" + wflog + " test=" + wftest + " nousgs=" + wfnousgs);
     console.log("Download threads: " + downloadth);
+
+    // Add loading indicator to map
+    var mapbox = document.getElementById('mapbox');
+    if (mapbox) {
+        var mapLoader = document.createElement('div');
+        mapLoader.id = 'waterflow-map-loader';
+        mapLoader.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(255,255,255,0.9); padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); text-align: center;';
+        mapLoader.innerHTML = '<img height=24 src="' + SITE_BASE_URL + '/extensions/PageForms/skins/loading.gif"/> <div style="margin-top:10px; font-size:14px; color:#666;">Loading gauge data...</div>';
+
+        // Ensure mapbox has relative positioning
+        var currentPosition = window.getComputedStyle(mapbox).position;
+        if (currentPosition === 'static') {
+            mapbox.style.position = 'relative';
+        }
+
+        mapbox.appendChild(mapLoader);
+    }
 
     function isloading(str) { return str.indexOf('img') >= 0; }
 
@@ -238,23 +252,33 @@ function waterflow() {
         return;
     }
 
-    // Wrap table in scrollable container
+    // Wrap table in scrollable container with sticky headers
     if (!table.parentNode.classList || !table.parentNode.classList.contains('waterflow-scroll-wrapper')) {
         var wrapper = document.createElement('div');
         wrapper.className = 'waterflow-scroll-wrapper';
-        wrapper.style.cssText = 'width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;';
+        wrapper.style.cssText = 'max-height: 60vh; max-width: 100%; overflow: scroll; position: relative; -webkit-overflow-scrolling: touch;';
         table.parentNode.insertBefore(wrapper, table);
         wrapper.appendChild(table);
-    }
 
-    if (wfwatershed) {
-        var ths = table.getElementsByTagName('TH');
-        var newth = document.createElement('th');
-        newth.innerHTML = "TODAY CFS<br>(from AvgFlow)";
-        newth.style.fontSize = "small";
-        ths[firstcoldate].parentNode.insertBefore(newth, ths[firstcoldate]);
-        ++downloadth;
-        ++firstcoldate;
+        // Apply sticky styles to table
+        table.style.cssText = 'border-collapse: separate; border-spacing: 0;';
+
+        // Make first row (header) sticky
+        var headerRow = table.getElementsByTagName('TR')[0];
+        if (headerRow) {
+            var headers = headerRow.getElementsByTagName('TH');
+            for (var i = 0; i < headers.length; i++) {
+                headers[i].style.position = 'sticky';
+                headers[i].style.top = '0';
+                headers[i].style.backgroundColor = headers[i].style.backgroundColor || '#f0f0f0';
+                headers[i].style.zIndex = i === 0 ? '3' : '2';
+
+                // Make first column header sticky on both axes
+                if (i === 0) {
+                    headers[i].style.left = '0';
+                }
+            }
+        }
     }
 
     var box = document.getElementById('kmlrect');
@@ -393,7 +417,9 @@ function waterflow() {
             }
 
             var usgsrect = [rnd(boxrect[1]), rnd(boxrect[0]), rnd(boxrect[3]), rnd(boxrect[2])];
-            var url = "https://waterservices.usgs.gov/nwis/" +
+
+            // Cloudflare Workers caching proxy for waterservices.usgs.gov
+            var url = "https://usgs-cache.coops.workers.dev/nwis/" +
                 (imode ? "iv" : "dv") +
                 "/?format=json&bBox=" +
                 usgsrect.join(",") +
@@ -577,296 +603,7 @@ function waterflow() {
         }
     }
 
-    var pointwatershed;
-    var watersheds = [];
-
-    {
-        //
-        // WF SERVER
-        // MISC PROVIDERS
-        //
-        //sitecountdown(-1);
-        //url = LUCA_BASE_URL + "/rwwf?html=https://cdec.water.ca.gov/cgi-progs/staSearch?staid=sensor_chk=on&sensor=20&active_chk=on&active=Y&loc_chk=on&lon1=-119.24328&lon2=-118.34252&lat1=36.191&lat2=36.9146&elev1=-5&elev2=99000&ext=.json";
-        var misc = { counter: 0, name: "OTHER", error: true };
-        //var preurl = LUCA_BASE_URL + "/rwwf?waterflow=";
-        var location = urlget(window.location.href.toString(), "location=", "");
-        var preurl = wflocal ? PROTOCOL + "localhost/rwr?waterflow=" : LUCA_BASE_URL + "/rwr?waterflow=";
-        if (wftest) preurl += "&wftest=on";
-        if (wflog) preurl += "&wflog=on";
-        var preurld = preurl;
-
-        var winfo = document.getElementById('winfo');
-        if (winfo) {
-            var url = preurl + "&winfo=" + center.innerHTML;
-
-            console.log("Watershed info fetch: center=" + center.innerHTML);
-
-            $.getJSON(url,
-                function(data) {
-
-                    // load sites
-                    var sum = "";
-                    var list = data.list; //data.split('/cgi-progs/staMeta?station_id=');
-                    if (list.length > 0) {
-                        var str = pointwatershed = list[0];
-                        /*
-                        var s = str.indexOf(' Avg');
-                        if (s>=0) 
-                                {
-                                str1 = str.substring(0,s);
-                                str2 = str.substring(s);
-                                str = str1+"</span><br><span>Annual Average: "+str2;
-                                }
-                        var s = str.indexOf(':',str.indexOf('Drain'));
-                        if (s>=0)
-                            str = str.substring(s+1);
-                        */
-                        ;
-                        sum += "<span>" + str + "</span>";
-                        console.log("Watershed info received: " + str.substring(0, 80) + (str.length > 80 ? "..." : ""));
-                    }
-                    if (list.length > 1)
-                        sum += " " + aref(list[1], "more", "more", ' target="_blank"');
-                    winfo.innerHTML = sum.length > 0 ? sum : "N/A";
-                }).fail(function(jqxhr, textStatus, error) {
-                    console.error("Watershed info fetch failed: " + textStatus + ", " + error);
-                });
-        }
-
-/*
- // insert link to download KML 
- var kmlurl = preurl+"wfkmlrect="+boxrect.join();
- var kmllink = document.createElement("DIV");
- kmllink.innerHTML = '<a title="Download KML" href="'+kmlurl+'">Download KML</a>';
- var inselem = document.getElementById("mapbox");
- if (inselem) inselem = inselem.nextSibling;
- if (inselem) inselem.parentNode.insertBefore(kmllink, inselem);
-*/
-
-        function miscgetforecast() {
-            var url = preurl + "&wffrect=" + boxrect.join();
-
-            console.log("Forecast fetch: bbox=" + boxrect.join(","));
-
-            $.getJSON(url,
-                function(data) {
-
-                    // load sites
-                    var sitelist = [];
-                    var list = data.list; //data.split('/cgi-progs/staMeta?station_id=');
-                    for (i = 0; i < list.length; ++i) {
-                        var line = list[i].split(",");
-                        forecast.push({ id: line[0], url: line[5] });
-                    }
-
-                    console.log("Forecast received: " + forecast.length + " forecasts available");
-
-                    var matched = 0;
-                    for (i = 0; i < forecast.length; ++i) {
-                        var site = returnSiteByID(forecast[i].id);
-                        if (!site)
-                            continue;
-
-                        //matched site
-                        // if already processed, add now
-                        if (site.counter == 0) {
-                            var cell;
-                            row = document.getElementById(site.id);
-                            var cols = row.childNodes;
-                            addforecast(cols[firstcoldate], site.id);
-                            matched++;
-                        }
-                    }
-                    console.log("Forecast matched: " + matched + " sites with forecast links");
-                }).fail(function(jqxhr, textStatus, error) {
-                    console.error("Forecast fetch failed: " + textStatus + ", " + error);
-                });
-        }
-
-        miscgetforecast();
-
-/*
- function miscgetval(siteid, date, today) 
- {
-       //var stamp = "&stamp="+new Date().getTime();
-       var url = (today ? preurld : preurl) + "&wfid="+siteid+"&wfdates="+date+(today ? TODAY : "");
-       //console.log(siteid+"x"+date+": "+url);
-       $.getJSON(url, function(data) {
-         
-         var list = data.list;         
-         for(i=0; i<list.length; ++i)
-            addval(siteid, list[i].split(','));
-        }).always(function() {
-          datecountdown(siteid, -1);
-        });      
- }
-
- function miscgetsitelist(sitelist)
- {
-       site = sitelist.shift();
-       if (!site)
-          return;
-  
-       var today = false;
-       miscgetval(site.id, datesid[0], !today) 
-       //var stamp = "&stamp="+new Date().getTime();
-       var date = today ? datesid[0]+TODAY : datesid.slice(1).join(",");       
-       var url = (today ? preurld : preurl) + "&wfid="+site.id+"&wfdates="+date;
-       //console.log(site.id+"x"+date+": "+url);
-       $.getJSON(url, function(data) {
-         
-         var list = data.list;         
-         for(i=0; i<list.length; ++i)
-            addval(site.id, list[i].split(','));
-        }).always(function() {
-          datecountdown(site.id, -1);
-          miscgetsitelist(sitelist, today);
-        });  
- }
-*/
-
-        function miscgetvalmulti2(val, vallist) {
-            if (!val || val.datelist.length == 0)
-                val = vallist.shift();
-            if (!val)
-                return;
-
-
-            // request all dates at once
-            //var stamp = "&stamp="+new Date().getTime();
-            var url = (val.cnt == 0 ? preurld : preurl) + "&wfid=" + val.siteid + "&wfdates=" + val.datelist.join(',');
-            date = val.datelist.shift();
-
-            $.getJSON(url,
-                function(data) {
-
-                    var list = data.list;
-                    for (i = 0; i < list.length; ++i) {
-                        var line = list[i].split(',');
-                        addval(val.siteid, line);
-                        // delete from list of pending dates
-                        do {
-                            var d = val.datelist.indexOf(line[0].substr(0, 10));
-                            if (d >= 0) {
-                                val.datelist.splice(d, 1);
-                                datecountdown(val.siteid, -1);
-                            }
-                        } while (d >= 0)
-                    }
-                }).always(function() {
-                datecountdown(val.siteid, -1);
-                miscgetvalmulti2(val, vallist);
-            });
-        }
-
-        function miscgetvalmulti(vallist) {
-            var val = vallist.shift();
-            if (!val)
-                return;
-
-            var url = (val.today ? preurld : preurl) +
-                "&wfid=" +
-                val.siteid +
-                "&wfdates=" +
-                val.date +
-                (val.today ? TODAY : "");
-
-            $.getJSON(url,
-                function(data) {
-
-                    var list = data.list;
-                    for (i = 0; i < list.length; ++i)
-                        addval(val.siteid, list[i].split(','));
-                }).always(function() {
-                datecountdown(val.siteid, -1);
-                miscgetvalmulti(vallist);
-            });
-        }
-
-        function geturllist(id, urllist) {
-            var grp = id.split(":")[0];
-            for (var i = 0; i < urllist.length; ++i)
-                if (urllist[i][0] == grp)
-                    return i;
-            return -1;
-        }
-
-        function miscgetsites(multi) {
-            sitecountdown(misc, 1);
-            var url = preurl + "&wflocation=" + urlencode(location) + "&wfrect=" + boxrect.join();
-
-            $.getJSON(url,
-                function(data) {
-
-                    // load sites
-                    var sitelist = [];
-                    var list = data.list; //data.split('/cgi-progs/staMeta?station_id=');
-                    for (i = 0; i < list.length; ++i) {
-                        var line = list[i].split(",");
-                        if (line.length > 9)
-                            watersheds.push({ id: line[0], watershed: line[9].replace(" AvgFlow", "<br>AvgFlow") });
-                        if (isprov(line[0], 'USGS'))
-                            continue;
-                        var counter = multi > 0 ? datesid.length : (datesid.length > 1 ? 2 : 1);
-                        var grp = geturllist(line[0], data.urllist);
-                        var urls = data.urllist[grp], nurls = [];
-                        for (var u = 2; u < urls.length; ++u)
-                            nurls.push(urls[u]);
-
-                        var site = addsite(line[0],
-                            line[1],
-                            line[2],
-                            line[3],
-                            line[4],
-                            data.urllist[grp][1],
-                            nurls,
-                            counter);
-                        sitelist.push(site);
-                    }
-
-                    // sort by distance
-                    sitelist.sort(function(a, b) { return a.dist - b.dist });
-
-                    if (multi == 2) {
-                        var vallist = [];
-                        for (i = 0; i < sitelist.length; ++i) {
-                            var datelist = [];
-                            for (d = 0; d < datesid.length; ++d)
-                                datelist.push(datesid[d] + (d == 0 ? TODAY : ""));
-                            vallist.push({ siteid: sitelist[i].id, datelist: datelist });
-                        }
-                        for (t = 0; t < downloadth; ++t) {
-                            setTimeout(function() {
-                                    miscgetvalmulti2(null, vallist);
-                                },
-                                t * 500);
-                        }
-                    }
-                    if (multi == 1) {
-                        var vallist = [];
-                        for (i = 0; i < sitelist.length; ++i)
-                            for (d = 0; d < datesid.length; ++d)
-                                vallist.push({ siteid: sitelist[i].id, date: datesid[d], today: d == 0 });
-                        for (t = 0; t < downloadth; ++t) {
-                            setTimeout(function() {
-                                    miscgetvalmulti(vallist);
-                                },
-                                t * 500);
-                        }
-                    }
-
-
-                    // all is good
-                    misc.error = false;
-                }).always(function() {
-
-                if (sitecountdown(misc, -1)) {
-                }
-            });
-        }
-
-        miscgetsites(2);
-    }
+    console.log("Waterflow initialization complete - USGS sources only");
 
 
     // === Waterflow aux functions
@@ -1021,11 +758,11 @@ function waterflow() {
             case 0:
                 newcol = document.createElement("TD");
                 newcol.innerHTML = pinicon(site.id, wficonlist[0]) + sitelink(site.id, site.id);
+                newcol.style.cssText = 'position: sticky; left: 0; background-color: #fff; z-index: 1;';
                 break;
             case 1:
                 newcol = document.createElement("TD");
-                var wdiv = "<div id='" + site.id + "watershed' style='font-size:x-small'></div>";
-                newcol.innerHTML = "<div style='font-size:small;white-space:normal'>" + site.name + wdiv + "</div>";
+                newcol.innerHTML = "<div style='font-size:small;white-space:normal'>" + site.name + "</div>";
                 newcol.style.cssText = "white-space: normal;"
                 break;
             case 2:
@@ -1061,64 +798,6 @@ function waterflow() {
         }
     }
 
-    function findwatershed(id) {
-        for (var i = 0; i < watersheds.length; ++i)
-            if (watersheds[i].id == id)
-                return watersheds[i].watershed;
-        return "";
-    }
-
-    function updatewatersheds() {
-        if (!wfwatershed)
-            return;
-
-        var pointCFS = -1;
-        if (pointwatershed) {
-            var tag = "AvgFlow:";
-            var pointflow = pointwatershed.indexOf(tag);
-            if (pointflow >= 0)
-                pointCFS = parseFloat(pointwatershed.substring(pointflow + tag.length));
-        }
-
-        // change marker
-        for (var i = 0; i < sites.length; ++i) {
-            var site = sites[i];
-            if (!site.status)
-                continue; // no current flow
-
-            var elem = document.getElementById(site.id + "watershed");
-            if (!elem)
-                continue; // no wdiv?!?
-
-            var watershed = findwatershed(site.id);
-            if (!watershed)
-                continue; // no watershed
-            elem.innerHTML = watershed;
-            var flow = watershed.indexOf(tag);
-            if (flow < 0)
-                continue; // no AvgFlow
-
-            if (pointCFS <= 0 || isNaN(pointCFS))
-                continue; // AvFlow <= 0
-
-            var Q = parseFloat(site.status);
-            if (Q < 0 || isNaN(Q))
-                continue; // Q no good
-
-            var CFS = parseFloat(watershed.substring(flow + tag.length));
-            if (CFS <= 0 || isNaN(CFS))
-                continue; // AvFlow <= 0
-
-            // Finally!!! CFS vs pointCFS
-            var row = document.getElementById(site.id);
-            if (!row || row.children.length < firstcoldate)
-                continue;
-            var cell = row.children[firstcoldate - 1]
-            cell.style.fontSize = "small";
-            cell.innerHTML = valrnd(Q * pointCFS / CFS) + (metric ? 'm3s' : 'cfs') + "?";
-        }
-    }
-
     function sitecountdown(site, val) {
         site.counter += val;
         var msg = document.getElementById(site.name);
@@ -1143,7 +822,8 @@ function waterflow() {
         for (c = 0; c < sites.length; ++c) {
             var siteName = sites[c].name.split(",").join(" ").split(";").join(" ");
             list.push({
-                id: siteName,
+                id: sites[c].id,  // Use site ID for proper lookup in updatemarkers()
+                name: siteName,   // Preserve name for display
                 location: sites[c].loc,
                 zindex: sites[c].icon,
                 icon: wficonlist[sites[c].icon],
@@ -1153,22 +833,15 @@ function waterflow() {
         if (map != null) {
             loadRWResultsListIntoMap(list);
             updatemarkers();
+
+            // Remove map loading indicator
+            var mapLoader = document.getElementById('waterflow-map-loader');
+            if (mapLoader) {
+                mapLoader.parentNode.removeChild(mapLoader);
+            }
         }
 
-        updatewatersheds();
         return true;
-    }
-
-    function addforecast(cell, id) {
-        for (var i = 0; i < forecast.length; ++i)
-            if (forecast[i].id == id) {
-                var list = [];
-                var urlp = forecast[i].url.split(";");
-                for (var p = 0; p < urlp.length; ++p)
-                    list.push("<span>" + sitelink(id, p == 0 ? "FORECAST" : "+", urlp[p]) + "</span>");
-                cell.innerHTML += "<br>" + list.join(" - ");
-                return;
-            }
     }
 
     function datecountdown(siteid, val) {
@@ -1371,8 +1044,6 @@ function waterflow() {
                 wfsitelink(site.id, "30d", th[r].id, 30, today) +
                 " - " +
                 wfsitelink(site.id, "1yr", th[r].id, 365, today);
-            if (today)
-                addforecast(cell, site.id);
         }
 
         // style row
@@ -1497,7 +1168,6 @@ function waterflow() {
                 prediction[pd].innerHTML = "unknown";
         }
         updatemarkers();
-        updatewatersheds();
     }
 }
 
