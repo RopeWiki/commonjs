@@ -20,6 +20,37 @@ var TRACK_TYPES = {
     'Other': '#808080'
 };
 
+// Approved colors from KML Guidelines
+var APPROVED_COLORS = [
+    { label: 'Green (Approach)', color: '#00FF00' },
+    { label: 'Red (Descent)', color: '#FF0000' },
+    { label: 'Yellow (Exit)', color: '#FFFF00' },
+    { label: 'Orange (Bypass)', color: '#FF9900' },
+    { label: 'Black (Road)', color: '#000000' },
+    { label: 'Cyan (Water Approach)', color: '#00C0C0' },
+    { label: 'Blue (Water Exit)', color: '#0000FF' },
+    { label: 'Magenta (Special)', color: '#C000C0' }
+];
+
+// Inject CSS to scale down vertex markers (only run once)
+var vertexStylesInjected = false;
+function injectVertexStyles() {
+    if (vertexStylesInjected) return;
+
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML =
+        '/* Smaller vertex markers for editing polylines */' +
+        '.leaflet-editing-icon {' +
+        '  width: 5px !important;' +
+        '  height: 5px !important;' +
+        '  margin-left: -2px !important;' +
+        '  margin-top: -2px !important;' +
+        '}';
+    document.head.appendChild(style);
+    vertexStylesInjected = true;
+}
+
 // Diamond icon for markers (same as in leaflet_icons.js)
 function getDiamondIcon() {
     if (typeof KMLDiamond !== 'undefined') {
@@ -156,11 +187,9 @@ function setupLayerEventHandlers(layer) {
 function setupTrackPopup(layer) {
     var popupContent = '<div style="min-width: 150px;">';
     popupContent += '<b>' + (layer.options._kmlName || 'Unnamed Track') + '</b><br>';
-    popupContent += '<span style="color: ' + layer.options._kmlColor + '">● </span>';
-    popupContent += (layer.options._kmlType || 'Other') + '<br>';
     if (currentUser) {
         popupContent += '<button id="edit-track-path-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Edit Track</button>';
-        popupContent += '<button id="edit-track-type-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Change Name & Type</button>';
+        popupContent += '<button id="edit-track-type-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Edit Name & Color</button>';
         popupContent += '<button id="delete-track-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 3px; display: none;">Delete</button>';
     }
     popupContent += '</div>';
@@ -199,18 +228,25 @@ function setupTrackPopup(layer) {
 
         if (typeBtn) {
             typeBtn.onclick = function() {
-                showTrackTypeDialog(function(trackType, trackName) {
-                    var color = TRACK_TYPES[trackType] || '#FF0000';
-
+                showTrackTypeDialog(function(color, trackName) {
                     // Update both ghost and visible layer
                     var visibleLayer = layer._visibleLayer;
+
+                    // Find type that matches selected color, or use 'Other'
+                    var trackType = 'Other';
+                    for (var type in TRACK_TYPES) {
+                        if (TRACK_TYPES[type] === color) {
+                            trackType = type;
+                            break;
+                        }
+                    }
 
                     layer.options._kmlName = trackName;
                     layer.options.name = trackName;
                     layer.options._kmlColor = color;
                     layer.options.color = color;
                     layer.options._kmlType = trackType;
-                    layer.setStyle({ color: color });
+                    layer.setStyle({ color: color, weight: 2 });
 
                     if (visibleLayer) {
                         visibleLayer.options._kmlName = trackName;
@@ -218,7 +254,7 @@ function setupTrackPopup(layer) {
                         visibleLayer.options._kmlColor = color;
                         visibleLayer.options.color = color;
                         visibleLayer.options._kmlType = trackType;
-                        visibleLayer.setStyle({ color: color });
+                        visibleLayer.setStyle({ color: color, weight: 2 });
                     }
 
                     setupTrackPopup(layer);
@@ -227,7 +263,7 @@ function setupTrackPopup(layer) {
                     hasChanges = true;
                     updateSaveButtonState();
                     updateLegendFromGroup(editableGroup);
-                }, layer.options._kmlType, layer.options._kmlName);
+                }, layer.options._kmlColor, layer.options._kmlName);
             };
         }
 
@@ -257,7 +293,7 @@ function setupMarkerPopup(layer) {
     popupContent += '<b>' + (layer.options._kmlName || 'Unnamed Marker') + '</b><br>';
     if (currentUser) {
         popupContent += '<button id="edit-marker-path-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Edit Marker</button>';
-        popupContent += '<button id="edit-marker-name-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Change Name</button>';
+        popupContent += '<button id="edit-marker-name-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; margin-right: 5px; display: none;">Edit Name</button>';
         popupContent += '<button id="delete-marker-btn" style="margin-top: 8px; padding: 5px 10px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 3px; display: none;">Delete</button>';
     }
     popupContent += '</div>';
@@ -381,7 +417,7 @@ function addEditControls() {
     var kmlElement = document.getElementById('kmlfilep');
     if (!kmlElement) return;
     if (!currentUser) return;
-    if (!isTrustedTester()) return;
+    // if (!isTrustedTester()) return;
 
     var existingControls = document.getElementById('map-edit-controls');
     if (existingControls) return;
@@ -420,6 +456,38 @@ function addEditControls() {
 
 var saveControl = null;
 var cancelControl = null;
+var editBanner = null;
+
+function addEditBanner() {
+    if (editBanner) return;
+
+    var mapContainer = document.getElementById('mapbox');
+    if (!mapContainer) return;
+
+    editBanner = document.createElement('div');
+    editBanner.id = 'edit-mode-banner';
+    editBanner.style.position = 'absolute';
+    editBanner.style.top = '0';
+    editBanner.style.left = '0';
+    editBanner.style.right = '0';
+    editBanner.style.backgroundColor = '#FF9800';
+    editBanner.style.color = 'white';
+    editBanner.style.padding = '10px';
+    editBanner.style.textAlign = 'center';
+    editBanner.style.fontWeight = 'bold';
+    editBanner.style.zIndex = '1000';
+    editBanner.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+    editBanner.textContent = 'EDIT MODE - Click tracks to edit, use toolbar to add new features';
+
+    mapContainer.appendChild(editBanner);
+}
+
+function removeEditBanner() {
+    if (editBanner && editBanner.parentNode) {
+        editBanner.parentNode.removeChild(editBanner);
+        editBanner = null;
+    }
+}
 
 function updateSaveButtonState() {
     var saveButton = document.querySelector('.leaflet-control-save');
@@ -440,6 +508,12 @@ function enableEditMode() {
     isEditMode = true;
     hasChanges = false;
 
+    // Inject CSS to make vertex markers smaller
+    injectVertexStyles();
+
+    // Add edit mode banner
+    addEditBanner();
+
     // Hide the edit button when entering edit mode
     if (editControl) {
         map.removeControl(editControl);
@@ -454,7 +528,11 @@ function enableEditMode() {
                 remove: false // Disable delete button - use popup delete instead
             },
             draw: {
-                polyline: true,
+                polyline: {
+                    shapeOptions: {
+                        weight: 2
+                    }
+                },
                 polygon: false,
                 circle: false,
                 rectangle: false,
@@ -526,6 +604,9 @@ function enableEditMode() {
 
 function disableEditMode() {
     isEditMode = false;
+
+    // Remove edit mode banner
+    removeEditBanner();
 
     if (drawControl) {
         map.removeControl(drawControl);
@@ -663,7 +744,7 @@ function showMessageDialog(message, callback) {
     document.body.appendChild(overlay);
 }
 
-function showTrackTypeDialog(callback, initialType, initialName) {
+function showTrackTypeDialog(callback, initialColor, initialName) {
     var overlay = document.createElement('div');
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
@@ -680,78 +761,19 @@ function showTrackTypeDialog(callback, initialType, initialName) {
     dialog.style.backgroundColor = 'white';
     dialog.style.padding = '25px';
     dialog.style.borderRadius = '8px';
-    dialog.style.maxWidth = '450px';
+    dialog.style.maxWidth = '500px';
     dialog.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
     dialog.style.fontFamily = 'sans-serif';
 
     var title = document.createElement('h3');
-    title.textContent = 'Track Type';
+    title.textContent = 'Edit Track';
     title.style.marginTop = '0';
     title.style.marginBottom = '20px';
     title.style.fontSize = '18px';
     title.style.color = '#333';
     dialog.appendChild(title);
 
-    var typeGrid = document.createElement('div');
-    typeGrid.style.display = 'grid';
-    typeGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    typeGrid.style.gap = '10px';
-    typeGrid.style.marginBottom = '20px';
-
-    var selectedType = initialType || 'Descent';
-
-    Object.keys(TRACK_TYPES).forEach(function(type) {
-        var btn = document.createElement('button');
-        btn.textContent = type;
-        btn.style.padding = '12px';
-        btn.style.border = 'none';
-        btn.style.cursor = 'pointer';
-        btn.style.borderRadius = '6px';
-        btn.style.fontSize = '14px';
-        btn.style.fontWeight = '500';
-        btn.style.transition = 'all 0.2s';
-        btn.style.backgroundColor = '#f0f0f0';
-        btn.style.color = '#333';
-        btn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-
-        if (type === selectedType) {
-            btn.style.backgroundColor = TRACK_TYPES[type];
-            btn.style.color = 'white';
-            btn.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-            btn.style.transform = 'scale(1.05)';
-        }
-
-        btn.onmouseover = function() {
-            if (type !== selectedType) {
-                btn.style.backgroundColor = '#e0e0e0';
-            }
-        };
-
-        btn.onmouseout = function() {
-            if (type !== selectedType) {
-                btn.style.backgroundColor = '#f0f0f0';
-            }
-        };
-
-        btn.onclick = function() {
-            selectedType = type;
-            Array.from(typeGrid.children).forEach(function(child) {
-                child.style.backgroundColor = '#f0f0f0';
-                child.style.color = '#333';
-                child.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                child.style.transform = 'scale(1)';
-            });
-            btn.style.backgroundColor = TRACK_TYPES[type];
-            btn.style.color = 'white';
-            btn.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-            btn.style.transform = 'scale(1.05)';
-        };
-
-        typeGrid.appendChild(btn);
-    });
-
-    dialog.appendChild(typeGrid);
-
+    // Track Name Input
     var nameLabel = document.createElement('label');
     nameLabel.textContent = 'Track Name:';
     nameLabel.style.display = 'block';
@@ -773,6 +795,58 @@ function showTrackTypeDialog(callback, initialType, initialName) {
     nameInput.style.borderRadius = '4px';
     nameInput.style.fontSize = '14px';
     dialog.appendChild(nameInput);
+
+    // Color Selection
+    var colorLabel = document.createElement('label');
+    colorLabel.textContent = 'Track Color:';
+    colorLabel.style.display = 'block';
+    colorLabel.style.marginBottom = '8px';
+    colorLabel.style.fontSize = '14px';
+    colorLabel.style.fontWeight = '500';
+    colorLabel.style.color = '#555';
+    dialog.appendChild(colorLabel);
+
+    var colorGrid = document.createElement('div');
+    colorGrid.style.display = 'grid';
+    colorGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    colorGrid.style.gap = '8px';
+    colorGrid.style.marginBottom = '20px';
+
+    // Use provided color or default to red
+    var selectedColor = initialColor || '#FF0000';
+
+    APPROVED_COLORS.forEach(function(colorObj) {
+        var btn = document.createElement('button');
+        btn.style.padding = '0';
+        btn.style.border = '2px solid transparent';
+        btn.style.cursor = 'pointer';
+        btn.style.borderRadius = '4px';
+        btn.style.width = '100%';
+        btn.style.height = '30px';
+        btn.style.backgroundColor = colorObj.color;
+        btn.style.transition = 'all 0.2s';
+        btn.style.position = 'relative';
+        btn.title = colorObj.label;
+
+        if (colorObj.color === selectedColor) {
+            btn.style.border = '2px solid #333';
+            btn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+        }
+
+        btn.onclick = function() {
+            selectedColor = colorObj.color;
+            Array.from(colorGrid.children).forEach(function(child) {
+                child.style.border = '2px solid transparent';
+                child.style.boxShadow = 'none';
+            });
+            btn.style.border = '2px solid #333';
+            btn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+        };
+
+        colorGrid.appendChild(btn);
+    });
+
+    dialog.appendChild(colorGrid);
 
     var buttonContainer = document.createElement('div');
     buttonContainer.style.display = 'flex';
@@ -803,9 +877,9 @@ function showTrackTypeDialog(callback, initialType, initialName) {
     okBtn.style.fontSize = '14px';
     okBtn.style.fontWeight = '500';
     okBtn.onclick = function() {
-        var trackName = nameInput.value.trim() || selectedType;
+        var trackName = nameInput.value.trim() || 'Unnamed Track';
         document.body.removeChild(overlay);
-        callback(selectedType, trackName);
+        callback(selectedColor, trackName);
     };
     buttonContainer.appendChild(okBtn);
 
@@ -900,7 +974,7 @@ function setupDrawEventHandlers() {
             layer.options._kmlColor = defaultColor;
             layer.options.color = defaultColor;
             layer.options._kmlType = 'Descent';
-            layer.setStyle({ color: defaultColor });
+            layer.setStyle({ color: defaultColor, weight: 2 });
 
             // Create ghost layer for new track
             var ghostLayer = L.polyline(layer.getLatLngs(), {
@@ -933,8 +1007,15 @@ function setupDrawEventHandlers() {
             updateLegendFromGroup(editableGroup);
 
             // Now show dialog to update the properties
-            showTrackTypeDialog(function(trackType, trackName) {
-                var color = TRACK_TYPES[trackType] || '#FF0000';
+            showTrackTypeDialog(function(color, trackName) {
+                // Find type that matches selected color, or use 'Other'
+                var trackType = 'Other';
+                for (var type in TRACK_TYPES) {
+                    if (TRACK_TYPES[type] === color) {
+                        trackType = type;
+                        break;
+                    }
+                }
 
                 // Update both ghost and visible layer
                 layer.options._kmlName = trackName;
@@ -942,7 +1023,7 @@ function setupDrawEventHandlers() {
                 layer.options._kmlColor = color;
                 layer.options.color = color;
                 layer.options._kmlType = trackType;
-                layer.setStyle({ color: color });
+                layer.setStyle({ color: color, weight: 2 });
 
                 ghostLayer.options._kmlName = trackName;
                 ghostLayer.options.name = trackName;
@@ -955,7 +1036,7 @@ function setupDrawEventHandlers() {
                 setupTrackPopup(ghostLayer);
 
                 updateLegendFromGroup(editableGroup);
-            }, 'Descent', 'New Track');
+            }, '#FF0000', 'New Track');
         } else if (layer instanceof L.Marker) {
             // Add marker to map immediately
             layer.options._kmlName = 'New Marker';
