@@ -506,6 +506,14 @@ function loadUserInterface(document) {
                 });
         }
 
+    // fix SRF slideshow: center page number, align slider, and fix button shape
+    var slideshowStyle = document.createElement('style');
+    slideshowStyle.innerHTML =
+        '.srf-slideshow .slideshow-nav-readout { left: 0; }' +
+        '.srf-slideshow .slideshow-nav.ui-slider { margin-top: 0; margin-bottom: 0; }' +
+        '.srf-slideshow .slideshow-nav-wrapper .ui-button-icon-only { border-radius: 4px; }';
+    document.body.appendChild(slideshowStyle);
+
     //gallerybox
     var tt, it, isrc = null, ttmove = 0, ttshow = 0;
     var boxes = document.getElementsByClassName('galleryboxview');
