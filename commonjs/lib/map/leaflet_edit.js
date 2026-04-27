@@ -79,16 +79,7 @@ function loadKMLToEditableGroup(map, kmlurl) {
     editableGroup = new L.FeatureGroup();
     map.addLayer(editableGroup);
 
-    // Add cache-busting parameter if page has _kmlrefresh parameter
-    var urlParams = new URLSearchParams(window.location.search);
-    var kmlRefresh = urlParams.get('_kmlrefresh');
-    var finalKmlUrl = kmlurl;
-    if (kmlRefresh) {
-        var separator = kmlurl.indexOf('?') === -1 ? '?' : '&';
-        finalKmlUrl = kmlurl + separator + '_=' + kmlRefresh;
-    }
-
-    $.get(finalKmlUrl, function (kmltext) {
+    $.get(getUrlWithoutCache(kmlurl), function (kmltext) {
         var track = new L.KML(kmltext, 'text/xml');
 
         track.on('add', function () {
@@ -1105,23 +1096,13 @@ function doSaveMap() {
     }).done(function (result) {
         showMessageDialog('Map saved successfully!', function() {
             disableEditMode();
-            // Add cache-busting parameter to force reload of updated KML
-            var url = window.location.href.split('?')[0];
-            var params = new URLSearchParams(window.location.search);
-            params.delete('_kmlrefresh');
-            params.set('_kmlrefresh', Date.now().toString());
-            window.location.href = url + '?' + params.toString();
+            location.reload();
         });
     }).fail(function (code, result) {
         if (result.upload && result.upload.warnings) {
             showMessageDialog('Map saved successfully!', function() {
                 disableEditMode();
-                // Add cache-busting parameter to force reload of updated KML
-                var url = window.location.href.split('?')[0];
-                var params = new URLSearchParams(window.location.search);
-                params.delete('_kmlrefresh');
-                params.set('_kmlrefresh', Date.now().toString());
-                window.location.href = url + '?' + params.toString();
+                location.reload();
             });
         } else {
             var errorMsg = 'Save failed';
