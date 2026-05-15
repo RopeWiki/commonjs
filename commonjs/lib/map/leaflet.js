@@ -16,7 +16,7 @@ function initializeLeafletMap() {
     if (!currentUser) {
         mapbox.style = "";
         mapbox.id = "mapbox_disabled";
-        getMWPage("{{Template:Warning|Maps are currently limited to logged-in users only. " +
+        getMWPage("{{Template:Warning|Please [[Special:UserLogin|login]], as maps are limited to logged-in users only.<br>" +
             "Unfortunately this also disables other map-dependent pages like region overviews.}}",
             function (html) { mapbox.innerHTML = html }
         );
