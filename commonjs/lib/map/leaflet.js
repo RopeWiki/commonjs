@@ -86,7 +86,42 @@ function buildLeafletMap() {
 
     addMapResizeHandle();
 
+    addCoordinateContextMenu(map);
+
     findAndAddDataToMap(map);
+}
+
+function addCoordinateContextMenu(map) {
+    map.on('contextmenu', function (e) {
+        if (e.originalEvent) e.originalEvent.preventDefault();
+
+        var coords = e.latlng.lat.toFixed(6) + ', ' + e.latlng.lng.toFixed(6);
+
+        var container = L.DomUtil.create('div', 'coord-popup');
+        container.style.fontFamily = 'monospace';
+        container.style.whiteSpace = 'nowrap';
+
+        var label = L.DomUtil.create('span', '', container);
+        label.textContent = coords;
+
+        var icon = L.DomUtil.create('span', '', container);
+        icon.textContent = '📋';
+        icon.title = 'Copy coordinates';
+        icon.style.cursor = 'pointer';
+        icon.style.marginLeft = '6px';
+
+        L.DomEvent.on(icon, 'click', function () {
+            navigator.clipboard.writeText(coords).then(
+                function () { icon.textContent = '✔'; },
+                function () { icon.textContent = '✗'; }
+            );
+        });
+
+        L.popup({ closeButton: true })
+            .setLatLng(e.latlng)
+            .setContent(container)
+            .openOn(map);
+    });
 }
 
 function computeLength(polyline) {
