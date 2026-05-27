@@ -911,9 +911,13 @@ function loadResultsIntoMap(data, fitbounds) {
 
 function markerAlreadyExists(id)
 {
+    // Compare against the full page title (locationData.id), not marker.name,
+    // because marker.name is the disambiguator-stripped display name and can
+    // collide between distinct pages (e.g. "Panther Creek" and
+    // "Panther Creek (Mount Rainier National Park)").
     var alreadyExists = false;
     for (var j = 0; j < markers.length; ++j) {
-        if (markers[j].name === id) {
+        if (markers[j].locationData && markers[j].locationData.id === id) {
             alreadyExists = true;
             break;
         }
