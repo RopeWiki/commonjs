@@ -62,6 +62,20 @@ function add_risk_map(map) {
     });
     blmLayer.addTo(map);
 
+    roadlessLayer = L.vectorGrid.protobuf("https://tiles.ropewiki.com/data/roadless/{z}/{x}/{y}.pbf", {
+        vectorTileLayerStyles: {
+            roadless: {
+                fillColor: '#6aa84f',
+                color: '#38761d',
+                weight: 1,
+                fillOpacity: 0.3,
+                fill: true
+            }
+        },
+        interactive: true
+    });
+    roadlessLayer.addTo(map);
+
     var toggleControl = L.control({ position: 'bottomleft' });
 
     toggleControl.onAdd = function (map) {
@@ -80,6 +94,7 @@ function add_risk_map(map) {
             'US Public lands are at risk!<br>' +
             '<i style="background: #e06666; width: 12px; height: 12px; display: inline-block;"></i> USFS ' +
             '<i style="background: #e69138; width: 12px; height: 12px; display: inline-block;"></i> BLM ' +
+            '<i style="background: #6aa84f; width: 12px; height: 12px; display: inline-block;"></i> Roadless ' +
             '- <a target="_blank" style="display: inline; background-color:white; text-decoration: underline;" href="https://www.outdooralliance.org/blog/2025/6/16/33millionacres-publicland-selloffs-map">More info</a>' +
             '</label><br><span style="font-size: smaller;">' +
             '<a target="_new" style="line-height:0px; display: inline; text-decoration: underline;" href="https://www.dropbox.com/scl/fo/smwyjbbwr9ie5qg3dtuzd/AP10gfeav1spzd-mPAL-k1E?dl=0&e=2&rlkey=q055x4j4kxf29giajlmw11m93">' +
@@ -94,16 +109,19 @@ function add_risk_map(map) {
         if (!isChecked) {
             if (map.hasLayer(usfsLayer)) map.removeLayer(usfsLayer);
             if (map.hasLayer(blmLayer)) map.removeLayer(blmLayer);
+            if (map.hasLayer(roadlessLayer)) map.removeLayer(roadlessLayer);
         }
 
         checkbox.onclick = function () {
             if (map.hasLayer(usfsLayer)) {
                 map.removeLayer(usfsLayer);
                 map.removeLayer(blmLayer);
+                map.removeLayer(roadlessLayer);
                 setCookie("publiclands", "off");
             } else {
                 map.addLayer(usfsLayer);
                 map.addLayer(blmLayer);
+                map.addLayer(roadlessLayer);
                 setCookie("publiclands", "on");
             }
         };
