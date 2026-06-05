@@ -85,18 +85,31 @@ function add_risk_map(map) {
         div.style.cursor = 'pointer';
         div.title = 'Toggle Layer';
 
-        // Check cookie for initial state (default to checked if no cookie)
+        // Individually toggleable layers. Each remembers its own state in a
+        // cookie ("publiclands_<key>"); click the name to show/hide that layer.
+        var layers = [
+            { key: 'usfs', name: 'USFS', color: '#e06666', layer: usfsLayer },
+            { key: 'blm', name: 'BLM', color: '#e69138', layer: blmLayer },
+            { key: 'roadless', name: 'Roadless', color: '#6aa84f', layer: roadlessLayer }
+        ];
+
+        // Master on/off for the whole box (existing "publiclands" cookie)
         var isChecked = publiclands !== "off";
+
+        var swatches = layers.map(function (l) {
+            return '<span class="landLayerName" data-key="' + l.key + '" ' +
+                'style="cursor: pointer; user-select: none; white-space: nowrap; margin-right: 6px;">' +
+                '<i style="background: ' + l.color + '; width: 12px; height: 12px; display: inline-block;"></i> ' +
+                l.name + '</span>';
+        }).join('');
 
         div.innerHTML =
             '<label style="font-size: 13px; user-select: none; background-color: white;">' +
             '<input type="checkbox" id="landLayerToggle" ' + (isChecked ? 'checked' : '') + '> ' +
-            'US Public lands are at risk!<br>' +
-            '<i style="background: #e06666; width: 12px; height: 12px; display: inline-block;"></i> USFS ' +
-            '<i style="background: #e69138; width: 12px; height: 12px; display: inline-block;"></i> BLM ' +
-            '<i style="background: #6aa84f; width: 12px; height: 12px; display: inline-block;"></i> Roadless ' +
+            'US Public lands are at risk!</label><br>' +
+            '<span style="font-size: 13px;">' + swatches +
             '- <a target="_blank" style="display: inline; background-color:white; text-decoration: underline;" href="https://www.outdooralliance.org/blog/2025/6/16/33millionacres-publicland-selloffs-map">More info</a>' +
-            '</label><br><span style="font-size: smaller;">' +
+            '</span><br><span style="font-size: smaller;">' +
             '<a target="_new" style="line-height:0px; display: inline; text-decoration: underline;" href="https://www.dropbox.com/scl/fo/smwyjbbwr9ie5qg3dtuzd/AP10gfeav1spzd-mPAL-k1E?dl=0&e=2&rlkey=q055x4j4kxf29giajlmw11m93">' +
             'Source data</a> via Outdoor Alliance & TWA<span>';
 
@@ -105,26 +118,49 @@ function add_risk_map(map) {
 
         var checkbox = div.querySelector('#landLayerToggle');
 
-        // Set initial layer state based on checkbox
-        if (!isChecked) {
-            if (map.hasLayer(usfsLayer)) map.removeLayer(usfsLayer);
-            if (map.hasLayer(blmLayer)) map.removeLayer(blmLayer);
-            if (map.hasLayer(roadlessLayer)) map.removeLayer(roadlessLayer);
+        // Reconcile every layer's visibility + label appearance with the cookies.
+        // A layer shows only when the master box is on AND its own cookie isn't "off".
+        function applyLayers() {
+            var masterOn = getCookie("publiclands") !== "off";
+            layers.forEach(function (l) {
+                var on = masterOn && getCookie("publiclands_" + l.key) !== "off";
+                var span = div.querySelector('.landLayerName[data-key="' + l.key + '"]');
+                if (on) {
+                    if (!map.hasLayer(l.layer)) map.addLayer(l.layer);
+                    span.style.opacity = '1';
+                    span.style.textDecoration = 'none';
+                } else {
+                    if (map.hasLayer(l.layer)) map.removeLayer(l.layer);
+                    span.style.opacity = '0.4';
+                    span.style.textDecoration = 'line-through';
+                }
+            });
         }
 
+        // Master checkbox: show/hide the whole box at once
         checkbox.onclick = function () {
-            if (map.hasLayer(usfsLayer)) {
-                map.removeLayer(usfsLayer);
-                map.removeLayer(blmLayer);
-                map.removeLayer(roadlessLayer);
-                setCookie("publiclands", "off");
-            } else {
-                map.addLayer(usfsLayer);
-                map.addLayer(blmLayer);
-                map.addLayer(roadlessLayer);
-                setCookie("publiclands", "on");
-            }
+            setCookie("publiclands", checkbox.checked ? "on" : "off");
+            applyLayers();
         };
+
+        // Each layer name toggles just that layer
+        layers.forEach(function (l) {
+            var span = div.querySelector('.landLayerName[data-key="' + l.key + '"]');
+            L.DomEvent.on(span, 'click', function (e) {
+                L.DomEvent.stop(e);
+                // Clicking a name implies the box should be on
+                if (getCookie("publiclands") === "off") {
+                    setCookie("publiclands", "on");
+                    checkbox.checked = true;
+                }
+                var currentlyOn = getCookie("publiclands_" + l.key) !== "off";
+                setCookie("publiclands_" + l.key, currentlyOn ? "off" : "on");
+                applyLayers();
+            });
+        });
+
+        // Apply initial state from cookies
+        applyLayers();
 
         return div;
     };
