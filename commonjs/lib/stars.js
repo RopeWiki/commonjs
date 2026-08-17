@@ -76,7 +76,7 @@ function getStars(num, numRatings, size, includeNumRatings) {
 
 function getStarsVote(num, unum, ratings) {
     var line = '<span class="tablestars starRate">';
-    var text = ['Delete', 'Not worth doing', 'Worthwhile', 'Ok', 'Great', 'Among the best'];
+    var text = ['Delete', 'Not worth doing', 'Ok', 'Worthwhile', 'Great', 'Among the best'];
     var i;
 
     if (!currentUser)
@@ -194,8 +194,8 @@ function getUsersStarswithVotingDisplay(stars, ustars, numRatings) {
     var starDisplay = {}, i;
 
     var line = '<span class="starRate" style="white-space: nowrap;">';
-    var text = ['Delete', 'Not worth doing', 'Worthwhile', 'Ok', 'Great', 'Among the best'];
-    
+    var text = ['Delete', 'Not worth doing', 'Ok', 'Worthwhile', 'Great', 'Among the best'];
+
     if (!currentUser)
         for (i = 0; i <= 5; ++i)
             text[i] = 'Log in to rate';
